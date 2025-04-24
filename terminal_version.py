@@ -374,8 +374,9 @@ class Board:
 @click.option('--replace-blanks', default=False, is_flag=True, help='Replace blanks in the face with random letters')
 @click.option('--blank-character', type=str, default=' ', help='Blank character to use')
 @click.option('--array-format', default=False, is_flag=True, help='When showing grid format it as python array')
+@click.option('--baud-rate', default=800, type=int, help='Baud rate for SPI communication')
 def main(offset, time, interval, simulation_update, mode, calc_size, show_it_is, light_mode, light_color,
-         replace_blanks, blank_character, array_format):
+         replace_blanks, blank_character, array_format, baud_rate):
     term = blessed.Terminal()
 
     if time:
@@ -390,7 +391,7 @@ def main(offset, time, interval, simulation_update, mode, calc_size, show_it_is,
         lights = lambda n: mocklights.MockLights(term, n)
     elif light_mode == 'real':
         from pi5neo import Pi5Neo
-        lights = lambda n: Pi5Neo('/dev/spidev0.0', n)
+        lights = lambda n: Pi5Neo('/dev/spidev0.0', n, baud_rate)
     else:
         lights = None
 
