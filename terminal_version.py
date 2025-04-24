@@ -315,7 +315,10 @@ class Board:
                 if letter != ' ':
                     self.lights.set_led_color(idx, *self.light_color)
                 idx += 1
-        self.lights.update_strip()
+        try:
+                self.lights.update_strip()
+        except OSError as err:
+                raise Exception(f'Failed to send SPI data - is SPI interface turned on?: {err}') 
 
 
     def clear_board(self):
