@@ -1,4 +1,6 @@
 import random
+import signal
+import sys
 
 import blessed
 import datetime
@@ -406,6 +408,16 @@ def main(offset, time, interval, simulation_update, mode, calc_size, show_it_is,
 
     b.add_words(faces[mode])
 
+    def signal_handler(sig, frame):
+        """Handle the SIGTERM from SystemD"""
+        print(f'Caught SIGTERM {sig}')
+        if lights:
+            b.lights.clear_strip()
+            b.lights.update_strip()
+        sys.exit(0)
+
+    signal.signal(signal.SIGTERM, signal_handler)
+
     if calc_size:
         print('\nCalculation of board size ...\n')
         print(f'Board rows = {len(b.rows)}')
@@ -417,17 +429,23 @@ def main(offset, time, interval, simulation_update, mode, calc_size, show_it_is,
             print('\n'.join([f'"{line}",' for line in b.get_board_text(True)]))
     else:
         while True:
-            t = datetime.datetime.now()
-            b.time = t + current_offset
-            b.update_board()
-            b.show_board()
-            if term.inkey(timeout=interval):
+            try:
+                t = datetime.datetime.now()
+                b.time = t + current_offset
+                b.update_board()
+                b.show_board()
+                if term.inkey(timeout=interval):
+                    break
+                current_offset += simulation_offset
+            except KeyboardInterrupt:
+                print('CTRL-C detected')
                 break
-            current_offset += simulation_offset
 
         if lights:
             b.lights.clear_strip()
             b.lights.update_strip()
+
+
 
 
 if __name__ == '__main__':
