@@ -235,7 +235,7 @@ class Board:
     """Represents of the words arranged in a board"""
 
     def __init__(self, term, time, simple=False, show_it_is=False, lights=None, light_color=None,
-                 replace_blanks=False, blank_character=' '):
+                 replace_blanks=False, blank_character=' ', show_a=False):
         self.term = term
         self.time = time
         self.rows = None
@@ -247,6 +247,7 @@ class Board:
         self.light_color = light_color
         self.fill_character = blank_character
         self.replace_blanks = replace_blanks
+        self.show_a = show_a
 
     def add_word(self, word):
         if word.word and word.word[0] == 'x':
@@ -294,7 +295,7 @@ class Board:
         text_lines = self.get_board_text(terminal_mode=self.lights is None)
         print('\n'.join(text_lines))
         print()
-        print(self.term.green(f"Time = {self.time.strftime('%H:%M')}, {timesayer.convert_to_text(self.time)}"))
+        print(self.term.green(f"Time = {self.time.strftime('%H:%M')}, {timesayer.convert_to_text(self.time, show_a=self.show_a)}"))
         print(self.term.green(f'Board {self.get_dimensions()}'))
         #
         if self.lights:
@@ -355,7 +356,8 @@ class Board:
         it_is = 'It is ' if self.show_it_is else ''
         return it_is + timesayer.convert_to_text(self.time, simple=self.simple,
                                          mode=timesayer.Mode.oclock,
-                                         twelve_mode=timesayer.TwelveMode.number
+                                         twelve_mode=timesayer.TwelveMode.number,
+                                         show_a=self.show_a
         )
 
     def get_dimensions(self):
@@ -380,8 +382,9 @@ class Board:
 @click.option('--blank-character', type=str, default=' ', help='Blank character to use')
 @click.option('--array-format', default=False, is_flag=True, help='When showing grid format it as python array')
 @click.option('--baud-rate', default=800, type=int, help='Baud rate for SPI communication')
+@click.option('--show-a', default=False, is_flag=True, help='Whether to show "a" in "a quarter to ..."')
 def main(offset, time, interval, simulation_update, mode, calc_size, show_it_is, light_mode, light_color,
-         replace_blanks, blank_character, array_format, baud_rate):
+         replace_blanks, blank_character, array_format, baud_rate, show_a):
     term = blessed.Terminal()
 
     if time:
@@ -403,7 +406,8 @@ def main(offset, time, interval, simulation_update, mode, calc_size, show_it_is,
     b = Board(term, datetime.datetime.now(),
               simple=mode=='14x5', show_it_is=show_it_is,
               lights=lights, light_color=light_color,
-              replace_blanks=replace_blanks, blank_character=blank_character
+              replace_blanks=replace_blanks, blank_character=blank_character,
+              show_a=show_a
     )
 
     b.add_words(faces[mode])
