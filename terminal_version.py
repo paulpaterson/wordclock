@@ -143,8 +143,9 @@ square_words = [
     NewLine,
     Word('xx'),
 
+    Word('y'),
     Word('a'),
-    Word('cy'),
+    Word('c'),
     Word('quarter'),
     Word('dc'),
 
