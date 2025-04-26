@@ -17,11 +17,12 @@ class TargetTime:
         self.mins = mins
         self.format = format
 
-    def get_text(self, hour_name: str, next_hour_name: str, am_pm: str) -> str:
-        text = self.format.format(hour_name=hour_name, next_hour_name=next_hour_name, am_pm=am_pm)
+    def get_text(self, hour_name: str, next_hour_name: str, am_pm: str, show_a: bool = False) -> str:
+        a = 'a ' if show_a else ''
+        text = self.format.format(hour_name=hour_name, next_hour_name=next_hour_name, am_pm=am_pm, a=a)
         if 'midnight' in text or 'noon' in text:
             # Strip out AM/PM indicator for noon and midnight
-            return self.format.format(hour_name=hour_name, next_hour_name=next_hour_name, am_pm='')
+            return self.format.format(hour_name=hour_name, next_hour_name=next_hour_name, am_pm='', a=a)
         else:
             return text
 
@@ -34,9 +35,9 @@ class TargetTime:
 
 simple_times = [
     TargetTime(0, '{hour_name}{am_pm}'),
-    TargetTime(15, 'quarter past {hour_name}'),
+    TargetTime(15, '{a}quarter past {hour_name}'),
     TargetTime(30, 'half past {hour_name}'),
-    TargetTime(45, 'quarter to {next_hour_name}'),
+    TargetTime(45, '{a}quarter to {next_hour_name}'),
     TargetTime(60, '{next_hour_name}{am_pm}'),
 ]
 
@@ -53,7 +54,8 @@ complex_times = simple_times + [
 
 
 def convert_to_text(t: datetime.time, simple: bool = False,
-                    mode: Mode = Mode.am_pm, twelve_mode: TwelveMode = TwelveMode.name) -> str:
+                    mode: Mode = Mode.am_pm, twelve_mode: TwelveMode = TwelveMode.name,
+                    show_a=False) -> str:
     """Return a text representation of the time"""
     hour_words = [
         'midnight' if twelve_mode == TwelveMode.name else 'twelve',
@@ -83,7 +85,7 @@ def convert_to_text(t: datetime.time, simple: bool = False,
             case _:
                 am_pm = ' PM'
 
-    return best_option.get_text(hour, next_hour, am_pm)
+    return best_option.get_text(hour, next_hour, am_pm, show_a)
 
 
 

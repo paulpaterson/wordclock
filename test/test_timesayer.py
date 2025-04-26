@@ -82,6 +82,39 @@ class TestSayer(unittest.TestCase):
             self.assertEqual(expected, s,
                              f'Failed on {t}, expected {expected}, got {s}')
 
+    def test_partials_adding_a(self):
+        T = datetime.time
+        time_expect = [
+            (T(5, 2), 'five AM'),
+            (T(5, 3), 'five past five'),
+            (T(5, 7), 'five past five'),
+            (T(5, 8), 'ten past five'),
+            (T(5, 12), 'ten past five'),
+            (T(5, 13), 'a quarter past five'),
+            (T(5, 17), 'a quarter past five'),
+            (T(5, 18), 'twenty past five'),
+            (T(5, 22), 'twenty past five'),
+            (T(5, 23), 'twenty five past five'),
+            (T(5, 27), 'twenty five past five'),
+            (T(5, 28), 'half past five'),
+            (T(5, 32), 'half past five'),
+            (T(5, 33), 'twenty five to six'),
+            (T(5, 37), 'twenty five to six'),
+            (T(5, 38), 'twenty to six'),
+            (T(5, 42), 'twenty to six'),
+            (T(5, 43), 'a quarter to six'),
+            (T(5, 47), 'a quarter to six'),
+            (T(5, 48), 'ten to six'),
+            (T(5, 52), 'ten to six'),
+            (T(5, 53), 'five to six'),
+            (T(5, 57), 'five to six'),
+            (T(5, 58), 'six AM'),
+        ]
+        for t, expected in time_expect:
+            s = timesayer.convert_to_text(t, show_a=True)
+            self.assertEqual(expected, s,
+                             f'Failed on {t}, expected {expected}, got {s}')
+
     def test_partials_lower_granularity(self):
         T = datetime.time
         time_expect = [
