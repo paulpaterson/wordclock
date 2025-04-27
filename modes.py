@@ -62,9 +62,47 @@ class TestEdge(Mode):
         self.on = not self.on
 
 
+class TestWords(Mode):
+    """Test all the words lighting up"""
+
+    def __init__(self):
+        self.idx = None
+
+    def update(self, board):
+        """Update each word"""
+        possible_words = [word for word in board.get_all_words() if word.is_used]
+        if self.idx is None:
+            self.idx = -1
+        else:
+            possible_words[self.idx].clear()
+
+        self.idx += 1
+        if self.idx >= len(possible_words):
+            self.idx = 0
+        possible_words[self.idx].activate()
+
+
+class FlashWords(Mode):
+    """Alternately flash all the words"""
+
+    def __init__(self):
+        self.on = True
+
+    def update(self, board):
+        """Update each word"""
+        possible_words = [word for word in board.get_all_words() if word.is_used]
+        for word in possible_words:
+            if self.on:
+                word.activate()
+            else:
+                word.clear()
+        self.on = not self.on
+
 
 modes = {
     'Normal': Normal(),
     'EdgeSeconds': EdgeLightSeconds(),
     'TestEdge': TestEdge(),
+    'TestWords': TestWords(),
+    'FlashWords': FlashWords(),
 }

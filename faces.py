@@ -4,6 +4,7 @@
 class Word:
     """Represents a single word on the screen"""
     new_line = False
+    is_used = True
 
     def __init__(self, word, is_on=False):
         self.line = None
@@ -23,40 +24,45 @@ class Word:
             return term.grey(self.word.upper()) if terminal_mode else ' ' * len(self.word)
 
 
+class Unused(Word):
+    is_used = False
+
+
 class NewLine:
     new_line = True
+    is_used = False
 
 
 
 full_words = [
     Word('It', True),
-    Word('l'),
+    Unused('l'),
     Word('is', True),
-    Word('as'),
+    Unused('as'),
     Word('AM'),
     Word('PM'),
     NewLine,
 
-    Word('a'),
-    Word('c'),
+    Unused('a'),
+    Unused('c'),
     Word('quarter'),
-    Word('dc'),
+    Unused('dc'),
     NewLine,
 
     Word('twenty'),
     Word('five', True),
-    Word('x'),
+    Unused('x'),
     NewLine,
 
     Word('half'),
-    Word('s'),
+    Unused('s'),
     Word('ten'),
-    Word('f'),
+    Unused('f'),
     Word('to'),
     NewLine,
 
     Word('past'),
-    Word('eru'),
+    Unused('eru'),
     Word('nine'),
     NewLine,
 
@@ -79,9 +85,9 @@ full_words = [
     NewLine,
 
     Word('ten'),
-    Word('s'),
+    Unused('s'),
     Word('oclock', True),
-    Word('X'),
+    Unused('X'),
     # Word('AM'),
     # Word('PM'),
     # Word('YO'),
@@ -95,7 +101,7 @@ simple_words = [
     NewLine,
 
     Word('to'),
-    Word('x'),
+    Unused('x'),
     Word('nine'),
     Word('one'),
     Word('three'),
@@ -122,97 +128,97 @@ square_words = [
     NewLine,
     NewLine,
     NewLine,
-    Word('xx'),
+    Unused('xx'),
 
     Word('It', True),
-    Word('l'),
+    Unused('l'),
     Word('is', True),
-    Word('as'),
+    Unused('as'),
     Word('AM'),
-    Word('y'),
+    Unused('y'),
     Word('PM'),
 
-    Word('xx'),
+    Unused('xx'),
     NewLine,
-    Word('xx'),
+    Unused('xx'),
 
-    Word('y'),
+    Unused('y'),
     Word('a'),
-    Word('c'),
+    Unused('c'),
     Word('quarter'),
-    Word('dc'),
+    Unused('dc'),
 
-    Word('xx'),
+    Unused('xx'),
     NewLine,
-    Word('xx'),
+    Unused('xx'),
 
     Word('twenty'),
-    Word('y'),
+    Unused('y'),
     Word('five', True),
-    Word('r'),
+    Unused('r'),
 
-    Word('xx'),
+    Unused('xx'),
     NewLine,
-    Word('xx'),
+    Unused('xx'),
 
     Word('half'),
-    Word('sy'),
+    Unused('sy'),
     Word('ten'),
-    Word('f'),
+    Unused('f'),
     Word('to'),
 
-    Word('xx'),
+    Unused('xx'),
     NewLine,
-    Word('xx'),
+    Unused('xx'),
 
     Word('past'),
-    Word('eruy'),
+    Unused('eruy'),
     Word('nine'),
 
-    Word('xx'),
+    Unused('xx'),
     NewLine,
-    Word('xx'),
+    Unused('xx'),
 
     Word('one'),
     Word('six'),
-    Word('y'),
+    Unused('y'),
     Word('three'),
 
-    Word('xx'),
+    Unused('xx'),
     NewLine,
-    Word('xx'),
+    Unused('xx'),
 
     Word('four'),
     Word('five'),
-    Word('y'),
+    Unused('y'),
     Word('two'),
 
-    Word('xx'),
+    Unused('xx'),
     NewLine,
-    Word('xx'),
+    Unused('xx'),
 
     Word('eight'),
-    Word('y'),
+    Unused('y'),
     Word('eleven'),
 
-    Word('xx'),
+    Unused('xx'),
     NewLine,
-    Word('xx'),
+    Unused('xx'),
 
     Word('seven'),
-    Word('y'),
+    Unused('y'),
     Word('twelve'),
 
-    Word('xx'),
+    Unused('xx'),
     NewLine,
-    Word('xx'),
+    Unused('xx'),
 
     Word('ten'),
-    Word('sy'),
+    Unused('sy'),
     Word('oclock', True),
-    Word('X'),
+    Unused('X'),
 
-    Word('xx'),
+    Unused('xx'),
     NewLine,
     NewLine,
     NewLine,
