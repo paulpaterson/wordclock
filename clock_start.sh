@@ -1,7 +1,8 @@
 #!/bin/bash
 
 cd /home/paul/Workspace/wordclock
+source ./config.sh
 source .env/bin/activate
-python terminal_version.py --face-mode 16x16 --light-mode real --interval 10 --baud-rate 1000 --show-it-is --show-a --light-color 255 255 0 --mode Normal
+python terminal_version.py
 
 

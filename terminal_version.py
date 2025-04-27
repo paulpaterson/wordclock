@@ -175,7 +175,7 @@ class Board:
 @click.option('--face-mode', type=click.Choice(list(faces.faces.keys())), required=True, help='Select which face mode')
 @click.option('--calc-size', default=False, is_flag=True, help='Just calculate the size')
 @click.option('--show-it-is', default=False, is_flag=True, help='Whether to show "it is" wording')
-@click.option('--light-mode', type=click.Choice(['off', 'simulate', 'real']), default='off',
+@click.option('--light-mode', type=click.Choice(['off', 'simulate', 'real', 'detect']), default='off',
               help='Set how to handle lights')
 @click.option('--light-color', type=click.Tuple([click.INT, click.INT, click.INT]), default=(10, 10, 10),
               help='The color for the lights when they are on')
@@ -201,9 +201,13 @@ def main(offset, time, interval, simulation_update, face_mode, calc_size, show_i
 
     if light_mode == 'simulate':
         lights = lambda n: mocklights.MockLights(term, n)
-    elif light_mode == 'real':
-        from pi5neo import Pi5Neo
-        lights = lambda n: Pi5Neo('/dev/spidev0.0', n, baud_rate)
+    elif light_mode in ('real', 'detect'):
+        try:
+            from pi5neo import Pi5Neo
+        except ImportError:
+            lights = None
+        else:
+            lights = lambda n: Pi5Neo('/dev/spidev0.0', n, baud_rate)
     else:
         lights = None
 
@@ -261,4 +265,4 @@ def main(offset, time, interval, simulation_update, face_mode, calc_size, show_i
 
 
 if __name__ == '__main__':
-    main()
+    main(auto_envvar_prefix='CLOCK')
