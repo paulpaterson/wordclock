@@ -6,4 +6,4 @@ export CLOCK_MODE=Normal EdgeLightSeconds
 export CLOCK_LIGHT_MODE=detect
 export CLOCK_BAUD_RATE=1000
 export CLOCK_SHOW_IT_IS=true
-export CLOCK_LIGHT_COLOR=255 255 0
+export CLOCK_LIGHT_COLOR="255 255 0"
