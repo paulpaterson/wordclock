@@ -8,13 +8,14 @@ import timesayer
 import click
 import mocklights
 import faces
+import modes
 
 
 class Board:
     """Represents of the words arranged in a board"""
 
     def __init__(self, term, time, simple=False, show_it_is=False, lights=None, light_color=None,
-                 replace_blanks=False, blank_character=' ', show_a=False):
+                 replace_blanks=False, blank_character=' ', show_a=False, display=None):
         self.term = term
         self.time = time
         self.rows = None
@@ -28,6 +29,7 @@ class Board:
         self.replace_blanks = replace_blanks
         self.show_a = show_a
         self.edge_lights = {}
+        self.modes = display or [modes.Normal()]
 
     def add_word(self, word):
         if word.word and word.word[0] == 'x':
@@ -148,12 +150,8 @@ class Board:
 
     def update_board(self):
         self.clear_board()
-        time_string = self.convert_time()
-        time_words = time_string.split()
-        possible_words = self.get_all_words()
-        for word in time_words:
-            the_word = self.find_next_word(word, possible_words)
-            the_word.activate()
+        for mode in self.modes:
+            mode.update(self)
 
     def convert_time(self):
         it_is = 'It is ' if self.show_it_is else ''
@@ -186,8 +184,10 @@ class Board:
 @click.option('--array-format', default=False, is_flag=True, help='When showing grid format it as python array')
 @click.option('--baud-rate', default=800, type=int, help='Baud rate for SPI communication')
 @click.option('--show-a', default=False, is_flag=True, help='Whether to show "a" in "a quarter to ..."')
+@click.option('--display', type=click.Choice(modes.modes.keys()),
+              multiple=True, default=['Normal'], help='Select which display modes to use, can have multiple')
 def main(offset, time, interval, simulation_update, mode, calc_size, show_it_is, light_mode, light_color,
-         replace_blanks, blank_character, array_format, baud_rate, show_a):
+         replace_blanks, blank_character, array_format, baud_rate, show_a, display):
     term = blessed.Terminal()
 
     if time:
@@ -206,11 +206,13 @@ def main(offset, time, interval, simulation_update, mode, calc_size, show_it_is,
     else:
         lights = None
 
+    display_modes = [modes.modes[name] for name in display]
+
     b = Board(term, datetime.datetime.now(),
               simple=mode=='14x5', show_it_is=show_it_is,
               lights=lights, light_color=light_color,
               replace_blanks=replace_blanks, blank_character=blank_character,
-              show_a=show_a
+              show_a=show_a, display=display_modes
     )
 
     b.add_words(faces.faces[mode])
@@ -239,18 +241,6 @@ def main(offset, time, interval, simulation_update, mode, calc_size, show_it_is,
             try:
                 t = datetime.datetime.now()
                 b.time = t + current_offset
-
-                b.edge_lights = {}
-                s = t.second
-                if s < 16:
-                    row, col = 0, s
-                elif s < 16 + 15:
-                    row, col = s - 16,  15
-                elif s < 16 + 15 + 16:
-                    row, col = 15, 15 - (s - 16 - 15)
-                else:
-                    row, col = 61 - s, 0
-                b.edge_lights[(row, col)] = True
 
                 b.update_board()
                 b.show_board()
