@@ -177,7 +177,7 @@ class Board:
 @click.option('--show-it-is', default=False, is_flag=True, help='Whether to show "it is" wording')
 @click.option('--light-mode', type=click.Choice(['off', 'simulate', 'real', 'detect']), default='off',
               help='Set how to handle lights')
-@click.option('--light-color', type=click.Tuple([click.INT, click.INT, click.INT]), default=(10, 10, 10),
+@click.option('--light-color', type=str, default="#0A0A0A",
               help='The color for the lights when they are on')
 @click.option('--replace-blanks', default=False, is_flag=True, help='Replace blanks in the face with random letters')
 @click.option('--blank-character', type=str, default=' ', help='Blank character to use')
@@ -211,8 +211,10 @@ def main(offset, time, interval, simulation_update, face_mode, calc_size, show_i
     else:
         lights = None
 
-    print(mode_parameters)
     display_modes = [modes.modes[name](mode_parameters) for name in mode]
+
+    if light_color.startswith('#'):
+        light_color = hex_to_rgb(light_color)
 
     b = Board(term, datetime.datetime.now(),
               simple=face_mode=='14x5', show_it_is=show_it_is,
@@ -262,6 +264,31 @@ def main(offset, time, interval, simulation_update, face_mode, calc_size, show_i
             b.lights.update_strip()
 
 
+def hex_to_rgb(hex_color):
+    """
+    Converts a hex color code (e.g., "#14944c") to a tuple of RGB integers.
+
+    Args:
+        hex_color: A string representing the hex color code, including the '#' symbol.
+
+    Returns:
+        A tuple of three integers (r, g, b) representing the RGB values,
+        or None if the input is invalid.
+    """
+    if not isinstance(hex_color, str) or not hex_color.startswith('#'):
+        return None  # Input must be a string starting with '#'
+
+    hex_color = hex_color[1:]  # Remove the '#'
+    if len(hex_color) != 6:
+        return None  # Input must be 6 characters long (excluding '#')
+
+    try:
+        r = int(hex_color[0:2], 16)
+        g = int(hex_color[2:4], 16)
+        b = int(hex_color[4:6], 16)
+        return (r, g, b)
+    except ValueError:
+        return None  # Handle cases where the hex string is invalid
 
 
 if __name__ == '__main__':

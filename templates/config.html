@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clock Configuration</title>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const showItIsSwitch = document.getElementById('showItIs');
+            const showASwitch = document.getElementById('showA');
+            const intervalInput = document.getElementById('interval');
+            const lightColorInput = document.getElementById('lightColor');
+            const faceModeSelect = document.getElementById('faceMode');
+            const modeCheckboxes = document.querySelectorAll('input[name="mode"]');
+            const baudRateInput = document.getElementById('baudRate');
+            const saveButton = document.getElementById('saveButton');
+            const messageDiv = document.getElementById('message');
+
+            function showMessage(message, type = 'success') {
+                messageDiv.textContent = message;
+                messageDiv.className = type === 'success' ? 'success' : 'error';
+            }
+
+            async function fetchConfig() {
+                try {
+                    const response = await fetch('/api/config');
+                    if (!response.ok) {
+                        throw new Error(`Failed to fetch config: ${response.status}`);
+                    }
+                    const data = await response.json();
+
+                    showItIsSwitch.checked = data.CLOCK_SHOW_IT_IS === 'true';
+                    showASwitch.checked = data.CLOCK_SHOW_A === 'true';
+                    intervalInput.value = data.CLOCK_INTERVAL;
+                    lightColorInput.value = data.CLOCK_LIGHT_COLOR;
+                    faceModeSelect.value = data.CLOCK_FACE_MODE;
+
+                    const modes = data.CLOCK_MODE.split(' ');
+                    modeCheckboxes.forEach(checkbox => {
+                        checkbox.checked = modes.includes(checkbox.value);
+                    });
+
+                    baudRateInput.value = data.CLOCK_BAUD_RATE;
+                    updateUI();
+
+                } catch (error) {
+                    showMessage(`Error fetching config: ${error.message}`, 'error');
+                }
+            }
+
+            async function saveConfig() {
+                const selectedModes = [];
+                modeCheckboxes.forEach(checkbox => {
+                    if (checkbox.checked) {
+                        selectedModes.push(checkbox.value);
+                    }
+                });
+
+                const config = {
+                    CLOCK_SHOW_IT_IS: showItIsSwitch.checked.toString(),
+                    CLOCK_SHOW_A: showASwitch.checked.toString(),
+                    CLOCK_INTERVAL: intervalInput.value,
+                    CLOCK_LIGHT_COLOR: lightColorInput.value,
+                    CLOCK_FACE_MODE: faceModeSelect.value,
+                    CLOCK_MODE: selectedModes,
+                    CLOCK_BAUD_RATE: baudRateInput.value,
+                };
+
+                try {
+                    const response = await fetch('/api/config', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(config),
+                    });
+                    if (!response.ok) {
+                        throw new Error(`Failed to save config: ${response.status}`);
+                    }
+                    showMessage('Configuration saved successfully!', 'success');
+                    await fetchConfig(); // Reload config
+                } catch (error) {
+                    showMessage(`Error saving config: ${error.message}`, 'error');
+                }
+            }
+
+            function updateUI() {
+                const intervalValue = parseFloat(intervalInput.value);
+                let displayValue = '';
+                if (intervalValue < 60) {
+                    displayValue = intervalValue.toFixed(1) + ' s';
+                } else {
+                    displayValue = (intervalValue / 60).toFixed(1) + ' min';
+                }
+                intervalValueDisplay.textContent = displayValue;
+                colorValueDisplay.textContent = lightColorInput.value;
+                colorPreview.style.backgroundColor = lightColorInput.value;
+            }
+
+
+            intervalInput.addEventListener('input', updateUI);
+            lightColorInput.addEventListener('input', updateUI);
+            saveButton.addEventListener('click', saveConfig);
+
+            fetchConfig(); // Load config on page load
+        });
+    </script>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #1a202c;
+            color: #f7fafc;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background-color: #2d3748;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            color: #f56565;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #cbd5e0;
+            font-weight: bold;
+        }
+
+        .form-group input[type="color"] {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 4px;
+            padding: 0;
+            cursor: pointer;
+        }
+
+        .form-group input[type="range"] {
+            width: 100%;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            background: #4a5568;
+            border-radius: 5px;
+            outline: none;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
+
+        .form-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #f56565;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-group input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #f56565;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            border: none;
+        }
+
+        .form-group input[type="range"]:focus::-webkit-slider-thumb {
+            box-shadow: 0 0 0 3px rgba(244, 114, 182, 0.3);
+        }
+
+        .form-group input[type="range"]:focus::-moz-range-thumb {
+            box-shadow: 0 0 0 3px rgba(244, 114, 182, 0.3);
+        }
+
+        .form-group .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .form-group .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .form-group .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #4a5568;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .form-group .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        .form-group input:checked + .slider {
+            background-color: #f56565;
+        }
+
+        .form-group input:focus + .slider {
+            box-shadow: 0 0 0 3px rgba(244, 114, 182, 0.3);
+        }
+
+        .form-group input:checked + .slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+        }
+
+        .button {
+            background-color: #f56565;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .button:hover {
+            background-color: #c53030;
+        }
+
+        .message {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .message.success {
+            background-color: #48bb78;
+            color: white;
+        }
+
+        .message.error {
+            background-color: #f56565;
+            color: white;
+        }
+
+        .color-preview {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #cbd5e0;
+            margin-right: 10px;
+        }
+
+        .flex-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #4a5568;
+            border-radius: 5px;
+            background-color: #2d3748;
+            color: #f7fafc;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .form-group select:focus {
+            border-color: #f56565;
+            box-shadow: 0 0 0 3px rgba(244, 114, 182, 0.3);
+        }
+
+        .form-group input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #4a5568;
+            border-radius: 5px;
+            background-color: #2d3748;
+            color: #f7fafc;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .form-group input[type="number"]:focus {
+            border-color: #f56565;
+            box-shadow: 0 0 0 3px rgba(244, 114, 182, 0.3);
+        }
+
+        .form-group .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .form-group .checkbox-group label {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            margin-bottom: 0;
+        }
+
+        .form-group .checkbox-group input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            border: 1px solid #4a5568;
+            border-radius: 3px;
+            background-color: #2d3748;
+            color: #f7fafc;
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group .checkbox-group input[type="checkbox"]:checked {
+            background-color: #f56565;
+            border-color: #f56565;
+        }
+
+        .form-group .checkbox-group input[type="checkbox"]:focus {
+            box-shadow: 0 0 0 3px rgba(244, 114, 182, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Clock Configuration</h1>
+
+        <div class="form-group">
+            <label for="showItIs">Show &quot;It is&quot;</label>
+            <label class="switch">
+                <input type="checkbox" id="showItIs">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="form-group">
+            <label for="showA">Show &quot;A&quot;</label>
+            <label class="switch">
+                <input type="checkbox" id="showA">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="form-group">
+            <label for="interval">Interval (0.5s - 300s)</label>
+            <input type="range" id="interval" min="0.5" max="300" step="0.1">
+            <span id="intervalValue">0.5 s</span>
+        </div>
+
+        <div class="form-group">
+            <label>Light Color</label>
+            <div class="flex-container">
+                <div id="colorPreview" class="color-preview" style="background-color: #ffffff;"></div>
+                <input type="color" id="lightColor" value="#ffffff">
+                <span id="colorValue">#ffffff</span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="faceMode">Face Mode</label>
+            <select id="faceMode">
+                <option value="10x11">10x11</option>
+                <option value="14x5">14x5</option>
+                <option value="16x16">16x16</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Mode</label>
+            <div class="checkbox-group">
+                <label>
+                    <input type="checkbox" name="mode" value="Normal"> Normal
+                </label>
+                <label>
+                    <input type="checkbox" name="mode" value="EdgeLightSeconds"> Edge Light Seconds
+                </label>
+                <label>
+                    <input type="checkbox" name="mode" value="TestEdge"> Test Edge
+                </label>
+                <label>
+                    <input type="checkbox" name="mode" value="TestWords"> Test Words
+                </label>
+                <label>
+                    <input type="checkbox" name="mode" value="FlashWords"> Flash Words
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="baudRate">Baud Rate</label>
+            <input type="number" id="baudRate" value="115200" min="1200" step="100">
+        </div>
+
+        <button id="saveButton" class="button">Save Configuration</button>
+        <div id="message" class="message"></div>
+    </div>
+
+    <script>
+        const intervalInput = document.getElementById('interval');
+        const intervalValueDisplay = document.getElementById('intervalValue');
+        const lightColorInput = document.getElementById('lightColor');
+        const colorValueDisplay = document.getElementById('colorValue');
+        const colorPreview = document.getElementById('colorPreview');
+
+        intervalInput.addEventListener('input', function () {
+            const intervalValue = parseFloat(this.value);
+            let displayValue = '';
+            if (intervalValue < 60) {
+                displayValue = intervalValue.toFixed(1) + ' s';
+            } else {
+                displayValue = (intervalValue / 60).toFixed(1) + ' min';
+            }
+            intervalValueDisplay.textContent = displayValue;
+        });
+
+        lightColorInput.addEventListener('input', function () {
+            colorValueDisplay.textContent = this.value;
+            colorPreview.style.backgroundColor = this.value;
+        });
+    </script>
+</body>
+</html>
+</title>
+</head>
+<body>
+
+</body>
+</html>

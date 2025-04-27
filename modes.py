@@ -110,7 +110,7 @@ class FlashWords(Mode):
 
 modes = {
     'Normal': Normal,
-    'EdgeSeconds': EdgeLightSeconds,
+    'EdgeLightSeconds': EdgeLightSeconds,
     'TestEdge': TestEdge,
     'TestWords': TestWords,
     'FlashWords': FlashWords,
