@@ -42,7 +42,29 @@ class EdgeLightSeconds(Mode):
         board.edge_lights[(row, col)] = True
 
 
+class TestEdge(Mode):
+    """Test all the edge lights"""
+
+    def __init__(self):
+        self.on = True
+
+    def update(self, board):
+        """Update the edge lights"""
+        board.edge_lights = {}
+        rows, cols = board.get_dimensions()
+        for row in range(rows):
+            board.edge_lights[(row, 0)] = self.on
+            board.edge_lights[(row, cols - 1)] = self.on
+        for col in range(cols):
+            board.edge_lights[(0, col)] = self.on
+            board.edge_lights[(rows - 1, col)] = self.on
+
+        self.on = not self.on
+
+
+
 modes = {
     'Normal': Normal(),
     'EdgeSeconds': EdgeLightSeconds(),
+    'TestEdge': TestEdge(),
 }
