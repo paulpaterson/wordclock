@@ -186,8 +186,9 @@ class Board:
 @click.option('--show-a', default=False, is_flag=True, help='Whether to show "a" in "a quarter to ..."')
 @click.option('--mode', type=click.Choice(modes.modes.keys()),
               multiple=True, default=['Normal'], help='Select which display modes to use, can have multiple')
+@click.option('--mode-parameters', type=str, multiple=True, default=[], help='Parameters for the display mode')
 def main(offset, time, interval, simulation_update, face_mode, calc_size, show_it_is, light_mode, light_color,
-         replace_blanks, blank_character, array_format, baud_rate, show_a, mode):
+         replace_blanks, blank_character, array_format, baud_rate, show_a, mode, mode_parameters):
     term = blessed.Terminal()
 
     if time:
@@ -206,7 +207,8 @@ def main(offset, time, interval, simulation_update, face_mode, calc_size, show_i
     else:
         lights = None
 
-    display_modes = [modes.modes[name] for name in mode]
+    print(mode_parameters)
+    display_modes = [modes.modes[name](mode_parameters) for name in mode]
 
     b = Board(term, datetime.datetime.now(),
               simple=face_mode=='14x5', show_it_is=show_it_is,

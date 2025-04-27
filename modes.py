@@ -6,6 +6,9 @@ import datetime
 class Mode:
     """An abstract mode"""
 
+    def __init__(self, parameters):
+        self.parameters = parameters
+
     def update(self, board):
         """Update the board according to the mode"""
 
@@ -45,7 +48,8 @@ class EdgeLightSeconds(Mode):
 class TestEdge(Mode):
     """Test all the edge lights"""
 
-    def __init__(self):
+    def __init__(self, parameters):
+        super().__init__(parameters)
         self.on = True
 
     def update(self, board):
@@ -65,7 +69,8 @@ class TestEdge(Mode):
 class TestWords(Mode):
     """Test all the words lighting up"""
 
-    def __init__(self):
+    def __init__(self, parameters):
+        super().__init__(parameters)
         self.idx = None
 
     def update(self, board):
@@ -85,12 +90,16 @@ class TestWords(Mode):
 class FlashWords(Mode):
     """Alternately flash all the words"""
 
-    def __init__(self):
+    def __init__(self, parameters):
+        super().__init__(parameters)
         self.on = True
 
     def update(self, board):
         """Update each word"""
         possible_words = [word for word in board.get_all_words() if word.is_used]
+        if self.parameters:
+            possible_words = [word for word in possible_words if word.word.lower() in self.parameters]
+
         for word in possible_words:
             if self.on:
                 word.activate()
@@ -100,9 +109,9 @@ class FlashWords(Mode):
 
 
 modes = {
-    'Normal': Normal(),
-    'EdgeSeconds': EdgeLightSeconds(),
-    'TestEdge': TestEdge(),
-    'TestWords': TestWords(),
-    'FlashWords': FlashWords(),
+    'Normal': Normal,
+    'EdgeSeconds': EdgeLightSeconds,
+    'TestEdge': TestEdge,
+    'TestWords': TestWords,
+    'FlashWords': FlashWords,
 }
