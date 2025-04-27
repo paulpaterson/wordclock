@@ -249,6 +249,7 @@ class Board:
         self.fill_character = blank_character
         self.replace_blanks = replace_blanks
         self.show_a = show_a
+        self.edge_lights = {}
 
     def add_word(self, word):
         if word.word and word.word[0] == 'x':
@@ -318,6 +319,12 @@ class Board:
                 letter = text[row][col]
                 if letter != ' ':
                     self.lights.set_led_color(idx, *self.light_color)
+
+                # Check edge lights
+                if col == 0 or col == cols - 1 or row == 0 or row == rows - 1:
+                    if self.edge_lights.get((row, col), False):
+                        self.lights.set_led_color(idx, *self.light_color)
+
                 idx += 1
         try:
                 self.lights.update_strip()
@@ -437,6 +444,19 @@ def main(offset, time, interval, simulation_update, mode, calc_size, show_it_is,
             try:
                 t = datetime.datetime.now()
                 b.time = t + current_offset
+
+                b.edge_lights = {}
+                s = t.second
+                if s < 16:
+                    row, col = 0, s
+                elif s < 16 + 15:
+                    row, col = s - 16,  15
+                elif s < 16 + 15 + 16:
+                    row, col = 15, 15 - (s - 16 - 15)
+                else:
+                    row, col = 61 - s, 0
+                b.edge_lights[(row, col)] = True
+
                 b.update_board()
                 b.show_board()
                 if term.inkey(timeout=interval):
