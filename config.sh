@@ -1,9 +1,8 @@
-export CLOCK_FACE_MODE=16x16
-export CLOCK_SHOW_IT_IS=true
-export CLOCK_SHOW_A=true
-export CLOCK_INTERVAL=1
-export CLOCK_MODE=Normal EdgeLightSeconds
-export CLOCK_LIGHT_MODE=detect
-export CLOCK_BAUD_RATE=1000
-export CLOCK_SHOW_IT_IS=true
+export CLOCK_FACE_MODE="16x16"
+export CLOCK_SHOW_IT_IS="false"
+export CLOCK_SHOW_A="true"
+export CLOCK_INTERVAL="1"
+export CLOCK_MODE="Normal EdgeLightSeconds"
+export CLOCK_LIGHT_MODE="detect"
+export CLOCK_BAUD_RATE="1000"
 export CLOCK_LIGHT_COLOR="255 255 0"
