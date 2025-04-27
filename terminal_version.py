@@ -172,7 +172,7 @@ class Board:
 @click.option('--time', type=str, default='', help='Fix the time')
 @click.option('--interval', type=float, default=10, help='Time between updates in seconds')
 @click.option('--simulation-update', default=0, help='Number of minutes to advance per interval')
-@click.option('--mode', type=click.Choice(list(faces.faces.keys())),required=True, help='Select which mode')
+@click.option('--face-mode', type=click.Choice(list(faces.faces.keys())), required=True, help='Select which face mode')
 @click.option('--calc-size', default=False, is_flag=True, help='Just calculate the size')
 @click.option('--show-it-is', default=False, is_flag=True, help='Whether to show "it is" wording')
 @click.option('--light-mode', type=click.Choice(['off', 'simulate', 'real']), default='off',
@@ -184,10 +184,10 @@ class Board:
 @click.option('--array-format', default=False, is_flag=True, help='When showing grid format it as python array')
 @click.option('--baud-rate', default=800, type=int, help='Baud rate for SPI communication')
 @click.option('--show-a', default=False, is_flag=True, help='Whether to show "a" in "a quarter to ..."')
-@click.option('--display', type=click.Choice(modes.modes.keys()),
+@click.option('--mode', type=click.Choice(modes.modes.keys()),
               multiple=True, default=['Normal'], help='Select which display modes to use, can have multiple')
-def main(offset, time, interval, simulation_update, mode, calc_size, show_it_is, light_mode, light_color,
-         replace_blanks, blank_character, array_format, baud_rate, show_a, display):
+def main(offset, time, interval, simulation_update, face_mode, calc_size, show_it_is, light_mode, light_color,
+         replace_blanks, blank_character, array_format, baud_rate, show_a, mode):
     term = blessed.Terminal()
 
     if time:
@@ -206,16 +206,16 @@ def main(offset, time, interval, simulation_update, mode, calc_size, show_it_is,
     else:
         lights = None
 
-    display_modes = [modes.modes[name] for name in display]
+    display_modes = [modes.modes[name] for name in mode]
 
     b = Board(term, datetime.datetime.now(),
-              simple=mode=='14x5', show_it_is=show_it_is,
+              simple=face_mode=='14x5', show_it_is=show_it_is,
               lights=lights, light_color=light_color,
               replace_blanks=replace_blanks, blank_character=blank_character,
               show_a=show_a, display=display_modes
     )
 
-    b.add_words(faces.faces[mode])
+    b.add_words(faces.faces[face_mode])
 
     def signal_handler(sig, frame):
         """Handle the SIGTERM from SystemD"""
