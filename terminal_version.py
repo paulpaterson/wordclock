@@ -290,6 +290,16 @@ class Board:
             for word in row:
                 text[-1] += f'{word.show(self.term, terminal_mode)}'
             text[-1] = text[-1] + self.get_fill_character(width - len(text[-1]))
+        #
+        # Handle outer edge
+        for row in range(height):
+            for col in range(width):
+                if self.edge_lights.get((row, col)):
+                    light = self.term.move_xy(col, row + 1) + '*'
+                    text.append(light)
+
+        text.append(self.term.move_xy(0, height + 2))
+
         return text
 
     def show_board(self):
