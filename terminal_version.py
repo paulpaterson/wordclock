@@ -82,7 +82,7 @@ class Board:
         for row in range(height):
             for col in range(width):
                 if self.edge_lights.get((row, col)):
-                    light = self.term.move_xy(col, row + 1) + '*'
+                    light = self.term.move_xy(col, row + 1) + self.term.color_rgb(*self.edge_lights[(row, col)]) + '*'
                     text.append(light)
 
         text.append(self.term.move_xy(0, height + 2))
@@ -120,14 +120,18 @@ class Board:
 
                 # Check edge lights
                 if col == 0 or col == cols - 1 or row == 0 or row == rows - 1:
-                    if self.edge_lights.get((row, col), False):
-                        self.lights.set_led_color(idx, *self.light_color)
+                    try:
+                        edge_color = self.edge_lights[(row, col)]
+                    except KeyError:
+                        pass # OK, not lit
+                    else:
+                        self.lights.set_led_color(idx, *edge_color)
 
                 idx += 1
         try:
-                self.lights.update_strip()
+            self.lights.update_strip()
         except OSError as err:
-                raise Exception(f'Failed to send SPI data - is SPI interface turned on?: {err}') 
+            raise Exception(f'Failed to send SPI data - is SPI interface turned on?: {err}')
 
 
     def clear_board(self):

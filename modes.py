@@ -51,17 +51,19 @@ class TestEdge(Mode):
     def __init__(self, parameters):
         super().__init__(parameters)
         self.on = True
+        self.color = (255, 255, 255)
 
     def update(self, board):
         """Update the edge lights"""
         board.edge_lights = {}
         rows, cols = board.get_dimensions()
-        for row in range(rows):
-            board.edge_lights[(row, 0)] = self.on
-            board.edge_lights[(row, cols - 1)] = self.on
-        for col in range(cols):
-            board.edge_lights[(0, col)] = self.on
-            board.edge_lights[(rows - 1, col)] = self.on
+        if self.on:
+            for row in range(rows):
+                board.edge_lights[(row, 0)] = self.color
+                board.edge_lights[(row, cols - 1)] = self.color
+            for col in range(cols):
+                board.edge_lights[(0, col)] = self.color
+                board.edge_lights[(rows - 1, col)] = self.color
 
         self.on = not self.on
 
