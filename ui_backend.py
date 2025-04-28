@@ -42,6 +42,7 @@ def save_config(data):
             for key, value in data.items():
                 # Quote the values to handle spaces and special characters
                 f.write(f"export {key}=\"{value}\"\n")
+            f.write('export CLOCK_LIGHT_MODE="detect"\n')
     except Exception as e:
         print(f"Error writing config file: {e}")
         return False  # Indicate failure
