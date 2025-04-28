@@ -5,6 +5,8 @@ import os
 import re
 import socket
 
+import modes
+
 app = Flask(__name__)
 
 # Configuration file path
@@ -102,7 +104,7 @@ def handle_config():
             # Mode validation (check if it's a list and all values are valid)
             if not isinstance(data["CLOCK_MODE"], list):
                 return jsonify({"error": "Invalid value for CLOCK_MODE.  Must be a list."}), 400
-            valid_modes = ["Normal", "EdgeLightSeconds", "TestEdge", "TestWords", "FlashWords"]
+            valid_modes = list(modes.modes.keys())
             for mode in data["CLOCK_MODE"]:
                 if mode not in valid_modes:
                     return jsonify(

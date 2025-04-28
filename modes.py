@@ -12,6 +12,17 @@ class Mode:
     def update(self, board):
         """Update the board according to the mode"""
 
+    def set_edge_light_by_index(self, board, index, color):
+        if index < 16:
+            row, col = 0, index
+        elif index < 16 + 15:
+            row, col = index - 16 + 1, 15
+        elif index < 16 + 15 + 15:
+            row, col = 15, 15 - (index - 16 - 15) - 1
+        else:
+            row, col = 60 - index, 0
+        board.edge_lights[(row, col)] = color
+
 
 class Normal(Mode):
     """Show the time"""
@@ -34,15 +45,43 @@ class EdgeLightSeconds(Mode):
 
         board.edge_lights = {}
         s = datetime.datetime.now().second
-        if s < 16:
-            row, col = 0, s
-        elif s < 16 + 15:
-            row, col = s - 16, 15
-        elif s < 16 + 15 + 16:
-            row, col = 15, 15 - (s - 16 - 15)
-        else:
-            row, col = 61 - s, 0
-        board.edge_lights[(row, col)] = True
+        self.set_edge_light_by_index(board, s, (255, 255, 255))
+
+
+class EdgeLightColor(Mode):
+    """Set the edge lights to be red, white and blue"""
+
+    colors = [
+        (255, 0, 0),
+        (0, 255, 0),
+        (0, 0, 255),
+    ]
+
+    def __init__(self, parameters):
+        super().__init__(parameters)
+        self.offset = 0
+
+    def update(self, board):
+        """Update the edge lights"""
+        board.edge_lights = {}
+        for idx in range(61):
+            color = self.colors[(self.offset + idx) % len(self.colors)]
+            self.set_edge_light_by_index(board, idx, color)
+        self.offset += 1
+
+
+class EdgeLightRWB(EdgeLightColor):
+    colors = [
+        (255, 0, 0),
+        (255, 255, 255),
+        (0, 0, 255),
+    ]
+
+class EdgeLightGW(EdgeLightColor):
+    colors = [
+        (255, 255, 255),
+        (0, 255, 0),
+    ]
 
 
 class TestEdge(Mode):
@@ -116,4 +155,6 @@ modes = {
     'TestEdge': TestEdge,
     'TestWords': TestWords,
     'FlashWords': FlashWords,
+    'EdgeLightRWB': EdgeLightRWB,
+    'EdgeLightGW': EdgeLightGW,
 }
