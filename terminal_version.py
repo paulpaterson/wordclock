@@ -1,6 +1,7 @@
 import random
 import signal
 import sys
+import os
 
 import blessed
 import datetime
@@ -189,8 +190,8 @@ class Board:
 @click.option('--mode-parameters', type=str, multiple=True, default=[], help='Parameters for the display mode')
 def main(offset, time, interval, simulation_update, face_mode, calc_size, show_it_is, light_mode, light_color,
          replace_blanks, blank_character, array_format, baud_rate, show_a, mode, mode_parameters):
-    term = blessed.Terminal()
 
+    term = blessed.Terminal()
     if time:
         the_time = datetime.datetime.strptime(time, '%H:%M').time()
         absolute_time = datetime.datetime.now().replace(hour=the_time.hour, minute=the_time.minute)
@@ -245,6 +246,7 @@ def main(offset, time, interval, simulation_update, face_mode, calc_size, show_i
         else:
             print('\n'.join([f'"{line}",' for line in b.get_board_text(True)]))
     else:
+        last_config_time = os.path.getmtime('config.sh')
         while True:
             try:
                 t = datetime.datetime.now()
@@ -258,6 +260,8 @@ def main(offset, time, interval, simulation_update, face_mode, calc_size, show_i
             except KeyboardInterrupt:
                 print('CTRL-C detected')
                 break
+            if os.path.getmtime('config.sh') != last_config_time:
+                sys.exit(2)
 
         if lights:
             b.lights.clear_strip()
@@ -292,4 +296,12 @@ def hex_to_rgb(hex_color):
 
 
 if __name__ == '__main__':
-    main(auto_envvar_prefix='CLOCK')
+    while True:
+        result = main(auto_envvar_prefix='CLOCK')
+        import pdb; pdb.set_trace()
+        if not result:
+            print('Closing down clock')
+            break
+        print('Config changed - restarting')
+
+

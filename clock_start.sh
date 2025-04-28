@@ -1,8 +1,17 @@
 #!/bin/bash
 
 cd /home/paul/Workspace/wordclock
-source ./config.sh
+
 source .env/bin/activate
-python terminal_version.py
 
+exit_status=2
 
+until [ $exit_status -ne 2 ]; do
+  source ./config.sh
+  python terminal_version.py
+
+  # Get the exit status of the last command
+  exit_status=$?
+done
+
+echo "Finished"
