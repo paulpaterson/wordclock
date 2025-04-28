@@ -1,6 +1,9 @@
+from ipaddress import ip_address
+
 from flask import Flask, request, jsonify, render_template
 import os
 import re
+import socket
 
 app = Flask(__name__)
 
@@ -132,6 +135,45 @@ def show_config_page():
     return render_template('config.html')
 
 
+
+def get_my_ip():
+    """
+    Gets the current machine's IP address.  This method is more robust
+    than methods that rely on external internet connections, as it works
+    even when the machine is not connected to the internet.
+
+    It creates a UDP socket and connects to a known external IP (Google's
+    public DNS) on an arbitrary port.  The socket doesn't actually send
+    any data, but the operating system automatically assigns the socket
+    an IP address.  This IP address can then be retrieved using
+    getsockname().  The socket is then closed.
+
+    Returns:
+        str: The machine's IP address as a string (e.g., "192.168.1.10"),
+             or None if an error occurs.
+    """
+    try:
+        # Create a UDP socket
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        # Connect to a known external IP address and port.
+        # Google's public DNS is used here, but any reliable external server
+        # can be used.  The port number (8.8.8.8) is arbitrary.
+        s.connect(("8.8.8.8", 80))
+        # Get the IP address assigned to the socket by the OS.
+        # This is the machine's local IP address on the network.
+        ip_address = s.getsockname()[0]
+        s.close()  # Close the socket to free up resources
+        return ip_address
+    except socket.error as e:
+        print(f"Error getting IP address: {e}")
+        return None
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+        return None
+
 if __name__ == '__main__':
-    app.run(host="192.168.1.37", debug=True)
+    print('Checking IP address ...', end=' ')
+    ip_address = get_my_ip()
+    print(ip_address)
+    app.run(host=ip_address, debug=True)
 
