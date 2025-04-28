@@ -21,7 +21,7 @@ def load_config():
             with open(CONFIG_FILE, "r") as f:
                 for line in f:
                     # Use regex to find lines that start with CLOCK_ and have an assignment
-                    match = re.match(r"^(CLOCK_[\w_]+)=(.*)$", line)
+                    match = re.match(r"^export\s(CLOCK_[\w_]+)=(.*)$", line)
                     if match:
                         key, value = match.groups()
                         config[key] = value.strip().strip('"')  # Remove extra quotes
@@ -41,7 +41,7 @@ def save_config(data):
         with open(CONFIG_FILE, "w") as f:
             for key, value in data.items():
                 # Quote the values to handle spaces and special characters
-                f.write(f"{key}=\"{value}\"\n")
+                f.write(f"export {key}=\"{value}\"\n")
     except Exception as e:
         print(f"Error writing config file: {e}")
         return False  # Indicate failure
