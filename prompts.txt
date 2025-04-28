@@ -1,0 +1,32 @@
+# The prompt to create the ui front and back end
+
+
+write a web application with html as a front end and flask python as a back end.
+Do not use react or any other ui framework for the front end.
+The page should allow the user to edit the following parameters:
+
+- "Show it is" - can be either True or False
+- "Show A" - can be either True or False
+- "Interval" - is a floating point number
+- "Light color" - is a color expressed in RGB that the user can pull from a color picker
+- "Face mode" - can be one of "10x11", "14x5", "16x16"
+- "Mode" - which you can select multiple of "Normal", "EdgeLightSeconds", "TestEdge", "TestWords", "FlashWords"
+- "Baud rate" - which is an integer
+
+
+The flask back end should get and set the results to a file, "config.sh" which sets environment variables
+which are named like the parameters above except that they have a prefix of "CLOCK_"
+
+It should also include a route (to "/config") that returns the HTML you generated.
+
+Show both the HTML and Python back end.
+
+
+Things not added
+
+- Add CLOCK_LIGHT_MODE = detect, real, simulated, off
+- Make sure to include "export" on the script lines so that it can be run as a bash script
+- Initialise the properties from the config script when the page loads
+- Set the interval time to be more reasonable
+
+
