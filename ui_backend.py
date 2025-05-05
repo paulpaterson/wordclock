@@ -72,6 +72,7 @@ def handle_config():
                 "CLOCK_FACE_MODE",
                 "CLOCK_MODE",
                 "CLOCK_BAUD_RATE",
+                "CLOCK_IP_ADDRESS",
             ]
             if not all(key in data for key in required_keys):
                 return jsonify({"error": "Missing parameters in request"}), 400
@@ -120,6 +121,12 @@ def handle_config():
                     raise ValueError("Baud rate must be a positive integer")
             except ValueError as e:
                 return jsonify({"error": f"Invalid value for CLOCK_BAUD_RATE: {e}"}), 400
+
+            # IP address validation
+            try:
+                ip_address = data["CLOCK_IP_ADDRESS"]
+            except KeyError as e:
+                return jsonify({"error": f"No value found for IP ADDRESS {e}"}), 400
 
             success = save_config(data)
             if success:

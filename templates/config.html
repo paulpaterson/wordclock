@@ -17,6 +17,7 @@
             const faceModeSelect = document.getElementById('faceMode');
             const modeCheckboxes = document.querySelectorAll('input[name="mode"]');
             const baudRateInput = document.getElementById('baudRate');
+            const ipAddressInput = document.getElementById('ipAddress');
             const saveButton = document.getElementById('saveButton');
             const messageDiv = document.getElementById('message');
 
@@ -45,6 +46,7 @@
                     });
 
                     baudRateInput.value = data.CLOCK_BAUD_RATE;
+                    ipAddressInput.value = data.CLOCK_IP_ADDRESS;
                     updateUI();
 
                 } catch (error) {
@@ -68,6 +70,7 @@
                     CLOCK_FACE_MODE: faceModeSelect.value,
                     CLOCK_MODE: selectedModes,
                     CLOCK_BAUD_RATE: baudRateInput.value,
+                    CLOCK_IP_ADDRESS: ipAddressInput.value,
                 };
 
                 try {
@@ -448,6 +451,11 @@
         <div class="form-group">
             <label for="baudRate">Baud Rate</label>
             <input type="number" id="baudRate" value="115200" min="1200" step="100">
+        </div>
+
+        <div class="form-group">
+            <label for="ipAddress">IP Address for Clock</label>
+            <input type="text" id="ipAddress" value="192.168.1.38">
         </div>
 
         <button id="saveButton" class="button">Save Configuration</button>
