@@ -125,7 +125,10 @@ class Board:
                     except KeyError:
                         pass # OK, not lit
                     else:
-                        self.lights.set_led_color(idx, *edge_color)
+                        if edge_color:
+                            self.lights.set_led_color(idx, *edge_color)
+                        else:
+                            self.lights.set_led_color(idx, 0, 0, 0)
 
                 idx += 1
         try:
