@@ -1,8 +1,13 @@
+import json
+
 import aiohttp
 from omnilogic import OmniLogic
 import time
 import asyncio
 import ssl
+import click
+import pprint
+
 
 async def get_pool_data(store):
     """Get data on the pool telemetry"""
@@ -23,16 +28,25 @@ async def get_pool_data(store):
     store['air'] = status[0]['airTemp']
 
 
-if __name__ == "__main__":
+@click.command()
+@click.option('--interval', type=int, default=5, help='How often to run (seconds)')
+def main(interval):
     store = {}
     while True:
         asyncio.run(get_pool_data(store))
         print(store)
         with open('local_data.json', 'w') as f:
-            f.write('{\n')
-            f.write(f'"pool-temp": {store["water"]},\n')
-            f.write(f'"air-temp": {store["air"]},\n')
-            f.write('"garage-open": false, "ac-down-auto": true, "ac-up-auto": true }')
+            data = {
+                'pool-temp': int(store['water']),
+                'air-temp': int(store['air']),
+                'garage-open': False,
+                'ac-down-auto': True,
+                'ac-up-auto': True
+            }
+            f.write(json.dumps(data, indent=4))
         #
-        time.sleep(10*60)
+        time.sleep(interval)
 
+
+if __name__ == "__main__":
+    main()
