@@ -221,3 +221,6 @@ modes = {
     'EdgeLightGW': EdgeLightGW,
     'EdgeLightPool': EdgeLightPool,
 }
+
+def get_valid_modes():
+    return sorted(list(modes.keys()))

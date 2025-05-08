@@ -15,11 +15,12 @@
             const intervalInput = document.getElementById('interval');
             const lightColorInput = document.getElementById('lightColor');
             const faceModeSelect = document.getElementById('faceMode');
-            const modeCheckboxes = document.querySelectorAll('input[name="mode"]');
+            const modeGroup = document.getElementById('modeGroup');
             const baudRateInput = document.getElementById('baudRate');
             const ipAddressInput = document.getElementById('ipAddress');
             const saveButton = document.getElementById('saveButton');
             const messageDiv = document.getElementById('message');
+            let validModes = [];
 
             function showMessage(message, type = 'success') {
                 messageDiv.textContent = message;
@@ -39,8 +40,15 @@
                     intervalInput.value = data.CLOCK_INTERVAL;
                     lightColorInput.value = data.CLOCK_LIGHT_COLOR;
                     faceModeSelect.value = data.CLOCK_FACE_MODE;
+                    validModes = data.VALID_MODES;
 
+                    // Setup modes
+                    modeGroup.innerHTML = '';
+                    validModes.forEach(mode_name => {
+                        modeGroup.innerHTML += `<label><input type="checkbox" name="mode" value="${mode_name}">${mode_name}</label>`;
+                    })
                     const modes = data.CLOCK_MODE.split(' ');
+                    const modeCheckboxes = document.querySelectorAll('input[name="mode"]');
                     modeCheckboxes.forEach(checkbox => {
                         checkbox.checked = modes.includes(checkbox.value);
                     });
@@ -56,6 +64,7 @@
 
             async function saveConfig() {
                 const selectedModes = [];
+                const modeCheckboxes = document.querySelectorAll('input[name="mode"]');
                 modeCheckboxes.forEach(checkbox => {
                     if (checkbox.checked) {
                         selectedModes.push(checkbox.value);
@@ -423,7 +432,7 @@
 
         <div class="form-group">
             <label>Mode</label>
-            <div class="checkbox-group">
+            <div class="checkbox-group" id="modeGroup">
                 <label>
                     <input type="checkbox" name="mode" value="Normal"> Normal
                 </label>

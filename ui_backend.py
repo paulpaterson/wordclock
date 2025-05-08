@@ -59,6 +59,7 @@ def handle_config():
     """
     if request.method == 'GET':
         config = load_config()
+        config['VALID_MODES'] = modes.get_valid_modes()
         return jsonify(config)
     elif request.method == 'POST':
         try:
@@ -105,7 +106,7 @@ def handle_config():
             # Mode validation (check if it's a list and all values are valid)
             if not isinstance(data["CLOCK_MODE"], list):
                 return jsonify({"error": "Invalid value for CLOCK_MODE.  Must be a list."}), 400
-            valid_modes = list(modes.modes.keys())
+            valid_modes = modes.get_valid_modes()
             for mode in data["CLOCK_MODE"]:
                 if mode not in valid_modes:
                     return jsonify(
@@ -142,7 +143,7 @@ def get_modes():
     """
     Return any valid modes for the clock face
     """
-    return jsonify(list(modes.modes.keys()))
+    return jsonify(modes.get_valid_modes())
 
 @app.route('/config', methods=['GET'])
 def show_config_page():
