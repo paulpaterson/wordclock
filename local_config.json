@@ -79,14 +79,14 @@
       "light-end": 19,
       "variable": "garage-open",
       "on-color": [255, 0, 0],
-      "off-color": [0, 255, 0]
+      "off-color": [0, 0, 0]
     },
     {
       "type": "boolean",
       "light-start": 56,
       "light-end": 59,
       "variable": "ac-down-auto",
-      "on-color": [0, 255, 0],
+      "on-color": [0, 0, 0],
       "off-color": [255, 0, 0]
     },
     {
@@ -94,7 +94,7 @@
       "light-start": 52,
       "light-end": 55,
       "variable": "ac-up-auto",
-      "on-color": [0, 255, 0],
+      "on-color": [0, 0, 0],
       "off-color": [255, 0, 0]
     }
   ]
