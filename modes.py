@@ -212,10 +212,14 @@ class EdgeLightCustom(Mode):
         light_start = item['light-start']
         light_end = item['light-end']
         value = data.get(item['variable'])
-        val_min = item['min']
-        val_max = item['max']
-        color = item['color']
+        ranges = item['ranges']
         reversed = item['reversed']
+        for value_range in ranges:
+            val_min = value_range['min']
+            val_max = value_range['max']
+            color = value_range['color']
+            if val_min <= value <= val_max:
+                break
         #
         fraction = (value - val_min) / (val_max - val_min)
         num_lights = light_end - light_start + 1

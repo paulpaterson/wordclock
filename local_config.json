@@ -7,9 +7,35 @@
       "light-start": 0,
       "light-end": 15,
       "variable": "pool-temp",
-      "min": 70,
-      "max": 86,
-      "color": [0, 255, 0]
+      "ranges": [
+        {
+          "min": 60,
+          "max": 69,
+          "color": [
+            0,
+            0,
+            255
+          ]
+        },
+        {
+          "min": 70,
+          "max": 79,
+          "color": [
+            0,
+            255,
+            255
+          ]
+        },
+        {
+          "min": 80,
+          "max": 90,
+          "color": [
+            0,
+            255,
+            0
+          ]
+        }
+      ]
     },
     {
       "type": "bar",
@@ -17,9 +43,35 @@
       "light-start": 30,
       "light-end": 45,
       "variable": "air-temp",
-      "min": 70,
-      "max": 86,
-      "color": [255, 0, 0]
+      "ranges": [
+        {
+          "min": 60,
+          "max": 69,
+          "color": [
+            0,
+            0,
+            255
+          ]
+        },
+        {
+          "min": 70,
+          "max": 79,
+          "color": [
+            0,
+            255,
+            0
+          ]
+        },
+        {
+          "min": 80,
+          "max": 90,
+          "color": [
+            255,
+            0,
+            0
+          ]
+        }
+      ]
     },
     {
       "type": "boolean",
