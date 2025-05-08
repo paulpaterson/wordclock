@@ -2,7 +2,10 @@
 
 import datetime
 import asyncio
+import json
 import ssl
+from multiprocessing.pool import job_counter
+
 import aiohttp
 from omnilogic import OmniLogic
 
@@ -16,7 +19,7 @@ class Mode:
     def update(self, board):
         """Update the board according to the mode"""
 
-    def set_edge_light_by_index(self, board, index, color):
+    def set_edge_light_by_index(self, board, index, color=None):
         if index < 16:
             row, col = 0, index
         elif index < 16 + 15:
@@ -210,6 +213,70 @@ class EdgeLightPool(Mode):
                 else:
                     board.edge_lights[(15, i)] = None
 
+class EdgeLightCustom(Mode):
+    """A mode of the edge lights that reads the local config file and data"""
+
+    def __init__(self, parameters):
+        super().__init__(parameters)
+        #
+        self.config_data = self.read_config()
+        self.frequency = self.config_data['frequency']
+        self.next_time = datetime.datetime.now()
+
+    def read_config(self):
+        """Read the configuration data"""
+        with open('local_config.json', 'r') as f:
+            config_data_text = f.read()
+        return json.loads(config_data_text)
+
+    def get_data(self):
+        """Get the latest data to show"""
+        with open('local_data.json', 'r') as f:
+            data_text = f.read()
+        data = json.loads(data_text)
+        return data
+
+    def update(self, board):
+        """Update the display"""
+        if datetime.datetime.now() >= self.next_time:
+            self.next_time += datetime.timedelta(seconds=self.frequency)
+            data = self.get_data()
+            self.update_display(board, data)
+
+    def update_display(self, board, data):
+        """Actually update the lights"""
+        self.config_data = self.read_config()
+        for item in self.config_data['items']:
+            match t := item['type']:
+                case 'bar':
+                    self.show_bar(board, item, data)
+                case _:
+                    raise ValueError(f'Unknown type {t}')
+
+    def show_bar(self, board, item, data):
+        """Show lights as a bar"""
+        light_start = item['light-start']
+        light_end = item['light-end']
+        value = data.get(item['variable'])
+        val_min = item['min']
+        val_max = item['max']
+        color = item['color']
+        reversed = item['reversed']
+        #
+        fraction = (value - val_min) / (val_max - val_min)
+        num_lights = light_end - light_start + 1
+        for idx in range(num_lights):
+            light_frac = float(idx) / (num_lights - 1)
+            if not reversed:
+                light_num = idx
+            else:
+                light_num = num_lights - idx - 1
+            #
+            if fraction >= light_frac:
+                self.set_edge_light_by_index(board, light_num + light_start, color)
+            else:
+                self.set_edge_light_by_index(board, light_num + light_start)
+
 
 modes = {
     'Normal': Normal,
@@ -220,6 +287,7 @@ modes = {
     'EdgeLightRWB': EdgeLightRWB,
     'EdgeLightGW': EdgeLightGW,
     'EdgeLightPool': EdgeLightPool,
+    'EdgeLightCustom': EdgeLightCustom,
 }
 
 def get_valid_modes():

@@ -193,5 +193,5 @@ if __name__ == '__main__':
     print('Checking IP address ...', end=' ')
     ip_address = get_my_ip()
     print(ip_address)
-    app.run(host=ip_address, debug=True)
+    app.run(host=ip_address, debug=True, port=8000)
 

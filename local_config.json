@@ -1,0 +1,25 @@
+{
+  "frequency": 1.0,
+  "items": [
+    {
+      "type": "bar",
+      "reversed": false,
+      "light-start": 0,
+      "light-end": 15,
+      "variable": "pool-temp",
+      "min": 70,
+      "max": 86,
+      "color": [0, 255, 0]
+    },
+    {
+      "type": "bar",
+      "reversed": true,
+      "light-start": 30,
+      "light-end": 45,
+      "variable": "air-temp",
+      "min": 70,
+      "max": 86,
+      "color": [255, 0, 0]
+    }
+  ]
+}
