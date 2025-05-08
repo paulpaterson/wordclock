@@ -137,6 +137,13 @@ def handle_config():
             return jsonify({"error": f"Error processing request: {e}"}), 400  # Bad Request
 
 
+@app.route('/getmodes', methods=['GET'])
+def get_modes():
+    """
+    Return any valid modes for the clock face
+    """
+    return jsonify(list(modes.modes.keys()))
+
 @app.route('/config', methods=['GET'])
 def show_config_page():
     """
