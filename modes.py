@@ -214,12 +214,15 @@ class EdgeLightCustom(Mode):
         value = data.get(item['variable'])
         ranges = item['ranges']
         reversed = item['reversed']
+        last_color = (0, 0, 0)
         for value_range in ranges:
             val_min = value_range['min']
             val_max = value_range['max']
             color = value_range['color']
             if val_min <= value <= val_max:
                 break
+            else:
+                last_color = color
         #
         fraction = (value - val_min) / (val_max - val_min)
         num_lights = light_end - light_start + 1
@@ -233,7 +236,7 @@ class EdgeLightCustom(Mode):
             if fraction >= light_frac:
                 self.set_edge_light_by_index(board, light_num + light_start, color)
             else:
-                self.set_edge_light_by_index(board, light_num + light_start)
+                self.set_edge_light_by_index(board, light_num + light_start, last_color)
 
     def show_boolean(self, board, item, data):
         """Show lights as a bar"""
