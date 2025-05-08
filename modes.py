@@ -250,6 +250,8 @@ class EdgeLightCustom(Mode):
             match t := item['type']:
                 case 'bar':
                     self.show_bar(board, item, data)
+                case 'boolean':
+                    self.show_boolean(board, item, data)
                 case _:
                     raise ValueError(f'Unknown type {t}')
 
@@ -276,6 +278,18 @@ class EdgeLightCustom(Mode):
                 self.set_edge_light_by_index(board, light_num + light_start, color)
             else:
                 self.set_edge_light_by_index(board, light_num + light_start)
+
+    def show_boolean(self, board, item, data):
+        """Show lights as a bar"""
+        light_start = item['light-start']
+        light_end = item['light-end']
+        value = data.get(item['variable'])
+        on_color = item['on-color']
+        off_color = item['off-color']
+        #
+        for idx in range(light_start, light_end + 1):
+            color = on_color if value else off_color
+            self.set_edge_light_by_index(board, idx, color)
 
 
 modes = {
