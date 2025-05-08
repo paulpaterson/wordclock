@@ -4,7 +4,7 @@ import datetime
 import asyncio
 import json
 import ssl
-from multiprocessing.pool import job_counter
+
 
 import aiohttp
 from omnilogic import OmniLogic
@@ -156,63 +156,6 @@ class FlashWords(Mode):
         self.on = not self.on
 
 
-async def get_pool_data(store):
-    """Get data on the pool telemetry"""
-    ssl_context = ssl.create_default_context()
-    ssl_context.check_hostname = False
-    ssl_context.verify_mode = ssl.CERT_NONE
-    conn = aiohttp.TCPConnector(ssl_context=ssl_context)
-
-    with open("../haywardlogin.py", "r") as f:
-        text = f.read()
-        vals = eval(text)
-        username = vals['username']
-        password = vals['password']
-
-    omni = OmniLogic(username, password, aiohttp.ClientSession(connector=conn))
-    status = await omni.get_telemetry_data()
-    store.status = status
-
-
-class EdgeLightPool(Mode):
-    """Set the edge lights to be based on the pool air and water temp"""
-
-    def __init__(self, parameters):
-        super().__init__(parameters)
-        self.target_air = 80
-        self.target_pool = 85
-        self.frequency = 10 * 60.0
-        self.min = 70
-        self.max = 86
-        self.next_time = datetime.datetime.now()
-        self.status = None
-
-    def update(self, board):
-        """Update the edge lights"""
-        if datetime.datetime.now() >= self.next_time:
-            asyncio.run(get_pool_data(self))
-            self.next_time += datetime.timedelta(seconds=self.frequency)
-        #
-        if self.status:
-            water = float(self.status[0]['BOWS'][0]['waterTemp'])
-            air = float(self.status[0]['airTemp'])
-            water_frac = float(water - self.min) / (self.max - self.min) * 16.0
-            air_frac = float(air - self.min) / (self.max - self.min) * 16.0
-            print(f'Got air {air} and water {water} and {air_frac}, {water_frac}')
-            #
-            water_colour = (0, 255, 0) if water > self.target_pool else (255, 0, 0)
-            air_colour = (0, 255, 0) if air > self.target_air else (255, 0, 0)
-            #
-            for i in range(16):
-                if i < water_frac:
-                    board.edge_lights[(0, i)] = water_colour
-                else:
-                    board.edge_lights[(0, i)] = None
-                if i < air_frac:
-                    board.edge_lights[(15, i)] = air_colour
-                else:
-                    board.edge_lights[(15, i)] = None
-
 class EdgeLightCustom(Mode):
     """A mode of the edge lights that reads the local config file and data"""
 
@@ -300,7 +243,6 @@ modes = {
     'FlashWords': FlashWords,
     'EdgeLightRWB': EdgeLightRWB,
     'EdgeLightGW': EdgeLightGW,
-    'EdgeLightPool': EdgeLightPool,
     'EdgeLightCustom': EdgeLightCustom,
 }
 
