@@ -22,6 +22,7 @@ async def get_pool_data(store):
     store['water'] = status[0]['BOWS'][0]['waterTemp']
     store['air'] = status[0]['airTemp']
 
+
 if __name__ == "__main__":
     store = {}
     while True:

@@ -89,7 +89,7 @@ class Board:
 
         return text
 
-    def show_board(self):
+    def show_board(self, logs):
         print(self.term.home + self.term.clear)
         text_lines = self.get_board_text(terminal_mode=self.lights is None)
         print('\n'.join(text_lines))
@@ -100,6 +100,12 @@ class Board:
         #
         if self.lights:
             self.do_lights(text_lines)
+        #
+        if logs:
+            print(self.term.red('\nLogs\n'))
+            for line in logs:
+                print(self.term.red(line))
+
 
     def do_lights(self, text):
         self.lights.clear_strip()
@@ -158,8 +164,13 @@ class Board:
 
     def update_board(self):
         self.clear_board()
+        logs = []
         for mode in self.modes:
-            mode.update(self)
+            results = mode.update(self)
+            if results:
+                logs.extend(results)
+
+        return logs
 
     def convert_time(self):
         it_is = 'It is ' if self.show_it_is else ''
@@ -259,8 +270,8 @@ def main(offset, time, interval, simulation_update, face_mode, calc_size, show_i
                 t = datetime.datetime.now()
                 b.time = t + current_offset
 
-                b.update_board()
-                b.show_board()
+                logs = b.update_board()
+                b.show_board(logs)
                 if term.inkey(timeout=interval):
                     break
                 current_offset += simulation_offset

@@ -3,6 +3,7 @@
 import datetime
 import asyncio
 import json
+import os
 import ssl
 
 
@@ -164,7 +165,7 @@ class EdgeLightCustom(Mode):
         #
         self.config_data = self.read_config()
         self.frequency = self.config_data['frequency']
-        self.next_time = datetime.datetime.now()
+        self.last_time = None
 
     def read_config(self):
         """Read the configuration data"""
@@ -174,17 +175,25 @@ class EdgeLightCustom(Mode):
 
     def get_data(self):
         """Get the latest data to show"""
-        with open('local_data.json', 'r') as f:
-            data_text = f.read()
-        data = json.loads(data_text)
-        return data
+        #
+        last_update = os.stat('local_data.json').st_mtime
+        if self.last_time is None or last_update > self.last_time:
+            with open('local_data.json', 'r') as f:
+                data_text = f.read()
+            data = json.loads(data_text)
+            self.last_time = last_update
+            return data
+        else:
+            return None
 
     def update(self, board):
         """Update the display"""
-        if datetime.datetime.now() >= self.next_time:
-            self.next_time += datetime.timedelta(seconds=self.frequency)
-            data = self.get_data()
+        data = self.get_data()
+        if data:
             self.update_display(board, data)
+            return [
+                "Updated data!"
+            ]
 
     def update_display(self, board, data):
         """Actually update the lights"""
