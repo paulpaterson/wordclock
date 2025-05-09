@@ -1,3 +1,4 @@
+import sys
 import json
 import requests
 import aiohttp
@@ -8,6 +9,7 @@ import ssl
 import click
 import pprint
 import datetime
+import signal
 
 
 async def get_pool_data(store):
@@ -98,7 +100,15 @@ def main(interval, pool, weather, debug, iterations, forecast):
         import pdb
         pdb.set_trace()
 
+
+def signal_handler(sig, frame):
+    """Handle the SIGTERM from SystemD"""
+    print(f'Caught SIGTERM {sig}')
+    sys.exit(0)
+
+
 if __name__ == "__main__":
+    signal.signal(signal.SIGTERM, signal_handler)
     main()
 
 
