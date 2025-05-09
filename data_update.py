@@ -76,7 +76,7 @@ def main(interval, pool, weather, debug, iterations, forecast):
             if pool:
                 asyncio.run(get_pool_data(store))
             if weather:
-                weather = get_weather_forecast(store, forecast)
+                get_weather_forecast(store, forecast)
 
             pprint.pprint(store)
             with open('local_data.json', 'w') as f:
