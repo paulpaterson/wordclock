@@ -81,6 +81,7 @@ def main(interval, pool, weather, debug, iterations, forecast):
             pprint.pprint(store)
             with open('local_data.json', 'w') as f:
                 data = {
+                    'update-time': datetime.datetime.now().isoformat(),
                     'pool-temp': int(store.get('water', -1)),
                     'air-temp': int(store.get('air', -1)),
                     'garage-open': False,
