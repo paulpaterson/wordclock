@@ -204,6 +204,8 @@ class EdgeLightCustom(Mode):
                     self.show_bar(board, item, data)
                 case 'boolean':
                     self.show_boolean(board, item, data)
+                case 'text':
+                    self.show_text(board, item, data)
                 case _:
                     raise ValueError(f'Unknown type {t}')
 
@@ -249,6 +251,22 @@ class EdgeLightCustom(Mode):
         for idx in range(light_start, light_end + 1):
             color = on_color if value else off_color
             self.set_edge_light_by_index(board, idx, color)
+
+    def show_text(self, board, item, data):
+        """Show lights as a text mapping"""
+        variable = item['variable']
+        light_start = item['light-start']
+        light_end = item['light-end']
+        reversed = item.get('reversed', False)
+        colors = item['colors']
+        num_lights = light_end - light_start + 1
+        for idx, text in zip(range(num_lights), data[variable]):
+            if not reversed:
+                light_num = idx
+            else:
+                light_num = num_lights - idx - 1
+            color = colors.get(text, (0, 0, 0))
+            self.set_edge_light_by_index(board, light_num + light_start, color)
 
 
 modes = {

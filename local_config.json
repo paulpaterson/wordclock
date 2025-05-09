@@ -82,20 +82,16 @@
       "off-color": [0, 0, 0]
     },
     {
-      "type": "boolean",
-      "light-start": 56,
+      "type": "text",
+      "light-start": 46,
       "light-end": 59,
-      "variable": "ac-down-auto",
-      "on-color": [0, 0, 0],
-      "off-color": [255, 0, 0]
-    },
-    {
-      "type": "boolean",
-      "light-start": 52,
-      "light-end": 55,
-      "variable": "ac-up-auto",
-      "on-color": [0, 0, 0],
-      "off-color": [255, 0, 0]
+      "variable": "forecast",
+      "reversed": true,
+      "colors": {
+        "Sunny": [255, 255, 0],
+        "Rain": [0, 0, 255],
+        "Cloud": [255, 255, 255]
+      }
     }
   ]
 }
