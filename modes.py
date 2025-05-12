@@ -1,14 +1,8 @@
 """Some modes of operation of the clock"""
 
 import datetime
-import asyncio
 import json
 import os
-import ssl
-
-
-import aiohttp
-from omnilogic import OmniLogic
 
 
 class Mode:
@@ -215,8 +209,9 @@ class EdgeLightCustom(Mode):
         light_end = item['light-end']
         value = data.get(item['variable'])
         ranges = item['ranges']
-        reversed = item['reversed']
-        last_color = (0, 0, 0)
+        reverse_it = item['reversed']
+        last_color = color = (0, 0, 0)
+        val_min, val_max = 0, 1
         for value_range in ranges:
             val_min = value_range['min']
             val_max = value_range['max']
@@ -230,7 +225,7 @@ class EdgeLightCustom(Mode):
         num_lights = light_end - light_start + 1
         for idx in range(num_lights):
             light_frac = float(idx) / (num_lights - 1)
-            if not reversed:
+            if not reverse_it:
                 light_num = idx
             else:
                 light_num = num_lights - idx - 1
