@@ -224,8 +224,108 @@ square_words = [
     NewLine,
 ]
 
+new_square_words = [
+    NewLine,
+    NewLine,
+    NewLine,
+    Unused('xx'),
+
+    Unused('s'),
+    Word('It', True),
+    Unused('l'),
+    Word('is', True),
+    Unused('y'),
+    Word('AM'),
+    Word('a'),
+    Word('PM'),
+
+    Unused('xx'),
+    NewLine,
+    Unused('xx'),
+
+    Word('quarter'),
+    Unused('yac'),
+    Unused('dc'),
+
+    Unused('xx'),
+    NewLine,
+    Unused('xx'),
+
+    Unused('r'),
+    Word('twenty'),
+    Unused('y'),
+    Word('five', True),
+
+    Unused('xx'),
+    NewLine,
+    Unused('xx'),
+
+    Word('half'),
+    Unused('sy'),
+    Word('ten'),
+    Unused('f'),
+    Word('to'),
+
+    Unused('xx'),
+    NewLine,
+    Unused('xx'),
+
+    Word('past'),
+    Unused('eruy'),
+    Word('nine'),
+
+    Unused('xx'),
+    NewLine,
+    Unused('xx'),
+
+    Word('one'),
+    Word('six'),
+    Unused('y'),
+    Word('three'),
+
+    Unused('xx'),
+    NewLine,
+    Unused('xx'),
+
+    Word('four'),
+    Word('five'),
+    Unused('y'),
+    Word('two'),
+
+    Unused('xx'),
+    NewLine,
+    Unused('xx'),
+
+    Word('eight'),
+    Unused('y'),
+    Word('eleven'),
+
+    Unused('xx'),
+    NewLine,
+    Unused('xx'),
+
+    Word('seven'),
+    Unused('y'),
+    Word('twelve'),
+
+    Unused('xx'),
+    NewLine,
+    Unused('xx'),
+
+    Word('ten'),
+    Unused('sy'),
+    Word('oclock', True),
+    Unused('X'),
+
+    Unused('xx'),
+    NewLine,
+    NewLine,
+    NewLine,
+]
+
 faces = {
     '10x11': full_words,
     '14x5': simple_words,
     '16x16': square_words,
+    '16x16new': new_square_words,
 }
