@@ -4,6 +4,7 @@ import sys
 import os
 
 import blessed
+import blessed.sequences
 import datetime
 import timesayer
 import click
@@ -16,7 +17,7 @@ class Board:
     """Represents of the words arranged in a board"""
 
     def __init__(self, term, time, simple=False, show_it_is=False, lights=None, light_color=None,
-                 replace_blanks=False, blank_character=' ', show_a=False, display=None):
+                 replace_blanks=False, blank_character=' ', edge_character=' ', show_a=False, display=None):
         self.term = term
         self.time = time
         self.rows = None
@@ -27,6 +28,7 @@ class Board:
         self.lights_fn = lights
         self.light_color = light_color
         self.fill_character = blank_character
+        self.edge_character = edge_character
         self.replace_blanks = replace_blanks
         self.show_a = show_a
         self.edge_lights = {}
@@ -66,12 +68,11 @@ class Board:
     def get_board_text(self, terminal_mode=True):
         text = []
         width, height = self.get_dimensions()
-        for row in self.rows:
+        for idx, row in enumerate(self.rows):
             text.append('')
             for word in row:
                 text[-1] += f'{word.show(self.term, terminal_mode)}'
             text[-1] = text[-1] + self.get_fill_character(width - len(text[-1]))
-
         return text
 
     def get_outer_edge(self):
@@ -200,6 +201,7 @@ class Board:
               help='The color for the lights when they are on')
 @click.option('--replace-blanks', default=False, is_flag=True, help='Replace blanks in the face with random letters')
 @click.option('--blank-character', type=str, default=' ', help='Blank character to use')
+@click.option('--edge-character', type=str, default=' ', help='Character to use for the edge')
 @click.option('--array-format', default=False, is_flag=True, help='When showing grid format it as python array')
 @click.option('--baud-rate', default=800, type=int, help='Baud rate for SPI communication')
 @click.option('--show-a', default=False, is_flag=True, help='Whether to show "a" in "a quarter to ..."')
@@ -207,7 +209,7 @@ class Board:
               multiple=True, default=['Normal'], help='Select which display modes to use, can have multiple')
 @click.option('--mode-parameters', type=str, multiple=True, default=[], help='Parameters for the display mode')
 def main(offset, time, interval, simulation_update, face_mode, calc_size, show_it_is, light_mode, light_color,
-         replace_blanks, blank_character, array_format, baud_rate, show_a, mode, mode_parameters):
+         replace_blanks, blank_character, edge_character, array_format, baud_rate, show_a, mode, mode_parameters):
 
     term = blessed.Terminal()
     if time:
@@ -239,6 +241,7 @@ def main(offset, time, interval, simulation_update, face_mode, calc_size, show_i
               simple=face_mode=='14x5', show_it_is=show_it_is,
               lights=lights, light_color=light_color,
               replace_blanks=replace_blanks, blank_character=blank_character,
+              edge_character=edge_character,
               show_a=show_a, display=display_modes
     )
 
@@ -262,7 +265,8 @@ def main(offset, time, interval, simulation_update, face_mode, calc_size, show_i
         if not array_format:
             print('\n'.join(b.get_board_text(True)))
         else:
-            print('\n'.join([f'"{line}",' for line in b.get_board_text(True)]))
+            lines = b.get_board_text(True)
+            print('\n'.join([f'"{line}",' for line in lines]))
     else:
         last_config_time = os.path.getmtime('config.sh')
         while True:
