@@ -174,7 +174,11 @@ class EdgeLightCustom(Mode):
         if self.last_time is None or last_update > self.last_time:
             with open('local_data.json', 'r') as f:
                 data_text = f.read()
-            data = json.loads(data_text)
+            try:
+                data = json.loads(data_text)
+            except json.decoder.JSONDecodeError:
+                # Oops, something went wrong
+                data = None
             self.last_time = last_update
             return data
         else:
