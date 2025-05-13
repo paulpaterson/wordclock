@@ -21,6 +21,7 @@
             const saveButton = document.getElementById('saveButton');
             const messageDiv = document.getElementById('message');
             let validModes = [];
+            let validFaces = [];
 
             function showMessage(message, type = 'success') {
                 messageDiv.textContent = message;
@@ -39,8 +40,8 @@
                     showASwitch.checked = data.CLOCK_SHOW_A === 'true';
                     intervalInput.value = data.CLOCK_INTERVAL;
                     lightColorInput.value = data.CLOCK_LIGHT_COLOR;
-                    faceModeSelect.value = data.CLOCK_FACE_MODE;
                     validModes = data.VALID_MODES;
+                    validFaces = data.VALID_FACES;
 
                     // Setup modes
                     modeGroup.innerHTML = '';
@@ -52,6 +53,13 @@
                     modeCheckboxes.forEach(checkbox => {
                         checkbox.checked = modes.includes(checkbox.value);
                     });
+
+                    // Setup face modes
+                    faceModeSelect.innerHTML = '';
+                    validFaces.forEach(face => {
+                        faceModeSelect.innerHTML += `<option value="${face}">${face}</option>`
+                    });
+                    faceModeSelect.value = data.CLOCK_FACE_MODE;
 
                     baudRateInput.value = data.CLOCK_BAUD_RATE;
                     ipAddressInput.value = data.CLOCK_IP_ADDRESS;
@@ -424,9 +432,6 @@
         <div class="form-group">
             <label for="faceMode">Face Mode</label>
             <select id="faceMode">
-                <option value="10x11">10x11</option>
-                <option value="14x5">14x5</option>
-                <option value="16x16">16x16</option>
             </select>
         </div>
 

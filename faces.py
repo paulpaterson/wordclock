@@ -329,3 +329,8 @@ faces = {
     '16x16': square_words,
     '16x16new': new_square_words,
 }
+
+def get_valid_faces():
+    """Return the valid face types"""
+    return list(sorted(faces.keys()))
+

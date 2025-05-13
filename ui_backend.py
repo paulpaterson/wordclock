@@ -5,6 +5,7 @@ import os
 import re
 import socket
 
+import faces
 import modes
 
 app = Flask(__name__)
@@ -60,6 +61,7 @@ def handle_config():
     if request.method == 'GET':
         config = load_config()
         config['VALID_MODES'] = modes.get_valid_modes()
+        config['VALID_FACES'] = faces.get_valid_faces()
         return jsonify(config)
     elif request.method == 'POST':
         try:
@@ -99,7 +101,7 @@ def handle_config():
                 return jsonify({"error": "Invalid value for CLOCK_SHOW_IT_IS.  Must be 'True' or 'False'"}), 400
 
             # Face mode validation
-            valid_face_modes = ["10x11", "14x5", "16x16"]
+            valid_face_modes = faces.get_valid_faces()
             if data["CLOCK_FACE_MODE"] not in valid_face_modes:
                 return jsonify({"error": f"Invalid value for CLOCK_FACE_MODE. Must be one of {valid_face_modes}"}), 400
 

@@ -192,7 +192,7 @@ class Board:
 @click.option('--time', type=str, default='', help='Fix the time')
 @click.option('--interval', type=float, default=10, help='Time between updates in seconds')
 @click.option('--simulation-update', default=0, help='Number of minutes to advance per interval')
-@click.option('--face-mode', type=click.Choice(list(faces.faces.keys())), required=True, help='Select which face mode')
+@click.option('--face-mode', type=click.Choice(list(faces.get_valid_faces())), required=True, help='Select which face mode')
 @click.option('--calc-size', default=False, is_flag=True, help='Just calculate the size')
 @click.option('--show-it-is', default=False, is_flag=True, help='Whether to show "it is" wording')
 @click.option('--light-mode', type=click.Choice(['off', 'simulate', 'real', 'detect']), default='off',
@@ -205,7 +205,7 @@ class Board:
 @click.option('--array-format', default=False, is_flag=True, help='When showing grid format it as python array')
 @click.option('--baud-rate', default=800, type=int, help='Baud rate for SPI communication')
 @click.option('--show-a', default=False, is_flag=True, help='Whether to show "a" in "a quarter to ..."')
-@click.option('--mode', type=click.Choice(modes.modes.keys()),
+@click.option('--mode', type=click.Choice(modes.get_valid_modes()),
               multiple=True, default=['Normal'], help='Select which display modes to use, can have multiple')
 @click.option('--mode-parameters', type=str, multiple=True, default=[], help='Parameters for the display mode')
 def main(offset, time, interval, simulation_update, face_mode, calc_size, show_it_is, light_mode, light_color,
