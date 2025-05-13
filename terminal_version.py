@@ -201,7 +201,7 @@ class Board:
               help='The color for the lights when they are on')
 @click.option('--replace-blanks', default=False, is_flag=True, help='Replace blanks in the face with random letters')
 @click.option('--blank-character', type=str, default=' ', help='Blank character to use')
-@click.option('--edge-character', type=str, default=' ', help='Character to use for the edge')
+@click.option('--edge-character', type=str, default='■', help='Character to use for the edge')
 @click.option('--array-format', default=False, is_flag=True, help='When showing grid format it as python array')
 @click.option('--baud-rate', default=800, type=int, help='Baud rate for SPI communication')
 @click.option('--show-a', default=False, is_flag=True, help='Whether to show "a" in "a quarter to ..."')
