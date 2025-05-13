@@ -265,7 +265,11 @@ def main(offset, time, interval, simulation_update, face_mode, calc_size, show_i
         if not array_format:
             print('\n'.join(b.get_board_text(True)))
         else:
-            lines = b.get_board_text(True)
+            lines = [term.strip(line) for line in b.get_board_text(True)]
+            lines[0] = edge_character * len(lines[0])
+            lines[-1] = edge_character * len(lines[-1])
+            for idx in range(1, len(lines)):
+                lines[idx] = edge_character + lines[idx][1:-1] + edge_character
             print('\n'.join([f'"{line}",' for line in lines]))
     else:
         last_config_time = os.path.getmtime('config.sh')
