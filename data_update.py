@@ -41,10 +41,12 @@ def map_weather_name(name):
     name = name.lower()
     if "sunny" in name or "clear" in name:
         return "Sunny"
-    elif "cloud" in name:
+    elif "cloud" in name or "fog" in name:
         return "Cloudy"
     elif "rain" in name or "shower" in name or "storm" in name:
         return "Rain"
+    else:
+        return name
 
 
 def get_weather_forecast(store, hours):
