@@ -42,8 +42,15 @@ if __name__ == "__main__":
     )
     b.modes.append(
         CycleColors(
-            [],
-            [GREEN, WHITE]
+            b.lights.get_ring_coords(1),
+            [ORANGE, YELLOW]
+        )
+    )
+    b.modes.append(
+        CycleColors(
+            b.lights.get_box_coords(COORD(3, 4), GRID(2, 4)),
+            [YELLOW, WHITE],
+            synchronized=True
         )
     )
     while True:

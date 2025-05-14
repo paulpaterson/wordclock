@@ -9,6 +9,8 @@ BLACK = COLOR(0, 0, 0)
 RED = COLOR(255, 0, 0)
 GREEN = COLOR(0, 255, 0)
 BLUE = COLOR(0, 0, 255)
+ORANGE = COLOR(255, 255, 0)
+YELLOW = COLOR(0, 255, 255)
 
 
 
@@ -79,9 +81,18 @@ class LightCollection:
         return [COORD(row, col) for row in range(self.size.rows)]
 
     def get_edge_coords(self) -> list[COORD]:
-        """Return all the edges"""
-        result = self.get_row_coords(0)
-        result += self.get_col_coords(self.size.cols - 1)[1:]
-        result += list(reversed(self.get_row_coords(self.size.rows - 1)))[1:]
-        result += list(reversed(self.get_col_coords(0)))[1:-1]
+        """Return a list of the edge cells"""
+        return self.get_ring_coords(0)
+
+    def get_ring_coords(self, distance: int) -> list[COORD]:
+        """Return a ring of cells at a certain distance from the edge"""
+        result = self.get_row_coords(distance)[distance:self.size.cols-distance]
+        result += self.get_col_coords(self.size.cols - distance - 1)[distance + 1:self.size.rows-distance]
+        result += list(reversed(self.get_row_coords(self.size.rows - distance - 1)))[distance + 1:self.size.cols-distance]
+        result += list(reversed(self.get_col_coords(distance)))[distance + 1:self.size.rows-distance - 1]
         return result
+
+    def get_box_coords(self, top_left: COORD, size: GRID) -> list[COORD]:
+        """Return a box of cells"""
+        return [COORD(row, col) for col in range(top_left.col, top_left.col + size.cols)
+                for row in range(top_left.row, top_left.row + size.rows)]

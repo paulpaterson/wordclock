@@ -22,10 +22,11 @@ class Mode:
 class CycleColors(Mode):
     """A mode that cycles colors"""
 
-    def __init__(self, locations, colors: list[COLOR]):
+    def __init__(self, locations, colors: list[COLOR], synchronized=False):
         """Initialise the mode"""
         super().__init__(locations)
         self.color_list = colors
+        self.synchronized = synchronized
 
     def update(self, lights: LightCollection):
         """Update all the colors"""
@@ -36,7 +37,8 @@ class CycleColors(Mode):
         for location in self.light_locations:
             light = lights.get_light_at(location)
             light.set_color(colors[0])
-            colors.insert(0, colors.pop())
+            if not self.synchronized:
+                colors.insert(0, colors.pop())
         #
         # Cycle the lights for next time
         self.color_list.append(self.color_list.pop(0))
