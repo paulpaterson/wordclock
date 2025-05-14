@@ -25,6 +25,12 @@ class DisplayMatrix:
         self.size = size
         self.lights = LightCollection(size)
         self.modes = modes
+        #
+        # Initialise the hardware lights if we have them
+        if matrix_leds:
+            self.matrix_leds = matrix_leds(size.rows * size.cols)
+        else:
+            self.matrix_leds = None
 
     def display_board(self):
         """Update the display of the board"""
@@ -37,7 +43,7 @@ class DisplayMatrix:
 
     def display_leds(self):
         """Update the LED board"""
-        if not matrix_leds:
+        if not self.matrix_leds:
             raise ImportError('Cannot import the led control')
         #
         # There is an odd pattern to the for loops here
@@ -52,9 +58,11 @@ class DisplayMatrix:
             for row in row_range:
                 light = self.lights.get_light_at(COORD(row, col))
                 color = light.get_shown_color()
-                matrix_leds.set_led_color(idx, *color)
+                self.matrix_leds.set_led_color(idx, *color)
                 #
                 idx += 1
+        #
+        self.matrix_leds.update_strip()
 
     def update_board(self):
         """Update the board"""
@@ -83,12 +91,21 @@ if __name__ == "__main__":
             synchronized=True
         )
     )
-    while True:
-        b.update_board()
-        b.display_board()
-        if matrix_leds:
-            b.display_leds()
-        time.sleep(1)
+    try:
+        while True:
+            b.update_board()
+            b.display_board()
+            if matrix_leds:
+                b.display_leds()
+            time.sleep(0.2)
+    except KeyboardInterrupt:
+        pass
+    #
+    if b.matrix_leds:
+        print('Clearing strip')
+        b.matrix_leds.clear_strip()
+        b.matrix_leds.update_strip()
+
 
 
 
