@@ -53,6 +53,7 @@ class LightCollection:
     def __init__(self, size: GRID):
         """Initialise the collection"""
         self.lights: list[list[Light]] = []
+        self.size = size
         for row in range(size.rows):
             self.lights.append([])
             for col in range(size.cols):
@@ -68,3 +69,19 @@ class LightCollection:
             return self.lights[coords.row][coords.col]
         except IndexError:
             raise NoSuchLight(f'No light found at {coords}')
+
+    def get_row_coords(self, row: int) -> list[COORD]:
+        """Return a row of coords"""
+        return [COORD(row, col) for col in range(self.size.cols)]
+
+    def get_col_coords(self, col: int) -> list[COORD]:
+        """Return a col of coords"""
+        return [COORD(row, col) for row in range(self.size.rows)]
+
+    def get_edge_coords(self) -> list[COORD]:
+        """Return all the edges"""
+        result = self.get_row_coords(0)
+        result += self.get_col_coords(self.size.cols - 1)[1:]
+        result += list(reversed(self.get_row_coords(self.size.rows - 1)))[1:]
+        result += list(reversed(self.get_col_coords(0)))[1:-1]
+        return result

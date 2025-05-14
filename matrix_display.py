@@ -36,13 +36,13 @@ if __name__ == "__main__":
     b = DisplayMatrix(GRID(16, 16), [])
     b.modes.append(
         CycleColors(
-            [COORD(2, 5), COORD(2, 6), COORD(2, 7), COORD(1, 5), COORD(1, 6), COORD(1, 7)],
+            b.lights.get_edge_coords(),
             [RED, BLUE, GREEN]
         )
     )
     b.modes.append(
         CycleColors(
-            [COORD(r, c) for r in [0, 15] for c in range(16)] + [COORD(r, c) for c in [0, 15] for r in range(16)],
+            [],
             [GREEN, WHITE]
         )
     )
