@@ -1,44 +1,10 @@
 """Drives a Matrix Display with various display modes"""
+import time
 
 import click
 import blessed
-from collections import namedtuple
-
-GRID = namedtuple('Grid', ['rows', 'cols'])
-COLOR = namedtuple('Color', ['red', 'green', 'blue'])
-
-WHITE = COLOR(255, 255, 255)
-BLACK = COLOR(0, 0, 0)
-
-
-class Light:
-    """Represents a single light in the matrix"""
-
-    def __init__(self):
-        """Initialise the light"""
-        self.on = False
-        self.color = WHITE
-
-    def set_color(self, color: COLOR, on=True):
-        """Set the color of the light"""
-        self.color = color
-        if on:
-            self.on = on
-
-    def get_shown_color(self):
-        """Return which color should be shown"""
-        return self.color if self.on else BLACK
-
-
-class Mode:
-    """An abstract mode that drives the matrix display"""
-
-    def __init__(self, parameters):
-        """Initialise the mode"""
-
-    def update(self, board):
-        """Update the board according to the mode"""
-
+from matrix_modes import Mode, CycleColors
+from matrix_common import *
 
 
 class DisplayMatrix:
@@ -48,35 +14,42 @@ class DisplayMatrix:
         """Initialise the matrix"""
         self.term = blessed.Terminal()
         self.size = size
-        self.lights = self.get_init_lights()
+        self.lights = LightCollection(size)
         self.modes = modes
-
-    def get_init_lights(self) -> list[list[Light]]:
-        """Create the lights in their initial state"""
-        lights = []
-        for row in range(self.size.rows):
-            lights.append([])
-            for col in range(self.size.cols):
-                lights[-1].append(Light())
-        #
-        return lights
 
     def display_board(self):
         """Update the display of the board"""
         print(self.term.home + self.term.clear)
-        for row in self.lights:
+        for row in self.lights.rows():
             for light in row:
                 color = light.get_shown_color()
                 print(self.term.color_rgb(*color) + "■", end="")
             print('')
 
+    def update_board(self):
+        """Update the board"""
+        for mode in self.modes:
+            mode.update(self.lights)
+
 
 if __name__ == "__main__":
     b = DisplayMatrix(GRID(16, 16), [])
-    b.lights[1][1].on = True
-    b.lights[14][14].set_color(COLOR(255, 0, 0))
-    b.lights[10][12].set_color(COLOR(255, 255, 0))
-    b.display_board()
+    b.modes.append(
+        CycleColors(
+            [COORD(2, 5), COORD(2, 6), COORD(2, 7), COORD(1, 5), COORD(1, 6), COORD(1, 7)],
+            [RED, BLUE, GREEN]
+        )
+    )
+    b.modes.append(
+        CycleColors(
+            [COORD(r, c) for r in [0, 15] for c in range(16)] + [COORD(r, c) for c in [0, 15] for r in range(16)],
+            [GREEN, WHITE]
+        )
+    )
+    while True:
+        b.update_board()
+        b.display_board()
+        time.sleep(1)
 
 
 
