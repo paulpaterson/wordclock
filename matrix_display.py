@@ -6,6 +6,15 @@ import blessed
 from matrix_modes import Mode, CycleColors
 from matrix_common import *
 
+# Load LED control stuff if it is there
+baud_rate = 800
+try:
+    from pi5neo import Pi5Neo
+except ImportError:
+    matrix_leds = None
+else:
+    matrix_leds = lambda n: Pi5Neo('/dev/spidev0.0', n, baud_rate)
+
 
 class DisplayMatrix:
     """Represents the matrix being displayed"""
@@ -16,6 +25,12 @@ class DisplayMatrix:
         self.size = size
         self.lights = LightCollection(size)
         self.modes = modes
+        #
+        # Initialise the hardware lights if we have them
+        if matrix_leds:
+            self.matrix_leds = matrix_leds(size.rows * size.cols)
+        else:
+            self.matrix_leds = None
 
     def display_board(self):
         """Update the display of the board"""
@@ -25,6 +40,29 @@ class DisplayMatrix:
                 color = light.get_shown_color()
                 print(self.term.color_rgb(*color) + "■", end="")
             print('')
+
+    def display_leds(self):
+        """Update the LED board"""
+        if not self.matrix_leds:
+            raise ImportError('Cannot import the led control')
+        #
+        # There is an odd pattern to the for loops here
+        # because the LED numbers go in a line that zig zags
+        # across the matrix
+        idx = 0
+        for col in range(self.size.cols):
+            if col % 2 == 0:
+                row_range = range(self.size.rows)
+            else:
+                row_range = range(self.size.rows -1, -1, -1)
+            for row in row_range:
+                light = self.lights.get_light_at(COORD(row, col))
+                color = light.get_shown_color()
+                self.matrix_leds.set_led_color(idx, *color)
+                #
+                idx += 1
+        #
+        self.matrix_leds.update_strip()
 
     def update_board(self):
         """Update the board"""
@@ -53,10 +91,21 @@ if __name__ == "__main__":
             synchronized=True
         )
     )
-    while True:
-        b.update_board()
-        b.display_board()
-        time.sleep(1)
+    try:
+        while True:
+            b.update_board()
+            b.display_board()
+            if matrix_leds:
+                b.display_leds()
+            time.sleep(0.2)
+    except KeyboardInterrupt:
+        pass
+    #
+    if b.matrix_leds:
+        print('Clearing strip')
+        b.matrix_leds.clear_strip()
+        b.matrix_leds.update_strip()
+
 
 
 
