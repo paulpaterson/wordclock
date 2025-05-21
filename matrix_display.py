@@ -7,7 +7,7 @@ from matrix_modes import Mode, CycleColors
 from matrix_common import *
 
 # Load LED control stuff if it is there
-baud_rate = 800
+baud_rate = 1000 # 800 maybe for the RPI5
 try:
     from pi5neo import Pi5Neo
 except ImportError:
@@ -69,8 +69,11 @@ class DisplayMatrix:
         for mode in self.modes:
             mode.update(self.lights)
 
-
-if __name__ == "__main__":
+@click.command()
+@click.option('--screen', default=False, type=bool, is_flag=True, help="Whether to show the simulation on the screen")
+@click.option('--leds', default=False, type=bool, is_flag=True, help="Whether to try to control the LED matrix")
+@click.option('--interval', default=10, type=float, help="Refresh interval (s)")
+def main(screen, leds, interval):
     b = DisplayMatrix(GRID(16, 16), [])
     b.modes.append(
         CycleColors(
@@ -94,10 +97,11 @@ if __name__ == "__main__":
     try:
         while True:
             b.update_board()
-            b.display_board()
-            if matrix_leds:
+            if screen:
+                b.display_board()
+            if leds and matrix_leds:
                 b.display_leds()
-            time.sleep(0.2)
+            time.sleep(interval)
     except KeyboardInterrupt:
         pass
     #
@@ -106,6 +110,9 @@ if __name__ == "__main__":
         b.matrix_leds.clear_strip()
         b.matrix_leds.update_strip()
 
+
+if __name__ == "__main__":
+    main()
 
 
 
