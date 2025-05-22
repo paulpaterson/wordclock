@@ -76,11 +76,12 @@ class DisplayMatrix:
 @click.option('--leds', default=False, type=bool, is_flag=True, help="Whether to try to control the LED matrix")
 @click.option('--interval', default=10, type=float, help="Refresh interval (s)")
 @click.option('--config', required=True, type=str, help="File to use for config")
-def main(screen, leds, interval, config):
+@click.argument('parameters', nargs=-1)
+def main(screen, leds, interval, config, parameters):
     b = DisplayMatrix(GRID(16, 16), [])
 
     config = importlib.import_module(config)
-    modes = config.get_modes(b)
+    modes = config.get_modes(b, *parameters)
     for mode in modes:
         b.modes.append(mode)
 
