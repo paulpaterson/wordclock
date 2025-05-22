@@ -1,9 +1,9 @@
 """Drives a Matrix Display with various display modes"""
 import time
-
+import pathlib
 import click
 import blessed
-from matrix_modes import Mode, CycleColors
+from matrix_modes import Mode, CycleColors, ShowImage
 from matrix_common import *
 
 # Load LED control stuff if it is there
@@ -75,25 +75,32 @@ class DisplayMatrix:
 @click.option('--interval', default=10, type=float, help="Refresh interval (s)")
 def main(screen, leds, interval):
     b = DisplayMatrix(GRID(16, 16), [])
-    b.modes.append(
-        CycleColors(
-            b.lights.get_edge_coords(),
-            [RED, BLUE, GREEN]
-        )
+    # b.modes.append(
+    #     CycleColors(
+    #         b.lights.get_edge_coords(),
+    #         [RED, BLUE, GREEN]
+    #     )
+    # )
+    # b.modes.append(
+    #     CycleColors(
+    #         b.lights.get_ring_coords(1),
+    #         [ORANGE, YELLOW]
+    #     )
+    # )
+    # b.modes.append(
+    #     CycleColors(
+    #         b.lights.get_box_coords(COORD(3, 4), GRID(2, 4)),
+    #         [YELLOW, WHITE],
+    #         synchronized=True
+    #     )
+    # )
+    m = ShowImage(
+        b.lights.get_box_coords(COORD(0, 0), GRID(16, 16)),
+        pathlib.Path('images', 'flower.webp'),
+        GRID(16, 16),
     )
-    b.modes.append(
-        CycleColors(
-            b.lights.get_ring_coords(1),
-            [ORANGE, YELLOW]
-        )
-    )
-    b.modes.append(
-        CycleColors(
-            b.lights.get_box_coords(COORD(3, 4), GRID(2, 4)),
-            [YELLOW, WHITE],
-            synchronized=True
-        )
-    )
+    b.modes.append(m)
+
     try:
         while True:
             b.update_board()

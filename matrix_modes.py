@@ -1,5 +1,7 @@
 """Modes that control lights on the matrix"""
 
+import pathlib
+import PIL.Image
 from matrix_common import *
 
 
@@ -14,7 +16,7 @@ class Mode:
         """Initialise the mode"""
         self.light_locations = locations
 
-    def update(self, board):
+    def update(self, lights: LightCollection):
         """Update the board according to the mode"""
 
 
@@ -42,3 +44,19 @@ class CycleColors(Mode):
         #
         # Cycle the lights for next time
         self.color_list.append(self.color_list.pop(0))
+
+
+class ShowImage(Mode):
+    """A mode that shows one or more images in sequence"""
+
+    def __init__(self, locations, file: pathlib.Path, size: GRID):
+        """Initialise the mode"""
+        super().__init__(locations)
+        self.original_image = PIL.Image.open(file)
+        self.scaled_image = self.original_image.resize(size)
+
+    def update(self, lights: LightCollection):
+        """Update the representation of the picture"""
+        for location in self.light_locations:
+            light = lights.get_light_at(location)
+            light.set_color(self.scaled_image.getpixel((location.col, location.row)))
