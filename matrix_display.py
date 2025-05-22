@@ -1,10 +1,12 @@
 """Drives a Matrix Display with various display modes"""
 import time
 import pathlib
+import importlib
 import click
 import blessed
 from matrix_modes import Mode, CycleColors, ShowImage
 from matrix_common import *
+import configurations
 
 # Load LED control stuff if it is there
 baud_rate = 1000 # 800 maybe for the RPI5
@@ -73,33 +75,14 @@ class DisplayMatrix:
 @click.option('--screen', default=False, type=bool, is_flag=True, help="Whether to show the simulation on the screen")
 @click.option('--leds', default=False, type=bool, is_flag=True, help="Whether to try to control the LED matrix")
 @click.option('--interval', default=10, type=float, help="Refresh interval (s)")
-def main(screen, leds, interval):
+@click.option('--config', required=True, type=str, help="File to use for config")
+def main(screen, leds, interval, config):
     b = DisplayMatrix(GRID(16, 16), [])
-    # b.modes.append(
-    #     CycleColors(
-    #         b.lights.get_edge_coords(),
-    #         [RED, BLUE, GREEN]
-    #     )
-    # )
-    # b.modes.append(
-    #     CycleColors(
-    #         b.lights.get_ring_coords(1),
-    #         [ORANGE, YELLOW]
-    #     )
-    # )
-    # b.modes.append(
-    #     CycleColors(
-    #         b.lights.get_box_coords(COORD(3, 4), GRID(2, 4)),
-    #         [YELLOW, WHITE],
-    #         synchronized=True
-    #     )
-    # )
-    m = ShowImage(
-        b.lights.get_box_coords(COORD(0, 0), GRID(16, 16)),
-        pathlib.Path('images', 'cloudy_weather.gif'),
-        GRID(16, 16),
-    )
-    b.modes.append(m)
+
+    config = importlib.import_module(config)
+    modes = config.get_modes(b)
+    for mode in modes:
+        b.modes.append(mode)
 
     try:
         while True:
