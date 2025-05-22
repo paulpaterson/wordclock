@@ -53,10 +53,31 @@ class ShowImage(Mode):
         """Initialise the mode"""
         super().__init__(locations)
         self.original_image = PIL.Image.open(file)
-        self.scaled_image = self.original_image.resize(size)
+        self.frames: list[PIL.Image] = []
+        self.size = size
+        #
+        # Extract all the frames if there are some
+        if self.original_image.n_frames > 0:
+            for idx in range(self.original_image.n_frames):
+                self.original_image.seek(idx)
+                self.frames.append(self.get_frame_from(self.original_image))
+        else:
+            self.frames.append(self.original_image)
+
+    def get_frame_from(self, image: PIL.Image):
+        """Return a scaled and converted frame"""
+        frame = image.convert('RGB')
+        frame = frame.resize(self.size)
+        return frame
 
     def update(self, lights: LightCollection):
         """Update the representation of the picture"""
+        #
+        # Get the frame to display
+        frame = self.frames.pop(0)
+        self.frames.append(frame)
+        #
+        # Now light up the display pixels
         for location in self.light_locations:
             light = lights.get_light_at(location)
-            light.set_color(self.scaled_image.getpixel((location.col, location.row)))
+            light.set_color(frame.getpixel((location.col, location.row)))

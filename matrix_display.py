@@ -96,7 +96,7 @@ def main(screen, leds, interval):
     # )
     m = ShowImage(
         b.lights.get_box_coords(COORD(0, 0), GRID(16, 16)),
-        pathlib.Path('images', 'flower.webp'),
+        pathlib.Path('images', 'cloudy_weather.gif'),
         GRID(16, 16),
     )
     b.modes.append(m)
