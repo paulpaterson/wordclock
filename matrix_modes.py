@@ -135,6 +135,10 @@ class SandSimulation:
             3: '*',  # Yellow sand
         }
         self.empty_char = '.' # Character for empty space
+        self.probability_of_cascading = 0.02
+        self.probability_of_switching = 0.001
+        self.current_sand_type = 1
+        self.max_sand_types = 3
 
     def init_grid(self):
         """Initialise the grid"""
@@ -190,7 +194,7 @@ class SandSimulation:
                     if self.grid[r + 1][c] == 0:
                         self.grid[r + 1][c] = current_cell
                         self.grid[r][c] = 0
-                    else:
+                    elif random.random() < self.probability_of_cascading:
                         # Check diagonal left
                         can_fall_left = (c > 0 and self.grid[r + 1][c - 1] == 0)
                         # Check diagonal right
@@ -227,7 +231,12 @@ class SandSimulation:
                 if (i + current_step) % drop_interval == 0:
                     for _ in range(drop_count):
                         # Drop random sand type in a random column
-                        self.add_sand(random.randint(0, self.width - 1), random.choice(list(self.sand_types.keys())))
+                        self.add_sand(random.randint(0, self.width - 1),
+                                      self.current_sand_type)
+                        if random.random() < self.probability_of_cascading:
+                            self.current_sand_type += 1
+                            if self.current_sand_type > self.max_sand_types:
+                                self.current_sand_type = 1
 
                 self._update_sand()
         except KeyboardInterrupt:
