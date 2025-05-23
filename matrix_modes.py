@@ -101,7 +101,7 @@ class SandSim(Mode):
 
     def update(self, lights: LightCollection):
         """Update the simulation"""
-        self.sim.run_simulation(1, self.drop_interval, self.drop_count)
+        self.sim.run_simulation(1, self.iteration, self.drop_interval, self.drop_count)
         for location in self.light_locations:
             sand = self.sim.grid[location.row][location.col]
             color =  self.colors[sand]
@@ -212,7 +212,7 @@ class SandSimulation:
                             self.grid[r][c] = 0
                         # If none of the above, sand stays put (it's settled)
 
-    def run_simulation(self, steps=100, drop_interval=5, drop_count=1):
+    def run_simulation(self, steps=100, current_step=0, drop_interval=5, drop_count=1):
         """
         Runs the sand falling simulation for a specified number of steps.
 
@@ -221,11 +221,10 @@ class SandSimulation:
             drop_interval (int): How often (in steps) new sand is dropped.
             drop_count (int): How many sand particles to drop at each interval.
         """
-        print("Starting simulation... Press Ctrl+C to stop.")
         try:
             for i in range(steps):
                 # Drop new sand periodically
-                if i % drop_interval == 0:
+                if (i + current_step) % drop_interval == 0:
                     for _ in range(drop_count):
                         # Drop random sand type in a random column
                         self.add_sand(random.randint(0, self.width - 1), random.choice(list(self.sand_types.keys())))
@@ -233,7 +232,5 @@ class SandSimulation:
                 self._update_sand()
         except KeyboardInterrupt:
             print("\nSimulation stopped by user.")
-        finally:
-            print("Simulation finished.")
 
 
