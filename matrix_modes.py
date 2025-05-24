@@ -177,7 +177,7 @@ class SandSimulation:
             3: '*',  # Yellow sand
         }
         self.empty_char = '.' # Character for empty space
-        self.probability_of_cascading = 0.2
+        self.probability_of_cascading = 0.02
         self.probability_of_switching = 0.001
         self.current_sand_type = 1
         self.max_sand_types = 3
