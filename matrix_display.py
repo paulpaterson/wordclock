@@ -7,6 +7,9 @@ import blessed
 from matrix_modes import Mode, CycleColors, ShowImage
 from matrix_common import *
 import configurations
+import signal
+import sys
+
 
 # Load LED control stuff if it is there
 baud_rate = 1000 # 800 maybe for the RPI5
@@ -78,6 +81,17 @@ class DisplayMatrix:
 @click.option('--config', required=True, type=str, help="File to use for config")
 @click.argument('parameters', nargs=-1)
 def main(screen, leds, interval, config, parameters):
+    def signal_handler(sig, frame):
+        """Handle the SIGTERM from SystemD"""
+        print(f'Caught SIGTERM {sig}')
+        if b.matrix_leds:
+            print('Clearing strip')
+            b.matrix_leds.clear_strip()
+            b.matrix_leds.update_strip()
+        sys.exit(0)
+
+    signal.signal(signal.SIGTERM, signal_handler)
+
     b = DisplayMatrix(GRID(16, 16), [])
 
     config = importlib.import_module(config)
