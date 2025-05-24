@@ -13,6 +13,7 @@ def get_modes(board):
             },
             5,
             1,
-            1000
+            1000,
+            True
         )
     ]

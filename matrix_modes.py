@@ -1,5 +1,5 @@
 """Modes that control lights on the matrix"""
-
+import colorsys
 import random
 import time
 import os
@@ -90,14 +90,18 @@ class SandSim(Mode):
     """A mode that runs a sand falling simulation"""
 
     def __init__(self, locations, size: GRID, colors: dict[int, COLOR],
-                 drop_interval: int=5, drop_count: int=1, max_sim_length: int=200):
+                 drop_interval: int=5, drop_count: int=1, max_sim_length: int=200,
+                 random_at_end: bool=False):
         super().__init__(locations)
         self.sim = SandSimulation(size.cols, size.rows)
         self.iteration = 0
         self.colors = colors
-        self.drop_interval = drop_interval
-        self.drop_count = drop_count
-        self.max_sim_length = max_sim_length
+        self.drop_interval = self.initial_drop_interval = drop_interval
+        self.drop_count = self.initial_drop_count = drop_count
+        self.max_sim_length = self.initial_sim_length = max_sim_length
+        self.random_at_end = random_at_end
+        if self.random_at_end:
+            self.randomize_params()
 
     def update(self, lights: LightCollection):
         """Update the simulation"""
@@ -112,7 +116,45 @@ class SandSim(Mode):
         if self.iteration >= self.max_sim_length:
             self.sim.init_grid()
             self.iteration = 0
+            if self.random_at_end:
+                self.randomize_params()
 
+    def randomize_params(self):
+        """Randomize the parameters of the simulation"""
+        self.drop_interval = random.randrange(1, self.initial_drop_interval * 2)
+        self.max_sim_length = self.initial_sim_length * self.drop_interval / self.initial_drop_interval
+        palette = self.generate_triadic_palette()
+        self.colors[1], self.colors[2], self.colors[3] = palette
+
+    def generate_triadic_palette(self) -> list[COLOR]:
+        """
+        Generates a palette of three random triadic colors.
+        Triadic colors are three colors equally spaced on the color wheel (120 degrees apart).
+
+        Returns:
+            list of tuples: A list containing three (R, G, B) tuples,
+                            where R, G, B are integers from 0 to 255.
+        """
+        # Generate a random base RGB color
+        # We generate a random hue, saturation, and lightness to ensure variety.
+        # It's generally better to generate random HSL and convert to RGB for color generation,
+        # as random RGB values can often result in dull or desaturated colors.
+        h = random.random()  # Hue (0.0 to 1.0)
+        s = random.uniform(0.5, 1.0) # Saturation (avoiding very dull colors)
+        l = random.uniform(0.4, 0.7) # Lightness (avoiding very dark or very bright colors)
+
+        # Convert the base HSL to RGB
+        r1, g1, b1 = [int(x * 255) for x in colorsys.hls_to_rgb(h, l, s)]
+
+        # Calculate the other two hues for a triadic scheme (120 and 240 degrees apart)
+        h2 = (h + 1/3) % 1.0 # Add 120 degrees (1/3 of the color wheel)
+        h3 = (h + 2/3) % 1.0 # Add 240 degrees (2/3 of the color wheel)
+
+        # Convert the new HSL values to RGB
+        r2, g2, b2 = [int(x * 255) for x in colorsys.hls_to_rgb(h2, l, s)]
+        r3, g3, b3 = [int(x * 255) for x in colorsys.hls_to_rgb(h3, l, s)]
+
+        return [COLOR(r1, g1, b1), COLOR(r2, g2, b2), COLOR(r3, g3, b3)]
 
 class SandSimulation:
     def __init__(self, width=16, height=16):
@@ -135,7 +177,7 @@ class SandSimulation:
             3: '*',  # Yellow sand
         }
         self.empty_char = '.' # Character for empty space
-        self.probability_of_cascading = 0.02
+        self.probability_of_cascading = 0.2
         self.probability_of_switching = 0.001
         self.current_sand_type = 1
         self.max_sand_types = 3
