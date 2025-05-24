@@ -1,5 +1,4 @@
-cd /home/paul/Workspace/wordclock
+#!/bin/bash
 
 source .env/bin/activate
-
-python matrix_display.py --screen --interval 0.1  --config configurations.sand_sim
+python matrix_display.py --leds --interval 0.2  --config configurations.sand_sim

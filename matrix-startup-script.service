@@ -15,7 +15,8 @@ Restart=on-failure
 User=paul
 # User to run the script as (e.g., pi, root)
 #Group=yourgroup      # Optional: Group to run the script as
-#WorkingDirectory=/path/to/script/  # Optional: useful if script uses relative paths
+WorkingDirectory=/home/paul/Workspace/wordclock  
+# Optional: useful if script uses relative paths
 
 [Install]
 WantedBy=multi-user.target
