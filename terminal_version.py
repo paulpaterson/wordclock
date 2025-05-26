@@ -2,16 +2,18 @@ import random
 import signal
 import sys
 import os
+import datetime
 
 import blessed
 import blessed.sequences
-import datetime
 import timesayer
 import click
 import mocklights
 import faces
 import modes
 
+
+RUN_MODES = ['NORMAL', 'CALCSIZE', 'SHOWLETTERS']
 
 class Board:
     """Represents of the words arranged in a board"""
@@ -193,7 +195,7 @@ class Board:
 @click.option('--interval', type=float, default=10, help='Time between updates in seconds')
 @click.option('--simulation-update', default=0, help='Number of minutes to advance per interval')
 @click.option('--face-mode', type=click.Choice(list(faces.get_valid_faces())), required=True, help='Select which face mode')
-@click.option('--calc-size', default=False, is_flag=True, help='Just calculate the size')
+@click.option('--run-mode', default=RUN_MODES[0], type=click.Choice(RUN_MODES), help='Mode for running this command line')
 @click.option('--show-it-is', default=False, is_flag=True, help='Whether to show "it is" wording')
 @click.option('--light-mode', type=click.Choice(['off', 'simulate', 'real', 'detect']), default='off',
               help='Set how to handle lights')
@@ -208,7 +210,7 @@ class Board:
 @click.option('--mode', type=click.Choice(modes.get_valid_modes()),
               multiple=True, default=['Normal'], help='Select which display modes to use, can have multiple')
 @click.option('--mode-parameters', type=str, multiple=True, default=[], help='Parameters for the display mode')
-def main(offset, time, interval, simulation_update, face_mode, calc_size, show_it_is, light_mode, light_color,
+def main(offset, time, interval, simulation_update, face_mode, run_mode, show_it_is, light_mode, light_color,
          replace_blanks, blank_character, edge_character, array_format, baud_rate, show_a, mode, mode_parameters):
 
     term = blessed.Terminal()
@@ -257,7 +259,7 @@ def main(offset, time, interval, simulation_update, face_mode, calc_size, show_i
 
     signal.signal(signal.SIGTERM, signal_handler)
 
-    if calc_size:
+    if run_mode == 'CALCSIZE':
         print('\nCalculation of board size ...\n')
         print(f'Board rows = {len(b.rows)}')
         print(f'Lights = {b.total_lights}')
@@ -271,6 +273,18 @@ def main(offset, time, interval, simulation_update, face_mode, calc_size, show_i
             for idx in range(1, len(lines)):
                 lines[idx] = edge_character + lines[idx][1:-1] + edge_character
             print('\n'.join([f'"{line}",' for line in lines]))
+    elif run_mode == 'SHOWLETTERS':
+        missing = []
+        for letter in 'abcdefghijklmnopqrstuvwxyz0123456789':
+            found = False
+            for row in b.rows:
+                for item in row:
+                    if letter in item.word:
+                        found = True
+            if not found:
+                missing.append(letter)
+        #
+        print(f'The following letters are missing: "{missing}\n')
     else:
         last_config_time = os.path.getmtime('config.sh')
         while True:
