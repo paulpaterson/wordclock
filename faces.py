@@ -232,9 +232,9 @@ new_square_words = [
 
     Unused('s'),
     Word('It', True),
-    Unused('l'),
+    Unused('0'),
     Word('is', True),
-    Unused('y'),
+    Unused('1'),
     Word('AM'),
     Word('a'),
     Word('PM'),
@@ -244,8 +244,8 @@ new_square_words = [
     Unused('xx'),
 
     Word('quarter'),
-    Unused('yac'),
-    Unused('dc'),
+    Unused('y2c'),
+    Unused('d3'),
 
     Unused('xx'),
     NewLine,
@@ -261,9 +261,9 @@ new_square_words = [
     Unused('xx'),
 
     Word('half'),
-    Unused('sy'),
+    Unused('s4'),
     Word('ten'),
-    Unused('f'),
+    Unused('5'),
     Word('to'),
 
     Unused('xx'),
@@ -271,7 +271,7 @@ new_square_words = [
     Unused('xx'),
 
     Word('past'),
-    Unused('eruy'),
+    Unused('ejuy'),
     Word('nine'),
 
     Unused('xx'),
@@ -280,7 +280,7 @@ new_square_words = [
 
     Word('one'),
     Word('six'),
-    Unused('y'),
+    Unused('6'),
     Word('three'),
 
     Unused('xx'),
@@ -289,7 +289,7 @@ new_square_words = [
 
     Word('four'),
     Word('five'),
-    Unused('y'),
+    Unused('7'),
     Word('two'),
 
     Unused('xx'),
@@ -297,7 +297,7 @@ new_square_words = [
     Unused('xx'),
 
     Word('eight'),
-    Unused('y'),
+    Unused('8'),
     Word('eleven'),
 
     Unused('xx'),
@@ -305,7 +305,7 @@ new_square_words = [
     Unused('xx'),
 
     Word('seven'),
-    Unused('y'),
+    Unused('z'),
     Word('twelve'),
 
     Unused('xx'),
@@ -313,9 +313,9 @@ new_square_words = [
     Unused('xx'),
 
     Word('ten'),
-    Unused('sy'),
+    Unused('9m'),
     Word('oclock', True),
-    Unused('X'),
+    Unused('b'),
 
     Unused('xx'),
     NewLine,
