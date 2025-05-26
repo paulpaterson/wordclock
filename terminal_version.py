@@ -284,7 +284,7 @@ def main(offset, time, interval, simulation_update, face_mode, run_mode, show_it
             if not found:
                 missing.append(letter)
         #
-        print(f'The following letters are missing: "{missing}\n')
+        print(f'The following {len(missing)} letters are missing: {", ".join(missing)}\n')
     else:
         last_config_time = os.path.getmtime('config.sh')
         while True:
