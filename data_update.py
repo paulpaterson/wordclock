@@ -10,6 +10,7 @@ import click
 import pprint
 import datetime
 import signal
+import paramiko
 
 
 async def get_pool_data(store):
@@ -63,14 +64,40 @@ def get_weather_forecast(store, hours):
     store['forecast'] = look_ahead[:hours]
 
 
+def get_home_assistant(store):
+    """Return data from home assistant"""
+    client = paramiko.SSHClient()
+    client.load_system_host_keys() # Load known hosts from your system
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    #key = paramiko.RSAKey.("/Users/paul/.ssh/id_ed25519")# Auto add new hosts (be cautious in production)
+    client.connect(
+        hostname='homeassistant.local',
+        port=22,
+        username='paul',
+        timeout=10
+    )
+    stdin, stdout, stderr = client.exec_command('cat /config/my_logs/data.txt')
+    result = stdout.read()
+    e = stderr.read()
+    #print(str(result))
+    #print(str(e))
+    lines = result.splitlines()
+    last_line = lines[-1]
+    data = json.loads(last_line)
+    #print(data)
+    store['water'] = data["Water"]
+    store['air'] = data["Air"]
+
+
 @click.command()
 @click.option('--interval', type=int, default=5, help='How often to run (seconds)')
 @click.option('--pool', is_flag=True, default=False, help='Whether to get pool information')
 @click.option('--weather', is_flag=True, default=False, help='Whether to get weather information')
+@click.option('--homeassistant', is_flag=True, default=False, help='Whether to get data from home assistant')
 @click.option('--debug', is_flag=True, default=False, help='Drop into debug mode when complete')
 @click.option('--iterations', type=int, default=-1, help='How many times to run')
 @click.option('--forecast', type=int, default=16, help='How many hours of forecast to look ahead')
-def main(interval, pool, weather, debug, iterations, forecast):
+def main(interval, pool, weather, homeassistant, debug, iterations, forecast):
     store = {}
     try:
         while iterations:
@@ -79,6 +106,8 @@ def main(interval, pool, weather, debug, iterations, forecast):
                 asyncio.run(get_pool_data(store))
             if weather:
                 get_weather_forecast(store, forecast)
+            if homeassistant:
+                get_home_assistant(store)
 
             pprint.pprint(store)
             with open('local_data.json', 'w') as f:
