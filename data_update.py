@@ -87,6 +87,7 @@ def get_home_assistant(store):
     #print(data)
     store['water'] = data["Water"]
     store['air'] = data["Air"]
+    client.close()
 
 
 @click.command()
