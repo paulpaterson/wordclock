@@ -83,10 +83,18 @@ def get_home_assistant(store):
     #print(str(e))
     lines = result.splitlines()
     last_line = lines[-1]
-    data = json.loads(last_line)
+    last_line = last_line.replace(b'True', b'true').replace(b'False', b'false')
+    try:
+        data = json.loads(last_line)
+    except json.JSONDecodeError as err:
+        print(f'Error decoding JSON from "{last_line}"')
+        print(err)
+        raise
     #print(data)
     store['water'] = data["Water"]
     store['air'] = data["Air"]
+    store['upstairs-cooling'] = data["Upstairs-Cooling"]
+    store['downstairs-cooling'] = data["Downstairs-Cooling"]
     client.close()
 
 
@@ -118,6 +126,8 @@ def main(interval, pool, weather, homeassistant, debug, iterations, forecast):
                     'air-temp': int(store.get('air', -1)),
                     'garage-open': False,
                     'ac-down-auto': True,
+                    'ac-down-cool': store.get('downstairs-cooling', False),
+                    'ac-up-cool': store.get('upstairs-cooling', False),
                     'ac-up-auto': True,
                     'forecast': store.get('forecast', [])
                 }
