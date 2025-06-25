@@ -323,6 +323,7 @@ class Updater:
         self.last_key_press = time.time()
         self.button_reset_interval = 5
         self.button_mins_interval = 0.5
+        self.button_click = 0
 
     def update(self):
         last_config_time = os.path.getmtime('config.sh')
@@ -358,6 +359,7 @@ class Updater:
         """Reset back to normal mode"""
         self.mode = UpdateModes.NORMAL
         self.board.modes = self.old_modes
+        self.button_click = 0
         if self.config_mode.on:
             # If it was on then turn it off to clear the config display
             self.config_mode.color = (0, 0, 0)
@@ -369,7 +371,8 @@ class Updater:
         if self.mode == UpdateModes.NORMAL:
             self.mode = UpdateModes.CONFIG_HOURS
             self.board.modes = self.config_modes
-        elif self.mode == UpdateModes.CONFIG_HOURS and time.time() - self.last_key_press < self.button_mins_interval:
+            self.button_click = 0
+        elif self.mode == UpdateModes.CONFIG_HOURS and time.time() - self.last_key_press < self.button_mins_interval and self.button_click == 0:
             self.mode = UpdateModes.CONFIG_MINS
             self.config_mode.color = (255, 255, 0)
         else:
@@ -377,6 +380,7 @@ class Updater:
                 self.current_offset += datetime.timedelta(hours=1)
             else:
                 self.current_offset += datetime.timedelta(minutes=5)
+            self.button_click += 1
         self.last_key_press = time.time()
 
 
