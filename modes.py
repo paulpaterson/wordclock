@@ -89,10 +89,12 @@ class EdgeLightGW(EdgeLightColor):
 class TestEdge(Mode):
     """Test all the edge lights"""
 
+    color = (255, 255, 255)
+    toggle = True
+
     def __init__(self, parameters):
         super().__init__(parameters)
         self.on = True
-        self.color = (255, 255, 255)
 
     def update(self, board):
         """Update the edge lights"""
@@ -106,14 +108,14 @@ class TestEdge(Mode):
                 board.edge_lights[(0, col)] = self.color
                 board.edge_lights[(rows - 1, col)] = self.color
 
-        self.on = not self.on
+        if self.toggle:
+            self.on = not self.on
 
 class ConfigMode(TestEdge):
     """Shows the phone in config mode"""
 
-    def __init__(self, parameters):
-        super().__init__(parameters)
-        self.color = (255, 0, 0)
+    color = (255, 0, 0)
+    toggle = False
 
 
 class TestWords(Mode):

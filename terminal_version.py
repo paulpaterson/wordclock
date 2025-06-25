@@ -317,7 +317,7 @@ class Updater:
         self.config_modes = [self.config_mode, modes.Normal(None)]
         self.last_key_press = time.time()
         self.button_reset_interval = 5
-        self.button_mins_interval = 0.2
+        self.button_mins_interval = 0.5
 
     def update(self):
         last_config_time = os.path.getmtime('config.sh')
@@ -364,13 +364,9 @@ class Updater:
         if self.mode == UpdateModes.NORMAL:
             self.mode = UpdateModes.CONFIG_HOURS
             self.board.modes = self.config_modes
-        elif time.time() - self.last_key_press < self.button_mins_interval:
-            if self.mode == UpdateModes.CONFIG_HOURS:
-                self.mode = UpdateModes.CONFIG_MINS
-                self.config_mode.color = (255, 255, 0)
-            else:
-                self.mode = UpdateModes.CONFIG_HOURS
-                self.config_mode.color = (255, 0, 0)
+        elif self.mode == UpdateModes.CONFIG_HOURS and time.time() - self.last_key_press < self.button_mins_interval:
+            self.mode = UpdateModes.CONFIG_MINS
+            self.config_mode.color = (255, 255, 0)
         else:
             if self.mode == UpdateModes.CONFIG_HOURS:
                 self.current_offset += datetime.timedelta(hours=1)
