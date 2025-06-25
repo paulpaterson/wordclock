@@ -152,6 +152,7 @@ class Board:
         for row in self.rows:
             for word in row:
                 word.clear()
+        self.edge_lights = {}
 
     def get_all_words(self):
         words = []
@@ -322,9 +323,13 @@ class Updater:
             try:
                 t = datetime.datetime.now()
                 self.board.time = t + self.current_offset
-
+                #
                 logs = self.board.update_board()
-                self.board.show_board(logs)
+                if self.mode == UpdateModes.CONFIG and time.time() - self.last_key_press > self.button_reset_interval:
+                    self.reset_config()
+                else:
+                    self.board.show_board(logs)
+                #
                 with self.term.cbreak():
                     if pressed := self.term.inkey(timeout=self.interval):
                         if pressed == self.button_key:
@@ -332,8 +337,6 @@ class Updater:
                         else:
                             break
                 self.current_offset += self.simulation_offset
-                if time.time() - self.last_key_press > self.button_reset_interval:
-                    self.reset_config()
             except KeyboardInterrupt:
                 print('CTRL-C detected')
                 break
