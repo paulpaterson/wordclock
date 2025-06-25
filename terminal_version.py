@@ -1,8 +1,10 @@
+import enum
 import random
 import signal
 import sys
 import os
 import datetime
+import time
 
 import blessed
 import blessed.sequences
@@ -34,7 +36,7 @@ class Board:
         self.replace_blanks = replace_blanks
         self.show_a = show_a
         self.edge_lights = {}
-        self.modes = display or [modes.Normal()]
+        self.modes = display or [modes.Normal(None)]
 
     def add_word(self, word):
         if word.word and word.word[0] == 'x':
@@ -290,10 +292,17 @@ def main(offset, time, interval, simulation_update, face_mode, run_mode, show_it
         updater = Updater(b, current_offset, term, interval, simulation_offset, lights, button_key)
         updater.update()
 
+
+class UpdateModes(enum.Enum):
+    NORMAL = 'normal'
+    CONFIG = 'config'
+
+
 class Updater:
     """A class to manage updating the clcck"""
     
     def __init__(self, board, current_offset, term, interval, simulation_offset, lights, button_key):
+        self.mode = UpdateModes.NORMAL
         self.board = board
         self.current_offset = current_offset
         self.term = term
@@ -301,7 +310,12 @@ class Updater:
         self.simulation_offset = simulation_offset
         self.lights = lights
         self.button_key = button_key
-        
+        self.old_modes = board.modes
+        self.config_mode = modes.ConfigMode(None)
+        self.config_modes = [self.config_mode, modes.Normal(None)]
+        self.last_key_press = time.time()
+        self.button_reset_interval = 5
+
     def update(self):
         last_config_time = os.path.getmtime('config.sh')
         while True:
@@ -314,10 +328,12 @@ class Updater:
                 with self.term.cbreak():
                     if pressed := self.term.inkey(timeout=self.interval):
                         if pressed == self.button_key:
-                            print('Pressed the button')
+                            self.button_up()
                         else:
                             break
                 self.current_offset += self.simulation_offset
+                if time.time() - self.last_key_press > self.button_reset_interval:
+                    self.reset_config()
             except KeyboardInterrupt:
                 print('CTRL-C detected')
                 break
@@ -328,6 +344,24 @@ class Updater:
             self.board.lights.clear_strip()
             self.board.lights.update_strip()
 
+    def reset_config(self):
+        """Reset back to normal mode"""
+        self.mode = UpdateModes.NORMAL
+        self.board.modes = self.old_modes
+        if self.config_mode.on:
+            # If it was on then turn it off to clear the config display
+            self.config_mode.color = (0, 0, 0)
+            self.config_mode.update(self.board)
+            self.config_mode.color = (255, 0, 0)
+
+    def button_up(self):
+        """The button was released"""
+        self.last_key_press = time.time()
+        if self.mode == UpdateModes.NORMAL:
+            self.mode = UpdateModes.CONFIG
+            self.board.modes = self.config_modes
+        else:
+            self.current_offset += datetime.timedelta(hours=1)
 
 def hex_to_rgb(hex_color):
     """

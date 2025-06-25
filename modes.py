@@ -113,7 +113,7 @@ class ConfigMode(TestEdge):
 
     def __init__(self, parameters):
         super().__init__(parameters)
-        self.color = (255, 255, 255)
+        self.color = (255, 0, 0)
 
 
 class TestWords(Mode):
