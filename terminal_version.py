@@ -37,6 +37,7 @@ class Board:
         self.show_a = show_a
         self.edge_lights = {}
         self.modes = display or [modes.Normal(None)]
+        self.show_board_on_terminal = True
 
     def add_word(self, word):
         if word.word and word.word[0] == 'x':
@@ -97,9 +98,11 @@ class Board:
     def show_board(self, logs):
         print(self.term.home + self.term.clear)
         text_lines = self.get_board_text(terminal_mode=self.lights is None)
-        print('\n'.join(text_lines))
-        print('\n'.join(self.get_outer_edge()))
-        print()
+        if self.show_board_on_terminal:
+            print('\n'.join(text_lines))
+            print('\n'.join(self.get_outer_edge()))
+            print()
+        #
         print(self.term.green(f"Time = {self.time.strftime('%H:%M')}, {timesayer.convert_to_text(self.time, show_a=self.show_a)}"))
         print(self.term.green(f'Board {self.get_dimensions()}'))
         #
@@ -250,6 +253,8 @@ def main(offset, time, interval, simulation_update, face_mode, run_mode, show_it
               edge_character=edge_character,
               show_a=show_a, display=display_modes
     )
+    if light_mode == 'detect' and lights:
+        b.show_board_on_terminal = False
 
     b.add_words(faces.faces[face_mode])
 
