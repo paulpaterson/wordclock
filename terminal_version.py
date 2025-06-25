@@ -206,12 +206,13 @@ class Board:
 @click.option('--edge-character', type=str, default='■', help='Character to use for the edge')
 @click.option('--array-format', default=False, is_flag=True, help='When showing grid format it as python array')
 @click.option('--baud-rate', default=800, type=int, help='Baud rate for SPI communication')
+@click.option('--button-key', default='b', type=str, help='Keyboard key to use to simulate the hardware button')
 @click.option('--show-a', default=False, is_flag=True, help='Whether to show "a" in "a quarter to ..."')
 @click.option('--mode', type=click.Choice(modes.get_valid_modes()),
               multiple=True, default=['Normal'], help='Select which display modes to use, can have multiple')
 @click.option('--mode-parameters', type=str, multiple=True, default=[], help='Parameters for the display mode')
 def main(offset, time, interval, simulation_update, face_mode, run_mode, show_it_is, light_mode, light_color,
-         replace_blanks, blank_character, edge_character, array_format, baud_rate, show_a, mode, mode_parameters):
+         replace_blanks, blank_character, edge_character, array_format, button_key, baud_rate, show_a, mode, mode_parameters):
 
     term = blessed.Terminal()
     if time:
@@ -286,26 +287,46 @@ def main(offset, time, interval, simulation_update, face_mode, run_mode, show_it
         #
         print(f'The following {len(missing)} letters are missing: {", ".join(missing)}\n')
     else:
+        updater = Updater(b, current_offset, term, interval, simulation_offset, lights, button_key)
+        updater.update()
+
+class Updater:
+    """A class to manage updating the clcck"""
+    
+    def __init__(self, board, current_offset, term, interval, simulation_offset, lights, button_key):
+        self.board = board
+        self.current_offset = current_offset
+        self.term = term
+        self.interval = interval
+        self.simulation_offset = simulation_offset
+        self.lights = lights
+        self.button_key = button_key
+        
+    def update(self):
         last_config_time = os.path.getmtime('config.sh')
         while True:
             try:
                 t = datetime.datetime.now()
-                b.time = t + current_offset
+                self.board.time = t + self.current_offset
 
-                logs = b.update_board()
-                b.show_board(logs)
-                if term.inkey(timeout=interval):
-                    break
-                current_offset += simulation_offset
+                logs = self.board.update_board()
+                self.board.show_board(logs)
+                with self.term.cbreak():
+                    if pressed := self.term.inkey(timeout=self.interval):
+                        if pressed == self.button_key:
+                            print('Pressed the button')
+                        else:
+                            break
+                self.current_offset += self.simulation_offset
             except KeyboardInterrupt:
                 print('CTRL-C detected')
                 break
             if os.path.getmtime('config.sh') != last_config_time:
                 sys.exit(2)
 
-        if lights:
-            b.lights.clear_strip()
-            b.lights.update_strip()
+        if self.lights:
+            self.board.lights.clear_strip()
+            self.board.lights.update_strip()
 
 
 def hex_to_rgb(hex_color):
