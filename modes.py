@@ -108,6 +108,13 @@ class TestEdge(Mode):
 
         self.on = not self.on
 
+class ConfigMode(TestEdge):
+    """Shows the phone in config mode"""
+
+    def __init__(self, parameters):
+        super().__init__(parameters)
+        self.color = (255, 255, 255)
+
 
 class TestWords(Mode):
     """Test all the words lighting up"""
@@ -277,6 +284,7 @@ modes = {
     'EdgeLightRWB': EdgeLightRWB,
     'EdgeLightGW': EdgeLightGW,
     'EdgeLightCustom': EdgeLightCustom,
+    'Config': ConfigMode,
 }
 
 def get_valid_modes():
