@@ -14,7 +14,7 @@ i = 0
 #    time.sleep(0.1)
 #    i += 1
 
-b = gpiozero.Button(2)
+b = gpiozero.Button(27)
 print('Waiting for the button to be pressed')
 #b.wait_for_press()
 #print('The button was pressed')

@@ -217,8 +217,9 @@ class Board:
 @click.option('--mode', type=click.Choice(modes.get_valid_modes()),
               multiple=True, default=['Normal'], help='Select which display modes to use, can have multiple')
 @click.option('--mode-parameters', type=str, multiple=True, default=[], help='Parameters for the display mode')
+@click.option('--button-pin', type=int, default=-1, help='GPIO Pin where button is. Set to -1 for no button (default)')
 def main(offset, time, interval, simulation_update, face_mode, run_mode, show_it_is, light_mode, light_color,
-         replace_blanks, blank_character, edge_character, array_format, button_key, baud_rate, show_a, mode, mode_parameters):
+         replace_blanks, blank_character, edge_character, array_format, button_key, baud_rate, show_a, mode, mode_parameters, button_pin):
 
     term = blessed.Terminal()
     if time:
@@ -296,6 +297,12 @@ def main(offset, time, interval, simulation_update, face_mode, run_mode, show_it
         print(f'The following {len(missing)} letters are missing: {", ".join(missing)}\n')
     else:
         updater = Updater(b, current_offset, term, interval, simulation_offset, lights, button_key)
+
+        if button_pin != -1:
+            import gpiozero
+            button = gpiozero.Button(button_pin)
+            button.when_pressed = updater.button_up
+
         updater.update()
 
 
