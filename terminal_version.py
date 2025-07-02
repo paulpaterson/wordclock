@@ -286,7 +286,7 @@ def main(offset, time, interval, simulation_update, face_mode, run_mode, show_it
             lines[0] = edge_character * len(lines[0])
             lines[-1] = edge_character * len(lines[-1])
             for idx in range(1, len(lines)):
-                lines[idx] = edge_character + lines[idx][1:-1] + edge_character
+                lines[idx] = edge_character + lines[idx] + edge_character
             print('\n'.join([f'"{line}",' for line in lines]))
     elif run_mode == 'SHOWLETTERS':
         missing = []
