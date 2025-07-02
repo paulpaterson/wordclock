@@ -220,10 +220,11 @@ class Board:
               multiple=True, default=['Normal'], help='Select which display modes to use, can have multiple')
 @click.option('--mode-parameters', type=str, multiple=True, default=[], help='Parameters for the display mode')
 @click.option('--button-pin', type=int, default=-1, help='GPIO Pin where button is. Set to -1 for no button (default)')
+@click.option('--mode-button-pin', type=int, default=-1, help='GPIO Pin where edge mode button is. Set to -1 for no button (default)')
 @click.option('--set-system-time', is_flag=True, help="Whether to set the system time when using the adjustment button")
 def main(offset, time, interval, simulation_update, face_mode, run_mode, show_it_is, light_mode, light_color,
          replace_blanks, blank_character, edge_character, array_format, button_key, mode_button_key, baud_rate, show_a, mode,
-         mode_parameters, button_pin, set_system_time):
+         mode_parameters, button_pin, mode_button_pin, set_system_time):
 
     term = blessed.Terminal()
     if time:
@@ -307,6 +308,10 @@ def main(offset, time, interval, simulation_update, face_mode, run_mode, show_it
             import gpiozero
             button = gpiozero.Button(button_pin)
             button.when_pressed = updater.button_up
+        if mode_button_pin != -1:
+            import gpiozero
+            button = gpiozero.Button(button_pin)
+            button.when_pressed = updater.next_edge_mode
 
         updater.update()
 
@@ -339,7 +344,6 @@ class Updater:
         self.button_mins_interval = 0.5
         self.button_click = 0
         self.edge_modes = [mode(None) for mode in modes.modes.values() if mode.type == modes.FaceModeType.EDGE]
-        import pdb; pdb.set_trace()
 
     def update(self):
         last_config_time = os.path.getmtime('config.sh')
