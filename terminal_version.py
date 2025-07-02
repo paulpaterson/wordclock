@@ -213,7 +213,8 @@ class Board:
 @click.option('--edge-character', type=str, default='■', help='Character to use for the edge')
 @click.option('--array-format', default=False, is_flag=True, help='When showing grid format it as python array')
 @click.option('--baud-rate', default=800, type=int, help='Baud rate for SPI communication')
-@click.option('--button-key', default='b', type=str, help='Keyboard key to use to simulate the hardware button')
+@click.option('--button-key', default='b', type=str, help='Keyboard key to use to simulate the hardware time adjust button')
+@click.option('--mode-button-key', default='m', type=str, help='Keyboard key to use to simulate the hardware mode switch button')
 @click.option('--show-a', default=False, is_flag=True, help='Whether to show "a" in "a quarter to ..."')
 @click.option('--mode', type=click.Choice(modes.get_valid_modes()),
               multiple=True, default=['Normal'], help='Select which display modes to use, can have multiple')
@@ -221,7 +222,7 @@ class Board:
 @click.option('--button-pin', type=int, default=-1, help='GPIO Pin where button is. Set to -1 for no button (default)')
 @click.option('--set-system-time', is_flag=True, help="Whether to set the system time when using the adjustment button")
 def main(offset, time, interval, simulation_update, face_mode, run_mode, show_it_is, light_mode, light_color,
-         replace_blanks, blank_character, edge_character, array_format, button_key, baud_rate, show_a, mode, 
+         replace_blanks, blank_character, edge_character, array_format, button_key, mode_button_key, baud_rate, show_a, mode,
          mode_parameters, button_pin, set_system_time):
 
     term = blessed.Terminal()
@@ -299,7 +300,8 @@ def main(offset, time, interval, simulation_update, face_mode, run_mode, show_it
         #
         print(f'The following {len(missing)} letters are missing: {", ".join(missing)}\n')
     else:
-        updater = Updater(b, current_offset, term, interval, simulation_offset, lights, button_key, set_system_time)
+        updater = Updater(b, current_offset, term, interval, simulation_offset, lights,
+                          button_key, mode_button_key, set_system_time)
 
         if button_pin != -1:
             import gpiozero
@@ -318,7 +320,7 @@ class UpdateModes(enum.Enum):
 class Updater:
     """A class to manage updating the clcck"""
 
-    def __init__(self, board, current_offset, term, interval, simulation_offset, lights, button_key, set_system_time):
+    def __init__(self, board, current_offset, term, interval, simulation_offset, lights, button_key, mode_button_key, set_system_time):
         self.mode = UpdateModes.NORMAL
         self.board = board
         self.current_offset = current_offset
@@ -327,6 +329,7 @@ class Updater:
         self.simulation_offset = simulation_offset
         self.lights = lights
         self.button_key = button_key
+        self.mode_button_key = mode_button_key
         self.set_system_time = set_system_time
         self.old_modes = board.modes
         self.config_mode = modes.ConfigMode(None)
@@ -335,6 +338,8 @@ class Updater:
         self.button_reset_interval = 5
         self.button_mins_interval = 0.5
         self.button_click = 0
+        self.edge_modes = [mode(None) for mode in modes.modes.values() if mode.type == modes.FaceModeType.EDGE]
+        import pdb; pdb.set_trace()
 
     def update(self):
         last_config_time = os.path.getmtime('config.sh')
@@ -353,6 +358,8 @@ class Updater:
                     if pressed := self.term.inkey(timeout=self.interval):
                         if pressed == self.button_key:
                             self.button_up()
+                        elif pressed == self.mode_button_key:
+                            self.next_edge_mode()
                         else:
                             break
                 self.current_offset += self.simulation_offset
@@ -365,6 +372,15 @@ class Updater:
         if self.lights:
             self.board.lights.clear_strip()
             self.board.lights.update_strip()
+
+    def next_edge_mode(self):
+        """Move to the next edge mode"""
+        if self.mode == UpdateModes.NORMAL:
+            new_mode = [modes.Normal(None)]
+            new_edge_mode = self.edge_modes.pop(0)
+            new_mode.append(new_edge_mode)
+            self.edge_modes.append(new_edge_mode)
+            self.board.modes = new_mode
 
     def reset_config(self):
         """Reset back to normal mode"""

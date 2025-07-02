@@ -1,12 +1,22 @@
 """Some modes of operation of the clock"""
 
 import datetime
+import enum
 import json
 import os
 
 
+class FaceModeType(enum.Enum):
+    FACE = 0
+    EDGE = 1
+    BOTH = 2
+    TEST = 3
+
+
 class Mode:
     """An abstract mode"""
+
+    type = FaceModeType.FACE
 
     def __init__(self, parameters):
         self.parameters = parameters
@@ -42,6 +52,8 @@ class Normal(Mode):
 class EdgeLightSeconds(Mode):
     """Show the number of seconds using the edge light"""
 
+    type = FaceModeType.EDGE
+
     def update(self, board):
         """Update the edge lights"""
 
@@ -52,6 +64,8 @@ class EdgeLightSeconds(Mode):
 
 class EdgeLightColor(Mode):
     """Set the edge lights to be red, white and blue"""
+
+    type = FaceModeType.EDGE
 
     colors = [
         (255, 0, 0),
@@ -91,6 +105,7 @@ class TestEdge(Mode):
 
     color = (255, 255, 255)
     toggle = True
+    type = FaceModeType.TEST
 
     def __init__(self, parameters):
         super().__init__(parameters)
@@ -121,6 +136,8 @@ class ConfigMode(TestEdge):
 class TestWords(Mode):
     """Test all the words lighting up"""
 
+    type = FaceModeType.TEST
+
     def __init__(self, parameters):
         super().__init__(parameters)
         self.idx = None
@@ -142,6 +159,8 @@ class TestWords(Mode):
 class FlashWords(Mode):
     """Alternately flash all the words"""
 
+    type = FaceModeType.TEST
+
     def __init__(self, parameters):
         super().__init__(parameters)
         self.on = True
@@ -162,6 +181,8 @@ class FlashWords(Mode):
 
 class EdgeLightCustom(Mode):
     """A mode of the edge lights that reads the local config file and data"""
+
+    type = FaceModeType.EDGE
 
     def __init__(self, parameters):
         super().__init__(parameters)
