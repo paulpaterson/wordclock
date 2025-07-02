@@ -310,8 +310,8 @@ def main(offset, time, interval, simulation_update, face_mode, run_mode, show_it
             button.when_pressed = updater.button_up
         if mode_button_pin != -1:
             import gpiozero
-            button = gpiozero.Button(button_pin)
-            button.when_pressed = updater.next_edge_mode
+            mode_button = gpiozero.Button(mode_button_pin)
+            mode_button.when_pressed = updater.next_edge_mode
 
         updater.update()
 
