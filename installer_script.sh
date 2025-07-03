@@ -25,6 +25,19 @@ printf "Turning on the SPI interface ..."
 sudo raspi-config nonint do_spi 0
 printf "Done!\n"
 
+# UV - needed to run Python
+
+if [ -f "/home/clock/.local/bin/uv" ]; then
+    printf "UV already found - skipping installation\n"
+else
+    printf "Installing UV to run the Python code ... this may take a while:\n"
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    printf "Done!\n"
+    printf "Copying UV so it can be used globally ... "
+    sudo ln -s /home/clock/.local/bin/uv /bin/uv
+    printf "Done!\n"
+fi
+
 
 
 
