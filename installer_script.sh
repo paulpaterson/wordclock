@@ -3,7 +3,7 @@
 # This script is used to configure the Raspberry PI machine to be able to run the software
 # Run it *once* before running the software
 
-set -e
+#set -e
 
 # BOOT Behaviour
 
@@ -24,6 +24,9 @@ printf "`ip -4 a show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}'`\n"
 printf "Turning on the SPI interface ..."
 sudo raspi-config nonint do_spi 0
 printf "Done!\n"
+printf "Fixing SPI buffer size ..."
+sudo cp spidev.conf /etc/modprobe.d/spidev.conf
+printf "Done!\n"
 
 # UV - needed to run Python
 
@@ -39,5 +42,16 @@ else
 fi
 
 
+# Get the right version of Python on the machine
+
+printf "Installing the required python version ... takes a while\n"
+uv python install 3.11
+printf "\nDone!\n"
+
+# Sync the environment for UV
+
+printf "Syncing UV environment ... this may take a while:\b"
+uv sync
+printf "Done!\n"
 
 

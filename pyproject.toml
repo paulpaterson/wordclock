@@ -3,7 +3,7 @@ name = "wordclock"
 version = "0.1.0"
 description = "Module to allow control of a clock that shows the time in words"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.11"
 dependencies = [
     "aiohttp>=3.12.13",
     "blessed>=1.21.0",
