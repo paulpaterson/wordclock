@@ -1,0 +1,12 @@
+[project]
+name = "wordclock"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "blessed>=1.21.0",
+    "click>=8.2.1",
+    "gpiozero>=2.0.1",
+    "lgpio>=0.2.2.0; sys_platform == 'linux'",
+]
