@@ -8,14 +8,15 @@ After=network.target
 [Service]
 Type=simple          
 # Type of service (simple, exec, forking, etc.)
-ExecStart=/home/paul/Workspace/wordclock/clock_start.sh  
+ExecStart=/home/clock/wordclock/clock_start.sh  
 # Path to your script
 Restart=on-failure   
 # Restart policy (no, on-failure, always, etc.)
 User=paul     
 # User to run the script as (e.g., pi, root)
 #Group=yourgroup      # Optional: Group to run the script as
-#WorkingDirectory=/path/to/script/  # Optional: useful if script uses relative paths
+WorkingDirectory=/home/clock/wordclock  
+# Optional: useful if script uses relative paths
 
 [Install]
 WantedBy=multi-user.target  

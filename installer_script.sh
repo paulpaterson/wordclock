@@ -12,7 +12,7 @@
 # installer_script      -> default
 # installer_script test -> test
 
-if [ $1 == "test" ]; then
+if [ "$1" == "test" ]; then
   printf "Configuring as a test machine\n"
   TEST=1
 else
@@ -91,15 +91,45 @@ printf "\nDone!\n"
 printf "Syncing UV environment ... this may take a while:\b"
 uv sync
 printf "Done!\n"
+if [ $TEST -eq 0 ]; then
+  printf "Installing hardware specific python packages ... "
+  uv sync --group hardware
+  printf "Done!\n"
+else
+  printf "Test hardware - Skipping hardware specific python packages\n"
+fi
 
 # SystemD services to run the clock
-printf "Copying the systemd services ... "
-sudo ln -s /home/clock/wordclock/clock-startup-script.service /etc/systemd/system/clock-startup-script.service
-sudo ln -s /home/clock/wordclock/clock-ui-script.service /etc/systemd/system/clock-ui-script.service
-printf "Done!\n"
+
+printf "Copying the systemd clock service ... "
+if [ -f "/etc/systemd/system/clock-startup-script.service" ]; then
+  printf "Clock startup already there - skipping\n"
+else
+  sudo ln -s /home/clock/wordclock/clock-startup-script.service /etc/systemd/system/clock-startup-script.service
+  printf "Done!\n"
+fi
+printf "Copying the systemd UI service ... "
+if [ -f "/etc/systemd/system/clock-ui-script.service" ]; then
+  printf "UI script already there - skipping\n"
+else
+  sudo ln -s /home/clock/wordclock/clock-ui-script.service /etc/systemd/system/clock-ui-script.service
+  printf "Done!\n"
+fi
 printf "Enabling the systemd services ... "
 sudo systemctl enable clock-startup-script.service
 sudo systemctl enable clock-ui-script.service
 printf "Done!\n"
+
+# Local configuration
+
+if [ $TEST -eq 0 ]; then
+  printf "Creating local config as hardware clock ... "
+  printf "# Actual hardware settings\nexport CLOCK_BUTTON_PIN=27\nexport CLOCK_MODE_BUTTON_PIN=25\n" > local_config.sh
+  printf "Done!\n"
+else
+ printf "Creating local config as simulated clock ... "
+ printf "# Simulated hardware - no settings\n" > local_config.sh
+ printf "Done!\n"
+fi
 
 
