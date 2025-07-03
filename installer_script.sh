@@ -71,4 +71,14 @@ printf "Syncing UV environment ... this may take a while:\b"
 uv sync
 printf "Done!\n"
 
+# SystemD services to run the clock
+printf "Copying the systemd services ... "
+sudo ln -s /home/clock/wordclock/clock-startup-script.service /etc/systemd/system/clock-startup-script.service
+sudo ln -s /home/clock/wordclock/clock-ui-script.service /etc/systemd/system/clock-ui-script.service
+printf "Done!\n"
+printf "Enabling the systemd services ... "
+sudo systemctl enable clock-startup-script.service
+sudo systemctl enable clock-ui-script.service
+printf "Done!\n"
+
 
