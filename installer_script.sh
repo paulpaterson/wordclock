@@ -5,6 +5,22 @@
 
 #set -e
 
+# Check installation type
+#   - default = hardware machine
+#   - test    = test or virtual machine, which does not have all the relevant hardware attached
+#
+# installer_script      -> default
+# installer_script test -> test
+
+if [ $1 == "test" ]; then
+  printf "Configuring as a test machine\n"
+  TEST=1
+else
+  printf "Configuring as a full hardware implementation\n"
+  TEST=0
+fi
+
+
 # BOOT Behaviour
 
 printf "Setting machine to boot to command line ... "
@@ -21,9 +37,14 @@ printf "`ip -4 a show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}'`\n"
 
 # SPI Interface - needed for the matrix control
 
-printf "Turning on the SPI interface ..."
-sudo raspi-config nonint do_spi 0
-printf "Done!\n"
+if [ $TEST -eq 0 ]; then
+  printf "Turning on the SPI interface ..."
+  sudo raspi-config nonint do_spi 0
+  printf "Done!\n"
+else
+  printf "Test hardware - Skipping turning on SPI interface\n"
+fi
+
 printf "Fixing SPI buffer size ..."
 sudo cp spidev.conf /etc/modprobe.d/spidev.conf
 printf "Done!\n"

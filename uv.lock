@@ -585,6 +585,10 @@ dependencies = [
     { name = "blessed" },
     { name = "click" },
     { name = "flask" },
+]
+
+[package.optional-dependencies]
+hardware-present = [
     { name = "gpiozero" },
     { name = "lgpio", marker = "sys_platform == 'linux'" },
     { name = "pi5neo", marker = "sys_platform == 'linux'" },
@@ -596,10 +600,11 @@ requires-dist = [
     { name = "blessed", specifier = ">=1.21.0" },
     { name = "click", specifier = ">=8.2.1" },
     { name = "flask", specifier = ">=3.1.1" },
-    { name = "gpiozero", specifier = ">=2.0.1" },
-    { name = "lgpio", marker = "sys_platform == 'linux'", specifier = ">=0.2.2.0" },
-    { name = "pi5neo", marker = "sys_platform == 'linux'", specifier = ">=1.0.6" },
+    { name = "gpiozero", marker = "extra == 'hardware-present'", specifier = ">=2.0.1" },
+    { name = "lgpio", marker = "sys_platform == 'linux' and extra == 'hardware-present'", specifier = ">=0.2.2.0" },
+    { name = "pi5neo", marker = "sys_platform == 'linux' and extra == 'hardware-present'", specifier = ">=1.0.6" },
 ]
+provides-extras = ["hardware-present"]
 
 [[package]]
 name = "yarl"
