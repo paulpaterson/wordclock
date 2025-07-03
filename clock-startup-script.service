@@ -12,7 +12,7 @@ ExecStart=/home/clock/wordclock/clock_start.sh
 # Path to your script
 Restart=on-failure   
 # Restart policy (no, on-failure, always, etc.)
-User=paul     
+User=clock
 # User to run the script as (e.g., pi, root)
 #Group=yourgroup      # Optional: Group to run the script as
 WorkingDirectory=/home/clock/wordclock  
