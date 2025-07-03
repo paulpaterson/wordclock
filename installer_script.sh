@@ -28,6 +28,23 @@ printf "Fixing SPI buffer size ..."
 sudo cp spidev.conf /etc/modprobe.d/spidev.conf
 printf "Done!\n"
 
+# Enabling the real time clock
+
+printf "Enabling Real Time Clock module ... "
+# Check location of config 
+if [ -d "/etc/boot/firmware" ]; then
+  config_file="/boot/firmware/config.txt"
+else
+  config_file="/boot/config.txt"
+fi
+sudo sed -i "1i# Real Time Clock\ndtoverlay=i2c-rtc,ds3231" $config_file
+printf "Done!\n"
+printf "Setting the time for the Real Time Clock ... "
+sudo hwclock -w
+printf "Done!\n"
+
+
+
 # UV - needed to run Python
 
 if [ -f "/home/clock/.local/bin/uv" ]; then
