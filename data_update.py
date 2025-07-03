@@ -69,7 +69,6 @@ def get_home_assistant(store):
     client = paramiko.SSHClient()
     client.load_system_host_keys() # Load known hosts from your system
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    #key = paramiko.RSAKey.("/Users/paul/.ssh/id_ed25519")# Auto add new hosts (be cautious in production)
     client.connect(
         hostname='homeassistant.local',
         port=22,
