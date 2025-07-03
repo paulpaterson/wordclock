@@ -468,6 +468,12 @@ wheels = [
 ]
 
 [[package]]
+name = "prod"
+version = "0.7"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/ec/77/aa01067c564b042e148463b88de57288ba88df9375307fd19f16762a189e/prod-0.7.tar.gz", hash = "sha256:24dc26180f655ca317f1dbee640be210d5b201e004e91a651223606a6c88ed53", size = 986, upload-time = "2017-08-20T15:21:38.457Z" }
+
+[[package]]
 name = "propcache"
 version = "0.3.2"
 source = { registry = "https://pypi.org/simple" }
@@ -585,10 +591,11 @@ dependencies = [
     { name = "blessed" },
     { name = "click" },
     { name = "flask" },
+    { name = "prod" },
 ]
 
-[package.optional-dependencies]
-hardware-present = [
+[package.dev-dependencies]
+hardware = [
     { name = "gpiozero" },
     { name = "lgpio", marker = "sys_platform == 'linux'" },
     { name = "pi5neo", marker = "sys_platform == 'linux'" },
@@ -600,11 +607,15 @@ requires-dist = [
     { name = "blessed", specifier = ">=1.21.0" },
     { name = "click", specifier = ">=8.2.1" },
     { name = "flask", specifier = ">=3.1.1" },
-    { name = "gpiozero", marker = "extra == 'hardware-present'", specifier = ">=2.0.1" },
-    { name = "lgpio", marker = "sys_platform == 'linux' and extra == 'hardware-present'", specifier = ">=0.2.2.0" },
-    { name = "pi5neo", marker = "sys_platform == 'linux' and extra == 'hardware-present'", specifier = ">=1.0.6" },
+    { name = "prod", specifier = ">=0.7" },
 ]
-provides-extras = ["hardware-present"]
+
+[package.metadata.requires-dev]
+hardware = [
+    { name = "gpiozero", specifier = ">=2.0.1" },
+    { name = "lgpio", marker = "sys_platform == 'linux'", specifier = ">=0.2.2.0" },
+    { name = "pi5neo", marker = "sys_platform == 'linux'", specifier = ">=1.0.6" },
+]
 
 [[package]]
 name = "yarl"
