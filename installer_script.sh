@@ -12,12 +12,27 @@
 # installer_script      -> default
 # installer_script test -> test
 
-if [ "$1" == "test" ]; then
+# Default settings
+TEST=0
+FISH=0
+
+for arg in "$@"; do
+    case $arg in
+       "test")
+           TEST=1
+           ;;
+       "fish")
+	   FISH=1
+	   ;;
+       *)
+	   printf "Unknown command line parameter: $arg\n"
+    esac
+done
+
+if [ $TEST -eq 1 ]; then
   printf "Configuring as a test machine\n"
-  TEST=1
 else
   printf "Configuring as a full hardware implementation\n"
-  TEST=0
 fi
 
 
@@ -132,4 +147,10 @@ else
  printf "Done!\n"
 fi
 
-
+# FISH shell installation - optional
+if [ $FISH -eq 1 ]; then
+  printf "Installing FISH shell as default ... make take a while\n"
+  sudo apt -y install fish
+  sudo sh -c 'echo $(which fish) >> /etc/shells'
+  sudo chsh -s $(which fish) clock
+fi
