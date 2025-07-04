@@ -16,18 +16,22 @@
 # Default settings
 TEST=0
 FISH=0
+SSH=0
 
 # Checking for command line parameters
 
 cd /home/clock/wordclock || exit
 
 for arg in "$@"; do
-    case $arg in
+    case ${arg,,} in
        "test")
            TEST=1
            ;;
        "fish")
 	   FISH=1
+	   ;;
+       "ssh")
+	   SSH=1
 	   ;;
        *)
 	   printf "Unknown command line parameter: $arg\n"
@@ -49,11 +53,15 @@ printf "Done!\n"
 
 # SSH logging in - disable if you don't want this
 
-printf "Turning on SSH ... "
-sudo raspi-config nonint do_ssh 0
-printf "Done!\n"
-printf "You can ssh into this machine now at address: "
-printf "`ip -4 a show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}'`\n"
+if [ $SSH -eq 1 ]; then
+  printf "Turning on SSH ... "
+  sudo raspi-config nonint do_ssh 0
+  printf "Done!\n"
+  printf "You can ssh into this machine now at address: "
+  printf "`ip -4 a show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}'`\n"
+else
+  printf "Skipping SSH configuration\n"
+fi
 
 # SPI Interface - needed for the matrix control
 
