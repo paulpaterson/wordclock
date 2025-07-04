@@ -78,8 +78,12 @@ if [ -d "/etc/boot/firmware" ]; then
 else
   config_file="/boot/config.txt"
 fi
-sudo sed -i "1i# Real Time Clock\ndtoverlay=i2c-rtc,ds3231" $config_file
-printf "Done!\n"
+if grep -q "dtoverlay=i2c-rtc,ds3231" "$config_file"; then 
+  printf "Already set!\n" 
+else 
+  sudo sed -i "1i# Real Time Clock\ndtoverlay=i2c-rtc,ds3231" $config_file
+  printf "Done!\n"
+fi
 printf "Setting the time for the Real Time Clock ... "
 sudo hwclock -w
 printf "Done!\n"
