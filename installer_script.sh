@@ -121,19 +121,20 @@ fi
 
 printf "Copying the systemd clock service ... "
 if [ -f "/etc/systemd/system/clock-startup-script.service" ]; then
-  printf "Clock startup already there - skipping\n"
-else
-  sudo ln -s /home/clock/wordclock/clock-startup-script.service /etc/systemd/system/clock-startup-script.service
-  printf "Done!\n"
+  sudo rm "/etc/systemd/system/clock-startup-script.service"
 fi
+sudo ln -s /home/clock/wordclock/services/clock-startup-script.service /etc/systemd/system/clock-startup-script.service
+printf "Done!\n"
+
 printf "Copying the systemd UI service ... "
 if [ -f "/etc/systemd/system/clock-ui-script.service" ]; then
-  printf "UI script already there - skipping\n"
-else
-  sudo ln -s /home/clock/wordclock/clock-ui-script.service /etc/systemd/system/clock-ui-script.service
-  printf "Done!\n"
+  sudo rm "/etc/systemd/system/clock-ui-script.service"
 fi
+sudo ln -s /home/clock/wordclock/services/clock-ui-script.service /etc/systemd/system/clock-ui-script.service
+printf "Done!\n"
+
 printf "Enabling the systemd services ... "
+sudo systemctl daemon-reload
 sudo systemctl enable clock-startup-script.service
 sudo systemctl enable clock-ui-script.service
 printf "Done!\n"
