@@ -11,7 +11,7 @@
 #   - fish    = also install the FISH shell and set it as default
 #
 # installer_script      -> default
-# installer_script test|fish 
+# installer_script test|fish|rtc|ssh
 
 # Default settings
 TEST=0
