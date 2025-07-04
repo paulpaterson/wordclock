@@ -11,7 +11,7 @@ import modes
 app = Flask(__name__)
 
 # Configuration file path
-CONFIG_FILE = "config.sh"
+CONFIG_FILE = "config/config.sh"
 
 def load_config():
     """

@@ -346,7 +346,7 @@ class Updater:
         self.edge_modes = [mode(None) for mode in modes.modes.values() if mode.type == modes.FaceModeType.EDGE]
 
     def update(self):
-        last_config_time = os.path.getmtime('config.sh')
+        last_config_time = os.path.getmtime('config/config.sh')
         while True:
             try:
                 t = datetime.datetime.now()
@@ -370,7 +370,7 @@ class Updater:
             except KeyboardInterrupt:
                 print('CTRL-C detected')
                 break
-            if os.path.getmtime('config.sh') != last_config_time:
+            if os.path.getmtime('config/config.sh') != last_config_time:
                 sys.exit(2)
 
         if self.lights:

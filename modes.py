@@ -193,16 +193,16 @@ class EdgeLightCustom(Mode):
 
     def read_config(self):
         """Read the configuration data"""
-        with open('local_config.json', 'r') as f:
+        with open('config/local_config.json', 'r') as f:
             config_data_text = f.read()
         return json.loads(config_data_text)
 
     def get_data(self):
         """Get the latest data to show"""
         #
-        last_update = os.stat('local_data.json').st_mtime
+        last_update = os.stat('config/local_data.json').st_mtime
         if self.last_time is None or last_update > self.last_time:
-            with open('local_data.json', 'r') as f:
+            with open('config/local_data.json', 'r') as f:
                 data_text = f.read()
             try:
                 data = json.loads(data_text)

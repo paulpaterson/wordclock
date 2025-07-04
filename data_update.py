@@ -118,7 +118,7 @@ def main(interval, pool, weather, homeassistant, debug, iterations, forecast):
                 get_home_assistant(store)
 
             pprint.pprint(store)
-            with open('local_data.json', 'w') as f:
+            with open('config/local_data.json', 'w') as f:
                 data = {
                     'update-time': datetime.datetime.now().isoformat(),
                     'pool-temp': int(store.get('water', -1)),
