@@ -17,6 +17,7 @@
 TEST=0
 FISH=0
 SSH=0
+RTC=0
 
 # Checking for command line parameters
 
@@ -33,6 +34,9 @@ for arg in "$@"; do
        "ssh")
 	   SSH=1
 	   ;;
+       "rtc")
+	   RTC=1
+           ;;
        *)
 	   printf "Unknown command line parameter: $arg\n"
     esac
@@ -79,23 +83,23 @@ printf "Done!\n"
 
 # Enabling the real time clock
 
-printf "Enabling Real Time Clock module ... "
-# Check location of config 
-if [ -d "/boot/firmware" ]; then
-  config_file="/boot/firmware/config.txt"
+if [ $RTC -eq 1 ]; then
+  printf "Enabling Real Time Clock module ... "
+  # Check location of config 
+  if [ -d "/boot/firmware" ]; then
+    config_file="/boot/firmware/config.txt"
+  else
+    config_file="/boot/config.txt"
+  fi
+  if grep -q "dtoverlay=i2c-rtc,ds3231" "$config_file"; then 
+    printf "Already set!\n" 
+  else 
+    sudo sed -i "1i# Real Time Clock\ndtoverlay=i2c-rtc,ds3231" $config_file
+    printf "Done!\n"
+  fi
 else
-  config_file="/boot/config.txt"
+  printf "Skipping RTC installation\n"
 fi
-if grep -q "dtoverlay=i2c-rtc,ds3231" "$config_file"; then 
-  printf "Already set!\n" 
-else 
-  sudo sed -i "1i# Real Time Clock\ndtoverlay=i2c-rtc,ds3231" $config_file
-  printf "Done!\n"
-fi
-printf "Setting the time for the Real Time Clock ... "
-sudo hwclock -w
-printf "Done!\n"
-
 
 
 # UV - needed to run Python
