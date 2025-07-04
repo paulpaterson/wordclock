@@ -8,13 +8,16 @@
 # Check installation type
 #   - default = hardware machine
 #   - test    = test or virtual machine, which does not have all the relevant hardware attached
+#   - fish    = also install the FISH shell and set it as default
 #
 # installer_script      -> default
-# installer_script test -> test
+# installer_script test|fish 
 
 # Default settings
 TEST=0
 FISH=0
+
+# Checking for command line parameters
 
 for arg in "$@"; do
     case $arg in
@@ -152,5 +155,5 @@ if [ $FISH -eq 1 ]; then
   printf "Installing FISH shell as default ... make take a while\n"
   sudo apt -y install fish
   sudo sh -c 'echo $(which fish) >> /etc/shells'
-  sudo chsh -s $(which fish) clock
+  sudo chsh -s "$(which fish)" clock
 fi
