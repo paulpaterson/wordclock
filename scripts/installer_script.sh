@@ -11,13 +11,14 @@
 #   - fish    = also install the FISH shell and set it as default
 #
 # installer_script      -> default
-# installer_script test|fish|rtc|ssh
+# installer_script test|fish|rtc|ssh|restore
 
 # Default settings
 TEST=0
 FISH=0
 SSH=0
 RTC=0
+RESTORE=0
 
 # Checking for command line parameters
 
@@ -37,15 +38,46 @@ for arg in "$@"; do
        "rtc")
 	   RTC=1
            ;;
+       "restore")
+           RESTORE=1
+           ;;
        *)
 	   printf "Unknown command line parameter: $arg\n"
     esac
 done
 
 if [ $TEST -eq 1 ]; then
-  printf "Configuring as a test machine\n"
+  printf "Configuring as a test machine\n\n"
 else
-  printf "Configuring as a full hardware implementation\n"
+  printf "Configuring as a full hardware implementation\n\n"
+fi
+
+# Check location of config
+if [ -d "/boot/firmware" ]; then
+  config_file="/boot/firmware/config.txt"
+else
+  config_file="/boot/config.txt"
+fi
+
+# Create backup files if they don't exist
+
+if [ -f "backups/config.txt" ]; then
+  if [ $RESTORE -eq 1 ]; then
+    printf "Restoring backups files ... "
+    sudo cp "backups/config.txt" "$config_file"
+    printf "Done!\n"
+    exit 0
+  else
+    printf "Backup files already exist.\n"
+  fi
+else
+  if [ $RESTORE -eq 1 ]; then
+    printf "Cannot restore from backup - backup files are not in backups folder\n"
+    exit 1
+  fi
+  printf "Backing up config files ... "
+  sudo cp "$config_file" "backups/config.txt"
+  printf "Done!\n"
 fi
 
 
@@ -85,12 +117,6 @@ printf "Done!\n"
 
 if [ $RTC -eq 1 ]; then
   printf "Enabling Real Time Clock module ... "
-  # Check location of config 
-  if [ -d "/boot/firmware" ]; then
-    config_file="/boot/firmware/config.txt"
-  else
-    config_file="/boot/config.txt"
-  fi
   if grep -q "dtoverlay=i2c-rtc,ds3231" "$config_file"; then 
     printf "Already set!\n" 
   else 
