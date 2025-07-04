@@ -1,6 +1,6 @@
 export CLOCK_SHOW_IT_IS="true"
 export CLOCK_SHOW_A="true"
-export CLOCK_INTERVAL="1"
+export CLOCK_INTERVAL="0.5"
 export CLOCK_LIGHT_COLOR="#ffffff"
 export CLOCK_FACE_MODE="16x16new"
 export CLOCK_MODE="Normal"

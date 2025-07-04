@@ -73,7 +73,7 @@ printf "Done!\n"
 
 printf "Enabling Real Time Clock module ... "
 # Check location of config 
-if [ -d "/etc/boot/firmware" ]; then
+if [ -d "/boot/firmware" ]; then
   config_file="/boot/firmware/config.txt"
 else
   config_file="/boot/config.txt"
