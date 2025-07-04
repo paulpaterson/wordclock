@@ -19,6 +19,8 @@ FISH=0
 
 # Checking for command line parameters
 
+cd /home/clock/wordclock || exit
+
 for arg in "$@"; do
     case $arg in
        "test")

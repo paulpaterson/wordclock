@@ -8,7 +8,7 @@ After=network.target
 [Service]
 Type=simple          
 # Type of service (simple, exec, forking, etc.)
-ExecStart=/home/clock/wordclock/ui_start.sh
+ExecStart=/home/clock/wordclock/scripts/ui_start.sh
 # Path to your script
 Restart=on-failure   
 # Restart policy (no, on-failure, always, etc.)
