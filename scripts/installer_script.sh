@@ -66,7 +66,7 @@ else
 fi
 
 printf "Fixing SPI buffer size ..."
-sudo cp spidev.conf /etc/modprobe.d/spidev.conf
+sudo cp config/spidev.conf /etc/modprobe.d/spidev.conf
 printf "Done!\n"
 
 # Enabling the real time clock
