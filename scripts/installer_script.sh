@@ -149,11 +149,11 @@ printf "Done!\n"
 
 if [ $TEST -eq 0 ]; then
   printf "Creating local config as hardware clock ... "
-  printf "# Actual hardware settings\nexport CLOCK_BUTTON_PIN=27\nexport CLOCK_MODE_BUTTON_PIN=25\n" > local_config.sh
+  printf "# Actual hardware settings\nexport CLOCK_BUTTON_PIN=27\nexport CLOCK_MODE_BUTTON_PIN=25\n" > config/local_config.sh
   printf "Done!\n"
 else
  printf "Creating local config as simulated clock ... "
- printf "# Simulated hardware - no settings\n" > local_config.sh
+ printf "# Simulated hardware - no settings\n" > config/local_config.sh
  printf "Done!\n"
 fi
 
