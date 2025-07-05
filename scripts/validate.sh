@@ -7,8 +7,16 @@ R="\033[31m"
 G="\033[32m"
 Y="\033[33m"
 W="\033[0m"
+B="\e[1;36m"
 
 printf "\nChecking overall configuration for errors.\n\n"
+
+# Overall info
+IP=`ip -4 a show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}'`
+HOSTNAME=`hostname`
+
+printf "$G - This machine is: $B $HOSTNAME - $IP\n"
+printf "$W"
 
 # SPIDEV enabled
 SPI=`sudo raspi-config nonint get_spi`
@@ -57,7 +65,7 @@ fi
 
 UI=`systemctl is-active  clock-ui-script.service`
 if [ "$UI" == "active" ]; then
-  printf "$G - Clock UI front end service is active\n"
+  printf "$G - Clock UI front end service is active at $B http://$IP:8000/config\n"
 else
   printf "$R - Clock UI front end service 'clock-ui-script.service' is not active - will not be able to use web front end\n"
 fi
