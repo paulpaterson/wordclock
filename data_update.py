@@ -68,6 +68,7 @@ def get_weather_forecast(store, hours):
         usable_forecast = map_weather_name(forecast)
         look_ahead.append(usable_forecast)
     store['forecast'] = look_ahead[:hours]
+    store['air'] = forecast_data['properties']['periods'][0]['temperature']
 
 
 def get_home_assistant(store):

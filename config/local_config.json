@@ -6,51 +6,6 @@
       "reversed": false,
       "light-start": 0,
       "light-end": 15,
-      "variable": "pool-temp",
-      "ranges": [
-        {
-          "min": 60,
-          "max": 70,
-          "color": [
-            0,
-            0,
-            255
-          ]
-        },
-        {
-          "min": 70,
-          "max": 80,
-          "color": [
-            0,
-            255,
-            0
-          ]
-        },
-        {
-          "min": 80,
-          "max": 90,
-          "color": [
-            255,
-            0,
-            0
-          ]
-        },
-        {
-            "min": 90,
-            "max": 100,
-            "color": [
-            255,
-            255,
-            255
-          ]
-        }
-      ]
-    },
-    {
-      "type": "bar",
-      "reversed": true,
-      "light-start": 30,
-      "light-end": 45,
       "variable": "air-temp",
       "ranges": [
         {
@@ -87,21 +42,13 @@
             255,
             255,
             255
-           ]
+          ]
         }
       ]
     },
     {
-      "type": "boolean",
-      "light-start": 16,
-      "light-end": 19,
-      "variable": "garage-open",
-      "on-color": [255, 0, 0],
-      "off-color": [0, 0, 0]
-    },
-    {
       "type": "text",
-      "light-start": 46,
+      "light-start": 16,
       "light-end": 59,
       "variable": "forecast",
       "reversed": true,
