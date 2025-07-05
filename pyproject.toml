@@ -9,7 +9,6 @@ dependencies = [
     "blessed>=1.21.0",
     "click>=8.2.1",
     "flask>=3.1.1",
-    "prod>=0.7",
 ]
 
 [dependency-groups]
@@ -18,4 +17,11 @@ hardware = [
     "gpiozero>=2.0.1",
     "lgpio>=0.2.2.0; sys_platform == 'linux'",
     "pi5neo>=1.0.6; sys.platform == 'linux'",
+]
+
+
+# Only needed if you want to use the custom date updater
+updater = [
+    "requests>=2.32.4",
+    "paramiko",
 ]

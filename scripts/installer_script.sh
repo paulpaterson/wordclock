@@ -202,6 +202,13 @@ else
   printf "Test hardware - Skipping hardware specific python packages\n"
 fi
 
+if [ $UPDATER -eq 1 ];then
+  printf "Installing python packages for data updater ... "
+  uv sync --group updater
+  printf "Done!\n"
+fi
+
+
 # SystemD services to run the clock
 
 printf "Copying the systemd clock service ... "

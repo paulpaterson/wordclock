@@ -2,7 +2,13 @@ import sys
 import json
 import requests
 import aiohttp
-from omnilogic import OmniLogic
+
+try:
+    from omnilogic import OmniLogic
+except ImportError:
+    print('Omnilogic module not imported')
+    omnilogic = None
+
 import time
 import asyncio
 import ssl
