@@ -190,6 +190,7 @@ class EdgeLightCustom(Mode):
         self.config_data = self.read_config()
         self.frequency = self.config_data['frequency']
         self.last_time = None
+        self.last_data = None
 
     def read_config(self):
         """Read the configuration data"""
@@ -219,9 +220,13 @@ class EdgeLightCustom(Mode):
         data = self.get_data()
         if data:
             self.update_display(board, data)
+            self.last_data = data
             return [
                 "Updated data!"
             ]
+        elif self.last_data:
+            self.update_display(board, self.last_data)
+            return []
 
     def update_display(self, board, data):
         """Actually update the lights"""
