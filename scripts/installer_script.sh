@@ -20,30 +20,48 @@ SSH=0
 RTC=0
 RESTORE=0
 
-# Checking for command line parameters
-
 cd /home/clock/wordclock || exit
 
-for arg in "$@"; do
-    case ${arg,,} in
-       "test")
+
+# Checking for command line parameters
+VALID_ARGS=$(getopt -o th  --long test,fish,ssh,rtc,restore,help -- "$@")
+if [[ $? -ne 0 ]]; then
+  exit 1;
+fi
+
+eval set -- "$VALID_ARGS"
+
+while [ : ];do
+  case "$1" in
+    -h | --help)
+	   printf "Usage: ./scripts/installer_script.sh --test --fish --ssh --rtc --restore\n"
+	   exit 0
+	   shift
+	   ;;
+    -t | --test)
            TEST=1
+	   shift
            ;;
-       "fish")
+    --fish)
 	   FISH=1
+	   shift
 	   ;;
-       "ssh")
+    --ssh)
 	   SSH=1
+	   shift
 	   ;;
-       "rtc")
+    --rtc)
 	   RTC=1
+	   shift
            ;;
-       "restore")
+    --restore)
            RESTORE=1
+	   shift
            ;;
-       *)
-	   printf "Unknown command line parameter: $arg\n"
-    esac
+    --)	   shift;
+	   break
+	   ;;
+  esac
 done
 
 if [ $TEST -eq 1 ]; then
