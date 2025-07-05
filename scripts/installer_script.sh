@@ -191,23 +191,23 @@ printf "\nDone!\n"
 
 # Sync the environment for UV
 
-printf "Syncing UV environment ... this may take a while:\b"
-uv sync
-printf "Done!\n"
+UVGROUPS=""
+
 if [ $TEST -eq 0 ]; then
-  printf "Installing hardware specific python packages ... "
-  uv sync --group hardware
-  printf "Done!\n"
+  printf "Adding hardware specific python dependencies\n"
+  UVGROUPS="$UVGROUPS --group hardware"
 else
   printf "Test hardware - Skipping hardware specific python packages\n"
 fi
 
 if [ $UPDATER -eq 1 ];then
-  printf "Installing python packages for data updater ... "
-  uv sync --group updater
-  printf "Done!\n"
+  printf "Adding python packages for data updater\n"
+  UVGROUPS="$UVGROUPS --group updater"
 fi
 
+printf "Syncing UV environment, including groups '$UVGROUPS' ... this may take a while:\b"
+uv sync $UVGROUPS
+printf "Done!\n"
 
 # SystemD services to run the clock
 
