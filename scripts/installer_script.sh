@@ -14,6 +14,7 @@ SSH=0
 RTC=0
 RESTORE=0
 SET_NAME=0
+UPDATER=0
 HOSTNAME=""
 EXISTING_HOSTNAME=`hostname`
 DEVICE=`ip -br link show | awk 'NR==2{print $1}'`
@@ -23,7 +24,7 @@ cd /home/clock/wordclock || exit
 
 
 # Checking for command line parameters
-VALID_ARGS=$(getopt -o th  --long test,fish,ssh,rtc,restore,help,name: -- "$@")
+VALID_ARGS=$(getopt -o h  --long test,fish,ssh,rtc,restore,help,name:,updater -- "$@")
 if [[ $? -ne 0 ]]; then
   exit 1;
 fi
@@ -61,6 +62,10 @@ while [ : ];do
 	   SET_NAME=1
 	   HOSTNAME="$2"
 	   shift 2
+	   ;;
+    --updater)
+           UPDATER=1
+	   shift
 	   ;;
     --)	   shift;
 	   break
@@ -218,6 +223,22 @@ sudo systemctl daemon-reload
 sudo systemctl enable clock-startup-script.service
 sudo systemctl enable clock-ui-script.service
 printf "Done!\n"
+
+# SystemD service to run the updater - needed for the custom clock face
+
+if [ $UPDATER -eq 1 ]; then
+  printf "Copying and enabling the data updater service ... "
+  if [ -f "/etc/systemd/system/clock-updater-script.service" ]; then
+    sudo rm /etc/systemd/system/clock-updater-script.service
+  fi
+  sudo ln -s /home/clock/wordclock/services/clock-updater-script.service /etc/systemd/system/clock-updater-script.service
+  sudo systemctl enable clock-updater-script.service
+
+  printf "Done!\n"
+else
+  printf "Skipping creation of Updater service\n"
+fi
+
 
 # Local configuration
 

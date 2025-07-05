@@ -64,6 +64,8 @@ else
   printf "$R - Clock service 'clock-startup-script.service' is not active - clock will not be running\n"
 fi
 
+printf "$W"
+
 UI=`systemctl is-active  clock-ui-script.service`
 if [ "$UI" == "active" ]; then
   printf "$G - Clock UI front end service is active at $B http://$IP:8000/config\n"
@@ -71,6 +73,14 @@ else
   printf "$R - Clock UI front end service 'clock-ui-script.service' is not active - will not be able to use web front end\n"
 fi
 
+printf "$W"
+
+UPDATER=`systemctl is-active  clock-updater-script.service`
+if [ "$UPDATER" == "active" ]; then
+  printf "$G - Clock data updater service is active - custom clock face mode will work\n"
+else
+  printf "$Y - Clock data updater service is not active - custom clock face mode will not work\n"
+fi
 
 printf "$W"
 
