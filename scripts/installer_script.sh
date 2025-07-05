@@ -19,12 +19,15 @@ FISH=0
 SSH=0
 RTC=0
 RESTORE=0
+SET_NAME=0
+HOSTNAME=""
+EXISTING_HOSTNAME=`hostname`
 
 cd /home/clock/wordclock || exit
 
 
 # Checking for command line parameters
-VALID_ARGS=$(getopt -o th  --long test,fish,ssh,rtc,restore,help -- "$@")
+VALID_ARGS=$(getopt -o th  --long test,fish,ssh,rtc,restore,help,name: -- "$@")
 if [[ $? -ne 0 ]]; then
   exit 1;
 fi
@@ -58,6 +61,11 @@ while [ : ];do
            RESTORE=1
 	   shift
            ;;
+    --name)
+	   SET_NAME=1
+	   HOSTNAME="$2"
+	   shift 2
+	   ;;
     --)	   shift;
 	   break
 	   ;;
@@ -68,6 +76,16 @@ if [ $TEST -eq 1 ]; then
   printf "Configuring as a test machine\n\n"
 else
   printf "Configuring as a full hardware implementation\n\n"
+fi
+
+# Setting the machine name
+if [ $SET_NAME -eq 1 ]; then
+  printf "Changing the hostname from $EXISTING_HOSTNAME to $HOSTNAME ... "
+  sudo hostnamectl set-hostname $HOSTNAME
+  sudo sed -i "s/$EXISTING_HOSTNAME/$HOSTNAME/g" /etc/hosts
+  printf "Done!\n"
+else
+  printf "Not setting the hostname of this machine - kept as '$HOSTNAME'\n"
 fi
 
 # Check location of config
