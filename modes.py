@@ -85,6 +85,13 @@ class EdgeLightColor(Mode):
             self.set_edge_light_by_index(board, idx, color)
         self.offset += 1
 
+class EdgeLightBlank(EdgeLightColor):
+    """No lights on the edge"""
+
+    colors = [
+        (0, 0, 0)
+    ]
+
 
 class EdgeLightRWB(EdgeLightColor):
     colors = [
@@ -305,6 +312,7 @@ class EdgeLightCustom(Mode):
 
 modes = {
     'Normal': Normal,
+    'EdgeLightBlank': EdgeLightBlank,
     'EdgeLightSeconds': EdgeLightSeconds,
     'TestEdge': TestEdge,
     'TestWords': TestWords,
