@@ -12,10 +12,11 @@ B="\e[1;36m"
 printf "\nChecking overall configuration for errors.\n\n"
 
 # Overall info
-IP=`ip -4 a show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}'`
+DEVICE=`ip -br link show | awk 'NR==2{print $1}'`
+IP=`ip -4 a show $DEVICE | grep -oP '(?<=inet\s)\d+(\.\d+){3}'`
 HOSTNAME=`hostname`
 
-printf "$G - This machine is: $B $HOSTNAME - $IP\n"
+printf "$G - This machine is: $B $HOSTNAME - $IP ($DEVICE)\n"
 printf "$W"
 
 # SPIDEV enabled

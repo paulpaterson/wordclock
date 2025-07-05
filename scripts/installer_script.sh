@@ -22,6 +22,8 @@ RESTORE=0
 SET_NAME=0
 HOSTNAME=""
 EXISTING_HOSTNAME=`hostname`
+DEVICE=`ip -br link show | awk 'NR==2{print $1}'`
+IP=`ip -4 a show $DEVICE | grep -oP '(?<=inet\s)\d+(\.\d+){3}'`
 
 cd /home/clock/wordclock || exit
 
@@ -85,7 +87,7 @@ if [ $SET_NAME -eq 1 ]; then
   sudo sed -i "s/$EXISTING_HOSTNAME/$HOSTNAME/g" /etc/hosts
   printf "Done!\n"
 else
-  printf "Not setting the hostname of this machine - kept as '$HOSTNAME'\n"
+  printf "Not setting the hostname of this machine - kept as '$EXISTING_HOSTNAME'\n"
 fi
 
 # Check location of config
@@ -130,7 +132,7 @@ if [ $SSH -eq 1 ]; then
   sudo raspi-config nonint do_ssh 0
   printf "Done!\n"
   printf "You can ssh into this machine now at address: "
-  printf "`ip -4 a show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}'`\n"
+  printf "$IP ($DEVICE)\n"
 else
   printf "Skipping SSH configuration\n"
 fi
