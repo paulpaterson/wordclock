@@ -1,17 +1,11 @@
 #!/bin/bash
 
 # This script is used to configure the Raspberry PI machine to be able to run the software
-# Run it *once* before running the software
+# Run it once before running the software. It is safe to run it multiple times in you want to 
+# change the options
 
 #set -e
 
-# Check installation type
-#   - default = hardware machine
-#   - test    = test or virtual machine, which does not have all the relevant hardware attached
-#   - fish    = also install the FISH shell and set it as default
-#
-# installer_script      -> default
-# installer_script test|fish|rtc|ssh|restore
 
 # Default settings
 TEST=0
@@ -103,6 +97,8 @@ if [ -f "backups/config.txt" ]; then
   if [ $RESTORE -eq 1 ]; then
     printf "Restoring backups files ... "
     sudo cp "backups/config.txt" "$config_file"
+    sudo cp "backups/hosts" "/etc/hosts"
+    sudo cp "backups/shells" "/etc/shells" 
     printf "Done!\n"
     exit 0
   else
@@ -115,6 +111,8 @@ else
   fi
   printf "Backing up config files ... "
   sudo cp "$config_file" "backups/config.txt"
+  sudo cp "/etc/hosts" "backups/hosts"
+  sudo cp "/etc/shells" "backups/shells"
   printf "Done!\n"
 fi
 
