@@ -39,7 +39,7 @@ async def get_pool_data(store):
     store['air'] = status[0]['airTemp']
 
 
-def map_weather_name(name):
+def map_weather_name(name, daytime):
     """Return a simple version of the forecasted weather
 
     Returns either Sunny, Cloudy, Rainy
@@ -47,14 +47,16 @@ def map_weather_name(name):
     """
     name = name.lower()
     if "sunny" in name or "clear" in name:
-        return "Sunny"
+        name = "Sunny"
     elif "cloud" in name or "fog" in name:
-        return "Cloudy"
+        name = "Cloudy"
     elif "rain" in name or "shower" in name or "storm" in name:
-        return "Rain"
-    else:
-        return name
-
+        name = "Rain"
+    #
+    if not daytime:
+        name = 'Night ' + name
+    #
+    return name
 
 def get_weather_forecast(store, hours):
     """Return the forecasted weather for the next few hours"""
@@ -65,7 +67,8 @@ def get_weather_forecast(store, hours):
     look_ahead = []
     for period in forecast_data['properties']['periods']:
         forecast = period['shortForecast']
-        usable_forecast = map_weather_name(forecast)
+        is_daytime = period['isDaytime']
+        usable_forecast = map_weather_name(forecast, is_daytime)
         look_ahead.append(usable_forecast)
     store['forecast'] = look_ahead[:hours]
     store['air'] = forecast_data['properties']['periods'][0]['temperature']
