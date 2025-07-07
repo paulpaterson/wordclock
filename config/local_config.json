@@ -56,9 +56,9 @@
         "Sunny": [255, 255, 0],
         "Rain": [0, 0, 255],
         "Cloudy": [100, 100, 100],
-        "Night Sunny": [125, 125, 0],
-        "Night Rain": [0, 0, 125],
-        "Night Cloudy": [50, 50, 50]
+        "Night Sunny": [75, 75, 0],
+        "Night Rain": [0, 0, 75],
+        "Night Cloudy": [20, 20, 20]
       }
     }
   ]
