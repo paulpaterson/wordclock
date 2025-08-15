@@ -21,12 +21,18 @@
             const saveButton = document.getElementById('saveButton');
             const updateButton = document.getElementById('updateButton');
             const messageDiv = document.getElementById('message');
+            const updateDiv = document.getElementById('update');
             let validModes = [];
             let validFaces = [];
 
             function showMessage(message, type = 'success') {
                 messageDiv.textContent = message;
                 messageDiv.className = type === 'success' ? 'success' : 'error';
+            }
+
+            function showUpdate(message, type = 'success') {
+                updateDiv.textContent = message;
+                updateDiv.className = type === 'success' ? 'success' : 'error';
             }
 
             async function fetchConfig() {
@@ -83,9 +89,9 @@
                         throw new Error(`Failed to update software: ${response.status}`);
                     }
                     text = await response.text();
-                    showMessage('Software updated successfully: ' + text + '. You need to reboot the clock now.', 'success');
+                    showUpdate('Software updated successfully: ' + text + '. You need to reboot the clock now.', 'success');
                 } catch (error) {
-                    showMessage(`Error updating software: ${error.message}`, 'error');
+                    showUpdate(`Error updating software: ${error.message}`, 'error');
                 }
             }
 
