@@ -59,9 +59,11 @@ def handle_config():
     POST requests to update the configuration.
     """
     if request.method == 'GET':
+        global CLOCK_IP
         config = load_config()
         config['VALID_MODES'] = modes.get_valid_modes()
         config['VALID_FACES'] = faces.get_valid_faces()
+        config['CLOCK_IP_ADDRESS'] = CLOCK_IP
         return jsonify(config)
     elif request.method == 'POST':
         try:
@@ -195,7 +197,7 @@ if __name__ == '__main__':
     if len(sys.argv) != 2:
         print('Usage: ui_backend.py <IPADDRESS>')
         sys.exit(2)
-    ip_address = sys.argv[1]
+    CLOCK_IP = ip_address = sys.argv[1]
     print(f'Starting - binding to IP {ip_address}')
     app.run(host=ip_address, debug=True, port=8000)
 

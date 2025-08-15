@@ -102,15 +102,15 @@ if [ $SET_IP -eq 1 ]; then
   printf "Trying to set fixed IP address for '$connection' as '$FIXED_IP'\n"
   sudo nmcli connection modify "$connection" ipv4.method manual
   sudo nmcli connection modify "$connection" ipv4.addresses "$FIXED_IP/24"
-  sudo nmcli connection up "$connection"
+  sudo nmcli connection modify "$connection" ipv4.gateway "192.168.1.1"
+  sudo nmcli connection modify "$connection" ipv4.dns "8.8.8.8,8.8.4.4"
   IP=`ip -4 a show $DEVICE | grep -oP '(?<=inet\s)\d+(\.\d+){3}'`
   printf "Validation tried to set to $FIXED_IP - is now $IP\n"
+  printf "You must reboot or reload internet settings via: sudo nmcli connection up \"$connection\"\n"
 else
   printf "Not setting fixed IP Address. Leaving as '$IP'\n"
 fi
 
-
-exit 0
 
 # Check location of config
 if [ -d "/boot/firmware" ]; then
