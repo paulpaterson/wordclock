@@ -172,6 +172,17 @@ def do_software_update():
         raise
     return 'OK'
 
+@app.route('/api/reboot_clock', methods=['GET'])
+def do_reboot():
+    try:
+        result = subprocess.run(["sudo", "reboot", "now"], capture_output=True, text=True, check=True)
+        print("STDOUT:", result.stdout)
+        print("STDERR:", result.stderr)
+    except subprocess.CalledProcessError as e:
+        print(f"Command failed with exit code {e.returncode}: {e.stderr}")
+        raise
+    return 'OK'
+
 def get_my_ip():
     """
     Gets the current machine's IP address.  This method is more robust

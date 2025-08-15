@@ -20,8 +20,10 @@
             const ipAddressInput = document.getElementById('ipAddress');
             const saveButton = document.getElementById('saveButton');
             const updateButton = document.getElementById('updateButton');
+            const rebootButton = document.getElementById('rebootButton');
             const messageDiv = document.getElementById('message');
             const updateDiv = document.getElementById('update');
+            const rebootDiv = document.getElementById('reboot');
             let validModes = [];
             let validFaces = [];
 
@@ -33,6 +35,11 @@
             function showUpdate(message, type = 'success') {
                 updateDiv.textContent = message;
                 updateDiv.className = type === 'success' ? 'success' : 'error';
+            }
+
+            function showReboot(message, type = 'success') {
+                rebootDiv.textContent = message;
+                rebootDiv.className = type === 'success' ? 'success' : 'error';
             }
 
             async function fetchConfig() {
@@ -95,6 +102,25 @@
                 }
             }
 
+
+            async function rebootClock() {
+                try {
+                    const response = await fetch('/api/reboot_clock', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    });
+                    if (!response.ok) {
+                        throw new Error(`Failed to reboot clock: ${response.status}`);
+                    }
+                    text = await response.text();
+                    showReboot('Clock rebooting: ' + text + '. Refresh this screen when clock has started.', 'success');
+                } catch (error) {
+                    showReboot(`Error rebooting clock: ${error.message}`, 'error');
+                }
+            }
+
             async function saveConfig() {
                 const selectedModes = [];
                 const modeCheckboxes = document.querySelectorAll('input[name="mode"]');
@@ -151,6 +177,7 @@
             lightColorInput.addEventListener('input', updateUI);
             saveButton.addEventListener('click', saveConfig);
             updateButton.addEventListener('click', updateClock);
+            rebootButton.addEventListener('click', rebootClock);
 
             fetchConfig(); // Load config on page load
         });
@@ -505,6 +532,9 @@
 
         <button id="updateButton" class="button update">Update Clock software from Github</button>
         <div id="update" class="message"></div>
+
+        <button id="rebootButton" class="button update">Reboot clock</button>
+        <div id="reboot" class="message"></div>
 
         <button id="saveButton" class="button">Save Configuration</button>
         <div id="message" class="message"></div>
