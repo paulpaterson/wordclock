@@ -83,7 +83,7 @@
                         throw new Error(`Failed to update software: ${response.status}`);
                     }
                     text = await response.text();
-                    showMessage('Software updated successfully: ' + text, 'success');
+                    showMessage('Software updated successfully: ' + text + '. You need to reboot the clock now.', 'success');
                 } catch (error) {
                     showMessage(`Error updating software: ${error.message}`, 'error');
                 }
