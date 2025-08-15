@@ -4,7 +4,7 @@ from flask import Flask, request, jsonify, render_template
 import os
 import re
 import socket
-
+import sys
 import faces
 import modes
 
@@ -192,8 +192,10 @@ def get_my_ip():
         return None
 
 if __name__ == '__main__':
-    print('Checking IP address ...', end=' ')
-    ip_address = get_my_ip()
-    print(ip_address)
+    if len(sys.argv) != 2:
+        print('Usage: ui_backend.py <IPADDRESS>')
+        sys.exit(2)
+    ip_address = sys.argv[1]
+    print(f'Starting - binding to IP {ip_address}')
     app.run(host=ip_address, debug=True, port=8000)
 

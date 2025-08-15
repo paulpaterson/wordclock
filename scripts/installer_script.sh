@@ -16,6 +16,8 @@ RESTORE=0
 SET_NAME=0
 UPDATER=0
 HOSTNAME=""
+SET_IP=0
+FIXED_IP=""
 EXISTING_HOSTNAME=`hostname`
 DEVICE=`ip -br link show | awk 'NR==2{print $1}'`
 IP=`ip -4 a show $DEVICE | grep -oP '(?<=inet\s)\d+(\.\d+){3}'`
@@ -24,7 +26,7 @@ cd /home/clock/wordclock || exit
 
 
 # Checking for command line parameters
-VALID_ARGS=$(getopt -o h  --long test,fish,ssh,rtc,restore,help,name:,updater -- "$@")
+VALID_ARGS=$(getopt -o h  --long test,fish,ssh,rtc,restore,help,name:,ip:,updater -- "$@")
 if [[ $? -ne 0 ]]; then
   exit 1;
 fi
@@ -34,7 +36,7 @@ eval set -- "$VALID_ARGS"
 while [ : ];do
   case "$1" in
     -h | --help)
-	   printf "Usage: ./scripts/installer_script.sh --test --fish --ssh --rtc --restore\n"
+	   printf "Usage: ./scripts/installer_script.sh --test --fish --ssh --rtc --restore --name <hostname> --ip <fixed IP address>\n"
 	   exit 0
 	   shift
 	   ;;
@@ -63,6 +65,11 @@ while [ : ];do
 	   HOSTNAME="$2"
 	   shift 2
 	   ;;
+    --ip)
+       SET_IP=1
+       FIXED_IP="$2"
+       shift 2
+       ;;
     --updater)
            UPDATER=1
 	   shift
@@ -88,6 +95,22 @@ if [ $SET_NAME -eq 1 ]; then
 else
   printf "Not setting the hostname of this machine - kept as '$EXISTING_HOSTNAME'\n"
 fi
+
+# Setting the fixed IP address
+if [ $SET_IP -eq 1 ]; then
+  connection=`nmcli --fields name  connection show | sed -n '2p' | awk '{$1=$1};1'`
+  printf "Trying to set fixed IP address for '$connection' as '$FIXED_IP'\n"
+  sudo nmcli connection modify "$connection" ipv4.method manual
+  sudo nmcli connection modify "$connection" ipv4.addresses "$FIXED_IP/24"
+  sudo nmcli connection up "$connection"
+  IP=`ip -4 a show $DEVICE | grep -oP '(?<=inet\s)\d+(\.\d+){3}'`
+  printf "Validation tried to set to $FIXED_IP - is now $IP\n"
+else
+  printf "Not setting fixed IP Address. Leaving as '$IP'\n"
+fi
+
+
+exit 0
 
 # Check location of config
 if [ -d "/boot/firmware" ]; then
