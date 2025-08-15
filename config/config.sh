@@ -1,7 +1,7 @@
 export CLOCK_SHOW_IT_IS="true"
 export CLOCK_SHOW_A="true"
 export CLOCK_INTERVAL="0.5"
-export CLOCK_LIGHT_COLOR="#952323"
+export CLOCK_LIGHT_COLOR="#ffffff"
 export CLOCK_FACE_MODE="16x16new"
 export CLOCK_MODE="EdgeLightCustom Normal"
 export CLOCK_BAUD_RATE="1000"
