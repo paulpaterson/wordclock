@@ -7,6 +7,7 @@ import socket
 import sys
 import faces
 import modes
+import subprocess
 
 app = Flask(__name__)
 
@@ -149,14 +150,27 @@ def get_modes():
     """
     return jsonify(modes.get_valid_modes())
 
-@app.route('/config', methods=['GET'])
+@app.route('/', methods=['GET'])
 def show_config_page():
     """
     Handles GET requests to the /config route by rendering the config.html template.
     """
     return render_template('config.html')
 
+@app.route('/config', methods=['GET'])
+def legacy_config():
+    return show_config_page()
 
+@app.route('/api/software_update', methods=['GET'])
+def do_software_update():
+    try:
+        result = subprocess.run(["./scripts/update_system.sh"], capture_output=True, text=True, check=True)
+        print("STDOUT:", result.stdout)
+        print("STDERR:", result.stderr)
+    except subprocess.CalledProcessError as e:
+        print(f"Command failed with exit code {e.returncode}: {e.stderr}")
+        raise
+    return 'OK'
 
 def get_my_ip():
     """

@@ -19,6 +19,7 @@
             const baudRateInput = document.getElementById('baudRate');
             const ipAddressInput = document.getElementById('ipAddress');
             const saveButton = document.getElementById('saveButton');
+            const updateButton = document.getElementById('updateButton');
             const messageDiv = document.getElementById('message');
             let validModes = [];
             let validFaces = [];
@@ -67,6 +68,24 @@
 
                 } catch (error) {
                     showMessage(`Error fetching config: ${error.message}`, 'error');
+                }
+            }
+
+            async function updateClock() {
+                try {
+                    const response = await fetch('/api/software_update', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    });
+                    if (!response.ok) {
+                        throw new Error(`Failed to update software: ${response.status}`);
+                    }
+                    text = await response.text();
+                    showMessage('Software updated successfully: ' + text, 'success');
+                } catch (error) {
+                    showMessage(`Error updating software: ${error.message}`, 'error');
                 }
             }
 
@@ -125,6 +144,7 @@
             intervalInput.addEventListener('input', updateUI);
             lightColorInput.addEventListener('input', updateUI);
             saveButton.addEventListener('click', saveConfig);
+            updateButton.addEventListener('click', updateClock);
 
             fetchConfig(); // Load config on page load
         });
@@ -283,6 +303,10 @@
             transition: background-color 0.3s ease;
             width: 100%;
             margin-top: 10px;
+        }
+
+        .update {
+            background-color: #1748c5;
         }
 
         .button:hover {
@@ -471,6 +495,10 @@
             <label for="ipAddress">IP Address for Clock</label>
             <input type="text" id="ipAddress" value="192.168.1.38">
         </div>
+
+
+        <button id="updateButton" class="button update">Update Clock Software from Github</button>
+        <div id="update" class="message"></div>
 
         <button id="saveButton" class="button">Save Configuration</button>
         <div id="message" class="message"></div>
