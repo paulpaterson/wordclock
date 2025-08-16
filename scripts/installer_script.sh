@@ -36,7 +36,7 @@ eval set -- "$VALID_ARGS"
 while [ : ];do
   case "$1" in
     -h | --help)
-	   printf "Usage: ./scripts/installer_script.sh --test --fish --ssh --rtc --restore --name <hostname> --ip <fixed IP address>\n"
+	   printf "Usage: ./scripts/installer_script.sh --test --fish --ssh --rtc --restore --updater --name <hostname> --ip <fixed IP address>\n"
 	   exit 0
 	   shift
 	   ;;
