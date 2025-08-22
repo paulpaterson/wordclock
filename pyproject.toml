@@ -25,3 +25,9 @@ updater = [
     "requests>=2.32.4",
     "paramiko",
 ]
+
+
+# Only needed if you want to use the camera
+camera = [
+    "python-resize-image>=1.1.20",
+]
