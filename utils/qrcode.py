@@ -10,8 +10,11 @@ import sys
 
 
 def raw_get_qr_code(filename, resize="resize", width=400):
-    zbar_root = pathlib.Path("/opt/homebrew/Cellar/zbar/0.23.93_2/bin")
-    zbar_app = zbar_root / "zbarimg"
+    if sys.platform == 'linux':
+        zbar_app = 'zbarimg'
+    else:
+        zbar_root = pathlib.Path("/opt/homebrew/Cellar/zbar/0.23.93_2/bin")
+        zbar_app = (zbar_root / "zbarimg").as_posix()
 
     root = pathlib.Path(__file__).parent.parent
     image_file = root / filename
@@ -32,7 +35,7 @@ def raw_get_qr_code(filename, resize="resize", width=400):
                 the_file_name = image_file
 
         output = subprocess.run(
-            [zbar_app.as_posix(), the_file_name],
+            [zbar_app, the_file_name],
             capture_output=True
         )
         fp.delete = True
