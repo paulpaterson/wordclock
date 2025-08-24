@@ -4,6 +4,7 @@ import datetime
 import enum
 import json
 import os
+from collections import namedtuple
 
 
 class FaceModeType(enum.Enum):
@@ -107,6 +108,8 @@ class EdgeLightGW(EdgeLightColor):
     ]
 
 
+
+
 class TestEdge(Mode):
     """Test all the edge lights"""
 
@@ -117,6 +120,7 @@ class TestEdge(Mode):
     def __init__(self, parameters):
         super().__init__(parameters)
         self.on = True
+        self.top = self.right = self.bottom = self.left = True
 
     def update(self, board):
         """Update the edge lights"""
@@ -124,11 +128,15 @@ class TestEdge(Mode):
         rows, cols = board.get_dimensions()
         if self.on:
             for row in range(rows):
-                board.edge_lights[(row, 0)] = self.color
-                board.edge_lights[(row, cols - 1)] = self.color
+                if self.left:
+                    board.edge_lights[(row, 0)] = self.color
+                if self.right:
+                    board.edge_lights[(row, cols - 1)] = self.color
             for col in range(cols):
-                board.edge_lights[(0, col)] = self.color
-                board.edge_lights[(rows - 1, col)] = self.color
+                if self.top:
+                    board.edge_lights[(0, col)] = self.color
+                if self.bottom:
+                    board.edge_lights[(rows - 1, col)] = self.color
 
         if self.toggle:
             self.on = not self.on

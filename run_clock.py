@@ -320,6 +320,7 @@ class UpdateModes(enum.Enum):
     NORMAL = 'normal'
     CONFIG_HOURS = 'config hours'
     CONFIG_MINS = 'config mins'
+    CONFIG_WIFI = 'config WIFI'
 
 
 class Updater:
@@ -366,6 +367,12 @@ class Updater:
                             self.next_edge_mode()
                         else:
                             break
+                    #
+                    # Set the lights to show we are now in active config
+                    if self.mode != UpdateModes.NORMAL and time.time() - self.last_key_press > self.button_mins_interval:
+                        self.config_mode.right = True
+                        self.config_mode.left = True
+
                 self.current_offset += self.simulation_offset
             except KeyboardInterrupt:
                 print('CTRL-C detected')
@@ -412,14 +419,23 @@ class Updater:
         if self.mode == UpdateModes.NORMAL:
             self.mode = UpdateModes.CONFIG_HOURS
             self.board.modes = self.config_modes
+            self.config_mode.right = False
+            self.config_mode.left = False
             self.button_click = 0
         elif self.mode == UpdateModes.CONFIG_HOURS and time.time() - self.last_key_press < self.button_mins_interval and self.button_click == 0:
             self.mode = UpdateModes.CONFIG_MINS
             self.config_mode.color = (255, 255, 0)
+            self.config_mode.right = False
+            self.config_mode.left = False
+        elif self.mode == UpdateModes.CONFIG_MINS and time.time() - self.last_key_press < self.button_mins_interval and self.button_click == 0:
+            self.mode = UpdateModes.CONFIG_WIFI
+            self.config_mode.color = (100, 100, 255)
+            self.config_mode.right = False
+            self.config_mode.left = False
         else:
             if self.mode == UpdateModes.CONFIG_HOURS:
                 self.current_offset += datetime.timedelta(hours=1)
-            else:
+            elif self.mode == UpdateModes.CONFIG_MINS:
                 self.current_offset += datetime.timedelta(minutes=5)
             self.button_click += 1
         self.last_key_press = time.time()
