@@ -19,6 +19,7 @@ HOSTNAME=""
 SET_IP=0
 FIXED_IP=""
 EXISTING_HOSTNAME=`hostname`
+CAMERA=0
 DEVICE=`ip -br link show | awk 'NR==2{print $1}'`
 IP=`ip -4 a show $DEVICE | grep -oP '(?<=inet\s)\d+(\.\d+){3}'`
 
@@ -26,7 +27,7 @@ cd /home/clock/wordclock || exit
 
 
 # Checking for command line parameters
-VALID_ARGS=$(getopt -o h  --long test,fish,ssh,rtc,restore,help,name:,ip:,updater -- "$@")
+VALID_ARGS=$(getopt -o h  --long test,fish,ssh,rtc,restore,help,name:,ip:,updater,camera -- "$@")
 if [[ $? -ne 0 ]]; then
   exit 1;
 fi
@@ -74,6 +75,10 @@ while [ : ];do
            UPDATER=1
 	   shift
 	   ;;
+    --camera)
+        CAMERA=1
+        shift
+        ;;
     --)	   shift;
 	   break
 	   ;;
@@ -191,6 +196,13 @@ else
   printf "Skipping RTC installation\n"
 fi
 
+# Enabling the software to do QR code detection
+if [ $CAMERA -eq 1 ]; then
+  printf "Enabling software for QR code detection ..."
+  sudo apt install libjpeg62-turbo-dev
+  sudo apt install zbar-tools libzbar-dev
+  printf "Done!"
+fi
 
 # UV - needed to run Python
 
@@ -228,6 +240,10 @@ if [ $UPDATER -eq 1 ];then
   UVGROUPS="$UVGROUPS --group updater"
 fi
 
+if [ $CAMERA -eq 1 ]; then
+  printf "Adding python packages for camera\n"
+  UVGROUPS="$UVGROUPS --group camera"
+fi
 printf "Syncing UV environment, including groups '$UVGROUPS' ... this may take a while:\b"
 uv sync $UVGROUPS
 printf "Done!\n"
