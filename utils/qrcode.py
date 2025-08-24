@@ -63,9 +63,32 @@ def get_qr_code(filename):
     return result
 
 
+def capture_frame(filename, timeout=1):
+    """Capture a frame from the camera"""
+    print("Capturing ...", end="")
+    result = subprocess.run([
+            "rpicam-still", "-t",  f"{timeout}s",  "-o",  filename
+    ], capture_output=True)
+    print("Done!")
+    return None
+
+def detect_mode():
+    """Continuously try to detect a QR code"""
+    filename = "images/detect.jpg"
+    while True:
+        capture_frame(filename)
+        result = get_qr_code(filename)
+        if result:
+            print(f"We got a QR code for: {result}")
+        else:
+            print("Nothing detected")
+
 
 if __name__ == '__main__':
     if len(sys.argv) == 2:
-        print(get_qr_code(sys.argv[1]))
+        if sys.argv[1] == 'detect':
+            detect_mode()
+        else:
+            print(get_qr_code(sys.argv[1]))
     else:
         print('Usage: python qrcode.py <filename>, <optionally: resize>')
