@@ -67,7 +67,9 @@ def capture_frame(filename, timeout=1):
     """Capture a frame from the camera"""
     print("Capturing ...", end="")
     result = subprocess.run([
-            "rpicam-still", "-t",  f"{timeout}s",  "-o",  filename
+            "rpicam-still", "-t",  f"{timeout}s",  
+            "--autofocus-mode", "continuous",
+            "-o",  filename
     ], capture_output=True)
     print("Done!")
     return None
@@ -76,7 +78,7 @@ def detect_mode():
     """Continuously try to detect a QR code"""
     filename = "images/detect.jpg"
     while True:
-        capture_frame(filename)
+        capture_frame(filename, 0.01)
         result = get_qr_code(filename)
         if result:
             print(f"We got a QR code for: {result}")
