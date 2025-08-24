@@ -37,7 +37,7 @@ eval set -- "$VALID_ARGS"
 while [ : ];do
   case "$1" in
     -h | --help)
-	   printf "Usage: ./scripts/installer_script.sh --test --fish --ssh --rtc --restore --updater --name <hostname> --ip <fixed IP address>\n"
+	   printf "Usage: ./scripts/installer_script.sh --test --fish --ssh --rtc --restore --updater --camera --name <hostname> --ip <fixed IP address>\n"
 	   exit 0
 	   shift
 	   ;;
@@ -199,8 +199,8 @@ fi
 # Enabling the software to do QR code detection
 if [ $CAMERA -eq 1 ]; then
   printf "Enabling software for QR code detection ..."
-  sudo apt install libjpeg62-turbo-dev
-  sudo apt install zbar-tools libzbar-dev
+  sudo apt -y install libjpeg62-turbo-dev
+  sudo apt -y install zbar-tools libzbar-dev
   printf "Done!"
 fi
 
