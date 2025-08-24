@@ -8,6 +8,7 @@ import time
 
 import modes
 import setdate
+import wificonfig
 
 
 class UpdateModes(enum.Enum):
@@ -16,13 +17,6 @@ class UpdateModes(enum.Enum):
     CONFIG_MINS = 'config mins'
     CONFIG_WIFI = 'config WIFI'
 
-class WifiConfigStage(enum.Enum):
-    IDLE = 'idle'
-    READING_QR_CODE = 'trying to read qr code'
-    WAITING_TO_JOIN_NETWORK = 'waiting to join network'
-    NO_QR_READ = 'no QR could be read'
-    NETWORK_NOT_JOINED = 'network could not be joined'
-    NETWORK_JOINED = 'network joined'
 
 
 class Updater:
@@ -30,7 +24,7 @@ class Updater:
 
     def __init__(self, board, current_offset, term, interval, simulation_offset, lights, button_key, mode_button_key, set_system_time):
         self.mode = UpdateModes.NORMAL
-        self.wifi_stage = WifiConfigStage.IDLE
+        self.wifi_config = wificonfig.WifiConfigurator(self)
         self.board = board
         self.current_offset = current_offset
         self.term = term
@@ -49,6 +43,10 @@ class Updater:
         self.button_click = 0
         self.edge_modes = [mode(None) for mode in modes.modes.values() if mode.type == modes.FaceModeType.EDGE]
 
+    def update_board(self):
+        """Update the display of the clock"""
+        return self.board.update_board()
+
     def update(self):
         last_config_time = os.path.getmtime('config/config.sh')
         while True:
@@ -56,7 +54,7 @@ class Updater:
                 t = datetime.datetime.now()
                 self.board.time = t + self.current_offset
                 #
-                logs = self.board.update_board()
+                logs = self.update_board()
                 if self.mode != UpdateModes.NORMAL and time.time() - self.last_key_press > self.button_reset_interval:
                     self.reset_config()
                 else:
@@ -101,7 +99,7 @@ class Updater:
         #
         # Reset the modes
         self.mode = UpdateModes.NORMAL
-        self.wifi_stage = WifiConfigStage.IDLE
+        self.wifi_config.go_idle()
         self.board.modes = self.old_modes
         self.button_click = 0
         if self.config_mode.on:
@@ -133,10 +131,7 @@ class Updater:
             self.config_mode.left = False
         elif self.mode == UpdateModes.CONFIG_MINS and time.time() - self.last_key_press < self.button_mins_interval and self.button_click == 0:
             self.mode = UpdateModes.CONFIG_WIFI
-            self.wifi_stage = WifiConfigStage.READING_QR_CODE
-            self.config_mode.color = (100, 100, 255)
-            self.config_mode.right = False
-            self.config_mode.left = False
+            self.wifi_config.start_reading()
         else:
             if self.mode == UpdateModes.CONFIG_HOURS:
                 self.current_offset += datetime.timedelta(hours=1)
