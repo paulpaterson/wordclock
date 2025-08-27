@@ -7,6 +7,7 @@ from resizeimage import resizeimage
 import tempfile
 import os
 import sys
+import re
 
 
 def raw_get_qr_code(filename, resize="resize", width=400):
@@ -74,22 +75,48 @@ def capture_frame(filename, timeout=1):
     print("Done!")
     return None
 
-def detect_mode():
+def detect_mode(max_iterations):
     """Continuously try to detect a QR code"""
     filename = "images/detect.jpg"
-    while True:
+    iteration = max_iterations
+    while iteration:
         capture_frame(filename, 0.01)
         result = get_qr_code(filename)
         if result:
             print(f"We got a QR code for: {result}")
+            return result
         else:
             print("Nothing detected")
+            iteration -= 1
+    return None
+
+
+
+
+def get_wifi_details_from_qr(qr_string):
+    """Return the WIFI details from a code read form the camera"""
+    if not qr_string.startswith('WIFI:'):
+        return None
+    parts = {}
+    for part_type, part_value in re.findall('(\w):([^;]*);', qr_string[5:]):
+        parts[part_type] = part_value
+    print(parts)
+    return {
+        'SECURITY': parts.get('T', 'unknown'),
+        'SSID': parts.get('S', 'unknown'),
+        'PASSWORD': parts.get('P', 'unknown'),
+    }
 
 
 if __name__ == '__main__':
     if len(sys.argv) == 2:
         if sys.argv[1] == 'detect':
-            detect_mode()
+            while True:
+                result = detect_mode(10)
+                if result:
+                    print(get_wifi_details_from_qr(result))
+                else:
+                    print('No result!')
         else:
             print(get_qr_code(sys.argv[1]))
     else:
