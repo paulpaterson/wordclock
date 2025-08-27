@@ -3,7 +3,7 @@
 import enum
 import random
 import time
-
+from utils import qrcode
 
 class WifiConfigStage(enum.Enum):
     IDLE = 'idle'
@@ -22,6 +22,7 @@ class WifiConfigurator:
         self.updater = updater
         self.wifi_stage = WifiConfigStage.IDLE
         self.max_retries = 4
+        self.wifi_details = None
 
     def start_reading(self):
         """Start trying to read the QR code"""
@@ -91,8 +92,16 @@ class WifiConfigurator:
 
     def get_qr(self):
         """Make one attempt to get the QR code and return the data or None if none found"""
-        time.sleep(1)
-        return random.random() > 0.8
+        result = qrcode.detect_mode(4)
+        if not result:
+            return None
+        else:
+            details = qrcode.get_wifi_details_from_qr(result)
+            if not details:
+                return None
+            else:
+                self.wifi_details = details
+                return True
 
     def make_network_change(self):
         """Set the network properties from the QR code"""
