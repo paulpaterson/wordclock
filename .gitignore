@@ -1,0 +1,9 @@
+# Backup file for the local machine
+config/config.bak
+
+# Smart data retrieved by the local machine
+config/local_data.json
+
+# Testing images which may contain wifi passwords
+images/qr*.jpg
+images/qr*.png
