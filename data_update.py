@@ -1,5 +1,7 @@
 import sys
 import json
+from typing import Any
+
 import requests
 import aiohttp
 
@@ -96,7 +98,7 @@ def get_home_assistant(store):
     try:
         data = json.loads(last_line)
     except json.JSONDecodeError as err:
-        print(f'Error decoding JSON from "{last_line}"')
+        print(f'Error decoding JSON from "{last_line.decode("utf-8")}"')
         print(err)
         raise
     #print(data)
@@ -116,7 +118,7 @@ def get_home_assistant(store):
 @click.option('--iterations', type=int, default=-1, help='How many times to run')
 @click.option('--forecast', type=int, default=16, help='How many hours of forecast to look ahead')
 def main(interval, pool, weather, homeassistant, debug, iterations, forecast):
-    store = {}
+    store: dict[str, Any] = {}
     try:
         while iterations:
             print(f'\n\nUpdating at {datetime.datetime.now()}\n')

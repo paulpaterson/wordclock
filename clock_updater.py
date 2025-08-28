@@ -89,7 +89,7 @@ class Updater:
     def next_edge_mode(self):
         """Move to the next edge mode"""
         if self.mode == UpdateModes.NORMAL:
-            new_mode = []
+            new_mode: list[modes.Mode] = []
             new_edge_mode = self.edge_modes.pop(0)
             if new_edge_mode.type == modes.FaceModeType.EDGE:
                 new_mode.append(modes.Normal(None))

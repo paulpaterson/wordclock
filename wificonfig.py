@@ -29,7 +29,7 @@ class WifiConfigurator:
         self.updater = updater
         self.wifi_stage = WifiConfigStage.IDLE
         self.max_retries = 4
-        self.wifi_details = None
+        self.wifi_details = {}
         self.fixed_qrcode_filename = qrcode_file
 
     def start_reading(self):
