@@ -1,5 +1,3 @@
-from ipaddress import ip_address
-
 from flask import Flask, request, jsonify, render_template
 import os
 import re
