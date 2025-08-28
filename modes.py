@@ -50,6 +50,46 @@ class Normal(Mode):
             the_word.activate()
 
 
+class ShowIPAddress(Mode):
+    """Show the current IP address by flashing the numbers one by one"""
+
+    words = [
+        'zero', 'one', 'two', 'three', 'four', 'five',
+        'six', 'seven', 'eight', 'nine', 'ten',
+    ]
+
+    def __init__(self, parameters):
+        """Initialise the mode"""
+        super().__init__(parameters)
+        self.character_idx = -1
+        self.ip_address = '192.168.1.167'
+
+    def update(self, board):
+        """Update the board to show the IP address"""
+        #
+        # Get the index of the next character to display
+        stripped_ip = self.ip_address
+        if self.character_idx >= len(stripped_ip):
+            self.character_idx = -1
+        #
+        # Find all words in the face
+        possible_words = board.get_all_words()
+        #
+        if self.character_idx == -1:
+            # Start of the IP address
+            board.find_next_word('IT', possible_words).activate()
+            board.find_next_word('IS', possible_words).activate()
+        else:
+            # Showing the IP address
+            current_character = stripped_ip[self.character_idx]
+            if current_character != '.':
+                word = self.words[int(current_character)]
+                #
+                the_word = board.find_next_word(word, possible_words)
+                the_word.activate()
+                #
+        self.character_idx += 1
+
 class EdgeLightSeconds(Mode):
     """Show the number of seconds using the edge light"""
 
@@ -329,6 +369,7 @@ modes = {
     'EdgeLightGW': EdgeLightGW,
     'EdgeLightCustom': EdgeLightCustom,
     'Config': ConfigMode,
+    'ShowIPAddress': ShowIPAddress,
 }
 
 def get_valid_modes():
