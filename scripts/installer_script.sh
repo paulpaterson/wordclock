@@ -200,7 +200,7 @@ fi
 if [ $CAMERA -eq 1 ]; then
   printf "Enabling software for QR code detection ..."
   sudo apt -y install libjpeg62-turbo-dev
-  sudo apt -y install zbar-tools libzbar-dev
+  sudo apt -y install zbar-tools libzbar-dev uuid-runtime
   printf "Done!"
 fi
 
