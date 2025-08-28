@@ -42,7 +42,7 @@ class Updater:
         self.button_reset_interval = 5
         self.button_mins_interval = 0.5
         self.button_click = 0
-        self.edge_modes = [mode(None) for mode in modes.modes.values() if mode.type == modes.FaceModeType.EDGE]
+        self.edge_modes = [mode(None) for mode in modes.modes.values() if mode.include_as_dynamic]
 
     def update_board(self):
         """Update the display of the clock"""
@@ -89,8 +89,10 @@ class Updater:
     def next_edge_mode(self):
         """Move to the next edge mode"""
         if self.mode == UpdateModes.NORMAL:
-            new_mode = [modes.Normal(None)]
+            new_mode = []
             new_edge_mode = self.edge_modes.pop(0)
+            if new_edge_mode.type == modes.FaceModeType.EDGE:
+                new_mode.append(modes.Normal(None))
             new_mode.append(new_edge_mode)
             self.edge_modes.append(new_edge_mode)
             self.board.modes = new_mode

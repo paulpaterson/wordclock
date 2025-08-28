@@ -24,6 +24,7 @@ class Mode:
     """An abstract mode"""
 
     type = FaceModeType.FACE
+    include_as_dynamic = False
 
     def __init__(self, parameters):
         self.parameters = parameters
@@ -63,12 +64,15 @@ class ShowIPAddress(Mode):
         'zero', 'one', 'two', 'three', 'four', 'five',
         'six', 'seven', 'eight', 'nine', 'ten',
     ]
+    include_as_dynamic = True
 
     def __init__(self, parameters):
         """Initialise the mode"""
         super().__init__(parameters)
         self.character_idx = -1
         self.ip_address = IP_ADDRESS
+        self.edge_mode = ConfigMode(None)
+        self.edge_mode.color = (100, 100, 255)
 
     def update(self, board):
         """Update the board to show the IP address"""
@@ -97,11 +101,14 @@ class ShowIPAddress(Mode):
             the_word.activate()
              #
         self.character_idx += 1
+        self.edge_mode.update(board)
+
 
 class EdgeLightSeconds(Mode):
     """Show the number of seconds using the edge light"""
 
     type = FaceModeType.EDGE
+    include_as_dynamic = True
 
     def update(self, board):
         """Update the edge lights"""
@@ -148,12 +155,14 @@ class EdgeLightRWB(EdgeLightColor):
         (255, 255, 255),
         (0, 0, 255),
     ]
+    include_as_dynamic = True
 
 class EdgeLightGW(EdgeLightColor):
     colors = [
         (255, 255, 255),
         (0, 255, 0),
     ]
+    include_as_dynamic = True
 
 
 
@@ -246,6 +255,7 @@ class EdgeLightCustom(Mode):
     """A mode of the edge lights that reads the local config file and data"""
 
     type = FaceModeType.EDGE
+    include_as_dynamic = True
 
     def __init__(self, parameters):
         super().__init__(parameters)
