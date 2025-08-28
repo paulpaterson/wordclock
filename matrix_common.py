@@ -1,8 +1,8 @@
 from collections import namedtuple
 
-GRID = namedtuple('Grid', ['rows', 'cols'])
-COLOR = namedtuple('Color', ['red', 'green', 'blue'])
-COORD = namedtuple('Coordinate', ['row', 'col'])
+GRID = namedtuple('GRID', ['rows', 'cols'])
+COLOR = namedtuple('COLOR', ['red', 'green', 'blue'])
+COORD = namedtuple('COORD', ['row', 'col'])
 
 WHITE = COLOR(255, 255, 255)
 BLACK = COLOR(0, 0, 0)

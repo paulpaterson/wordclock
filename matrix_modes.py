@@ -56,7 +56,7 @@ class ShowImage(Mode):
         """Initialise the mode"""
         super().__init__(locations)
         self.original_image = PIL.Image.open(file)
-        self.frames: list[PIL.Image] = []
+        self.frames: list[PIL.Image.Image] = []
         self.size = size
         #
         # Extract all the frames if there are some
@@ -67,7 +67,7 @@ class ShowImage(Mode):
         else:
             self.frames.append(self.original_image)
 
-    def get_frame_from(self, image: PIL.Image):
+    def get_frame_from(self, image: PIL.Image.Image):
         """Return a scaled and converted frame"""
         frame = image.convert('RGB')
         frame = frame.resize(self.size)
@@ -122,7 +122,7 @@ class SandSim(Mode):
     def randomize_params(self):
         """Randomize the parameters of the simulation"""
         self.drop_interval = random.randrange(1, self.initial_drop_interval * 2)
-        self.max_sim_length = self.initial_sim_length * self.drop_interval / self.initial_drop_interval
+        self.max_sim_length = int(self.initial_sim_length * self.drop_interval / self.initial_drop_interval)
         palette = self.generate_triadic_palette()
         self.colors[1], self.colors[2], self.colors[3] = palette
 
