@@ -61,7 +61,7 @@ class ShowIPAddress(Mode):
     """Show the current IP address by flashing the numbers one by one"""
 
     words = [
-        'zero', 'one', 'two', 'three', 'four', 'five',
+        '0', 'one', 'two', 'three', 'four', 'five',
         'six', 'seven', 'eight', 'nine', 'ten',
     ]
     include_as_dynamic = True
