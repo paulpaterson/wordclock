@@ -95,7 +95,7 @@ class ShowIPAddress(Mode):
             if current_character != '.':
                 word = self.words[int(current_character)]
             else:
-                word = 'X'
+                word = 's'
              #
             the_word = board.find_next_word(word, possible_words)
             the_word.activate()
