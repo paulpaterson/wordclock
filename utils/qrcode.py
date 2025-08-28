@@ -70,6 +70,7 @@ def capture_frame(filename, timeout=1):
     result = subprocess.run([
             "rpicam-still", "-t",  f"{timeout}s",  
             "--autofocus-mode", "continuous",
+            "--nopreview",
             "-o",  filename
     ], capture_output=True)
     print("Done!")

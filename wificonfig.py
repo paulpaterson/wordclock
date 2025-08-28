@@ -3,6 +3,7 @@
 import enum
 import random
 import time
+import subprocess
 from utils import qrcode
 
 class WifiConfigStage(enum.Enum):
@@ -44,7 +45,6 @@ class WifiConfigurator:
             # Set these as the network settings and try to connect to that
             # network
             self.make_network_change()
-            self.connect_to_network()
             #
             if self.wifi_stage == WifiConfigStage.NETWORK_JOINED:
                 # Connected!
@@ -106,26 +106,22 @@ class WifiConfigurator:
 
     def make_network_change(self):
         """Set the network properties from the QR code"""
-        return True
-
-    def connect_to_network(self):
-        """Connect to the network"""
-        on = False
-        for _ in range(self.max_retries):
-            #
-            # Flash the bar
-            self.updater.config_mode.color = (255, 255, 255) if on else (100, 100, 255)
-            on = not on
-            self.update_board()
-            #
-            if self.am_connected_to_network():
-                self.wifi_stage = WifiConfigStage.NETWORK_JOINED
-                return
-        else:
+        try:
+            result = subprocess.run(
+                [
+                    'sudo',
+                    './scripts/configure_network.sh',
+                    '--ssid', self.wifi_details['SSID'],
+                    '--password', self.wifi_details['PASSWORD'],
+                    '--security', self.wifi_details['SECURITY'],
+                    '--wait', '20',
+                ],
+                capture_output=False, text=True, check=True
+            )
+        except subprocess.CalledProcessError as e:
+            print(f'Failed: {e}')
             self.wifi_stage = WifiConfigStage.NETWORK_NOT_JOINED
+        else:
+            self.wifi_stage = WifiConfigStage.NETWORK_JOINED
 
-    def am_connected_to_network(self):
-        """Return True if we are connected to the network"""
-        time.sleep(1)
-        return random.random() > 0.8
 
