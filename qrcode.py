@@ -79,7 +79,7 @@ def capture_frame(filename, timeout=1):
 
 def detect_mode(max_iterations, fixed_filename=None):
     """Continuously try to detect a QR code"""
-    filename = fixed_filename if fixed_filename else "images/detect.jpg"
+    filename = fixed_filename if fixed_filename else pathlib.Path(__file__).parent / "images" / "detect.jpg"
     iteration = max_iterations
     while iteration:
         if not fixed_filename:
