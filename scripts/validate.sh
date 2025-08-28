@@ -53,7 +53,7 @@ fi
 printf "$W"
 
 # Camera available?
-if [ -d "/dev/video0" ]; then
+if [ "`rpicam-still --list-cameras | grep ov564`" != "" ]; then
   printf "$G - Found camera, should be able to check QR codes\n"
 else
   printf "$Y - No camera found, will not be able to check QR codes\n"
