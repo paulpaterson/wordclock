@@ -23,7 +23,7 @@ class Board:
                  replace_blanks=False, blank_character=' ', edge_character=' ', show_a=False, display=None):
         self.term = term
         self.time = time
-        self.rows = None
+        self.rows: list[list[faces.Word]] = [[]]
         self.simple = simple
         self.show_it_is = show_it_is
         self.total_lights = 0
@@ -45,7 +45,6 @@ class Board:
 
     def add_words(self, words):
         current_line = 0
-        self.rows = [[]]
         for word in words:
             if word.new_line:
                 current_line += 1
@@ -115,6 +114,8 @@ class Board:
 
 
     def do_lights(self, text):
+        if not self.lights:
+            return
         self.lights.clear_strip()
         #
         # Lights go down from 0 in the top left and then at the end of each row they
@@ -266,7 +267,7 @@ def main(offset, time, interval, simulation_update, face_mode, run_mode, show_it
     def signal_handler(sig, frame):
         """Handle the SIGTERM from SystemD"""
         print(f'Caught SIGTERM {sig}')
-        if lights:
+        if lights and b.lights:
             b.lights.clear_strip()
             b.lights.update_strip()
         sys.exit(0)
