@@ -181,13 +181,13 @@ class TestSayer(unittest.TestCase):
         self.assertEqual(
             'noon',
             timesayer.convert_to_text(datetime.time(12,0),
-            twelve_mode=timesayer.TwelveMode.name,
-        ))
+                                      twelve_mode=timesayer.TwelveMode.mode_name,
+                                      ))
         self.assertEqual(
             'midnight',
             timesayer.convert_to_text(datetime.time(23,59),
-            twelve_mode=timesayer.TwelveMode.name,
-        ))
+                                      twelve_mode=timesayer.TwelveMode.mode_name,
+                                      ))
         self.assertEqual(
             'twelve PM',
             timesayer.convert_to_text(datetime.time(12,0),

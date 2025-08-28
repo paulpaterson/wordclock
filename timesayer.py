@@ -9,7 +9,7 @@ class Mode(enum.Enum):
 
 class TwelveMode(enum.Enum):
     number = 0
-    name = 1
+    mode_name = 1
 
 
 class TargetTime:
@@ -54,14 +54,14 @@ complex_times = simple_times + [
 
 
 def convert_to_text(t: datetime.time, simple: bool = False,
-                    mode: Mode = Mode.am_pm, twelve_mode: TwelveMode = TwelveMode.name,
+                    mode: Mode = Mode.am_pm, twelve_mode: TwelveMode = TwelveMode.mode_name,
                     show_a=False) -> str:
     """Return a text representation of the time"""
     hour_words = [
-        'midnight' if twelve_mode == TwelveMode.name else 'twelve',
+        'midnight' if twelve_mode == TwelveMode.mode_name else 'twelve',
         'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight',
         'nine', 'ten', 'eleven',
-        'noon' if twelve_mode == TwelveMode.name else 'twelve',
+        'noon' if twelve_mode == TwelveMode.mode_name else 'twelve',
         'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight',
         'nine', 'ten', 'eleven'
     ]
