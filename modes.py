@@ -4,6 +4,7 @@ import datetime
 import enum
 import json
 import os
+import subprocess
 from collections import namedtuple
 
 
@@ -12,6 +13,11 @@ class FaceModeType(enum.Enum):
     EDGE = 1
     BOTH = 2
     TEST = 3
+
+
+# Get IP Address
+result = subprocess.run(['./scripts/getip.sh'], capture_output=True)
+IP_ADDRESS = result.stdout.decode('utf-8').strip()
 
 
 class Mode:
@@ -62,13 +68,13 @@ class ShowIPAddress(Mode):
         """Initialise the mode"""
         super().__init__(parameters)
         self.character_idx = -1
-        self.ip_address = '192.168.1.167'
+        self.ip_address = IP_ADDRESS
 
     def update(self, board):
         """Update the board to show the IP address"""
         #
         # Get the index of the next character to display
-        stripped_ip = self.ip_address
+        stripped_ip = self.ip_address.replace('.', '..') + '..'
         if self.character_idx >= len(stripped_ip):
             self.character_idx = -1
         #
@@ -84,10 +90,12 @@ class ShowIPAddress(Mode):
             current_character = stripped_ip[self.character_idx]
             if current_character != '.':
                 word = self.words[int(current_character)]
-                #
-                the_word = board.find_next_word(word, possible_words)
-                the_word.activate()
-                #
+            else:
+                word = 'X'
+             #
+            the_word = board.find_next_word(word, possible_words)
+            the_word.activate()
+             #
         self.character_idx += 1
 
 class EdgeLightSeconds(Mode):
