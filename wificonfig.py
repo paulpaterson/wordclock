@@ -1,13 +1,11 @@
 """Responsible for configuring the WIFI by the clock reading a QR code"""
 
 import enum
-import random
-import time
 import subprocess
 import warnings
 
 try:
-    from utils import qrcode
+    import qrcode
 except ImportError as e:
     warnings.warn(f'Could not load qrcode module - is camera loaded?: {e}')
 
