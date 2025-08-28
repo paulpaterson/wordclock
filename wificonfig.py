@@ -63,6 +63,7 @@ class WifiConfigurator:
         self.updater.config_mode.bottom = True
         #
         self.update_board()
+        return self.wifi_stage
 
     def update_board(self):
         """Update the display on the clock"""

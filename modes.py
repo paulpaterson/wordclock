@@ -147,6 +147,7 @@ class EdgeLightBlank(EdgeLightColor):
     colors = [
         (0, 0, 0)
     ]
+    include_as_dynamic = True
 
 
 class EdgeLightRWB(EdgeLightColor):

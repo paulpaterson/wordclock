@@ -134,7 +134,10 @@ class Updater:
             self.config_mode.left = False
         elif self.mode == UpdateModes.CONFIG_MINS and time.time() - self.last_key_press < self.button_mins_interval and self.button_click == 0:
             self.mode = UpdateModes.CONFIG_WIFI
-            self.wifi_config.start_reading()
+            result = self.wifi_config.start_reading()
+            if result == wificonfig.WifiConfigStage.NETWORK_JOINED:
+                self.mode = UpdateModes.NORMAL
+                self.board.modes = [modes.ShowIPAddress(None)]
         else:
             if self.mode == UpdateModes.CONFIG_HOURS:
                 self.current_offset += datetime.timedelta(hours=1)
@@ -142,3 +145,4 @@ class Updater:
                 self.current_offset += datetime.timedelta(minutes=5)
             self.button_click += 1
         self.last_key_press = time.time()
+
