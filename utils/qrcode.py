@@ -75,12 +75,14 @@ def capture_frame(filename, timeout=1):
     print("Done!")
     return None
 
-def detect_mode(max_iterations):
+
+def detect_mode(max_iterations, fixed_filename=None):
     """Continuously try to detect a QR code"""
-    filename = "images/detect.jpg"
+    filename = fixed_filename if fixed_filename else "images/detect.jpg"
     iteration = max_iterations
     while iteration:
-        capture_frame(filename, 0.01)
+        if not fixed_filename:
+            capture_frame(filename, 0.01)
         result = get_qr_code(filename)
         if result:
             print(f"We got a QR code for: {result}")
@@ -89,9 +91,6 @@ def detect_mode(max_iterations):
             print("Nothing detected")
             iteration -= 1
     return None
-
-
-
 
 def get_wifi_details_from_qr(qr_string):
     """Return the WIFI details from a code read form the camera"""

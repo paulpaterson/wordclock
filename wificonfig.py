@@ -17,12 +17,13 @@ class WifiConfigStage(enum.Enum):
 class WifiConfigurator:
     """The class responsible for moving through the config stages"""
 
-    def __init__(self, updater):
+    def __init__(self, updater, qrcode_file=""):
         """Initialise the configurator"""
         self.updater = updater
         self.wifi_stage = WifiConfigStage.IDLE
         self.max_retries = 4
         self.wifi_details = None
+        self.fixed_qrcode_filename = qrcode_file
 
     def start_reading(self):
         """Start trying to read the QR code"""
@@ -92,7 +93,7 @@ class WifiConfigurator:
 
     def get_qr(self):
         """Make one attempt to get the QR code and return the data or None if none found"""
-        result = qrcode.detect_mode(4)
+        result = qrcode.detect_mode(4, self.fixed_qrcode_filename)
         if not result:
             return None
         else:

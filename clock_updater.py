@@ -22,9 +22,10 @@ class UpdateModes(enum.Enum):
 class Updater:
     """A class to manage updating the clcck"""
 
-    def __init__(self, board, current_offset, term, interval, simulation_offset, lights, button_key, mode_button_key, set_system_time):
+    def __init__(self, board, current_offset, term, interval,
+                 simulation_offset, lights, button_key, mode_button_key, set_system_time, qrcode_file):
         self.mode = UpdateModes.NORMAL
-        self.wifi_config = wificonfig.WifiConfigurator(self)
+        self.wifi_config = wificonfig.WifiConfigurator(self, qrcode_file)
         self.board = board
         self.current_offset = current_offset
         self.term = term
