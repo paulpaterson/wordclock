@@ -4,7 +4,13 @@ import enum
 import random
 import time
 import subprocess
-from utils import qrcode
+import warnings
+
+try:
+    from utils import qrcode
+except ImportError as e:
+    warnings.warn(f'Could not load qrcode module - is camera loaded?: {e}')
+
 
 class WifiConfigStage(enum.Enum):
     IDLE = 'idle'
