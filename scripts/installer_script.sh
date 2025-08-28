@@ -202,6 +202,13 @@ fi
 
 # Enabling the software to do QR code detection
 if [ $CAMERA -eq 1 ]; then
+  printf "Downloading and installing camera specific modules\n"
+  wget -O install_pivariety_pkgs.sh https://github.com/ArduCAM/Arducam-Pivariety-V4L2-Driver/releases/download/install_script/install_pivariety_pkgs.sh
+  chmod +x install_pivariety_pkgs.sh
+  ./install_pivariety_pkgs.sh -p libcamera_dev
+  ./install_pivariety_pkgs.sh -p libcamera_apps
+  printf "Done!\n"
+
   printf "Enabling software for QR code detection ..."
   sudo apt -y install libjpeg62-turbo-dev
   sudo apt -y install zbar-tools libzbar-dev uuid-runtime
