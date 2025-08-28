@@ -3,9 +3,9 @@
 # Script to validate the configuration of the RPI
 # to see if everything should be working.
 
-R="\033[31m"
-G="\033[32m"
-Y="\033[33m"
+R="\033[31m [BAD ] "
+G="\033[32m [OK  ] "
+Y="\033[33m [WARN] "
 W="\033[0m"
 B="\e[1;36m"
 
