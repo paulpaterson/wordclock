@@ -8,5 +8,5 @@ def test_get_ip_address():
     path = pathlib.Path(__file__).parent.parent / 'scripts' / 'getip.sh'
     result = subprocess.run([path], capture_output=True)
     ip = result.stdout.decode('utf-8').strip()
-    assert re.match('\d+\.\d+\.\d+\.\d+', ip)
+    assert re.match(r'\d+\.\d+\.\d+\.\d+', ip)
     assert result.returncode == 0
