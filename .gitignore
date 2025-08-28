@@ -1,5 +1,6 @@
 # Backup file for the local machine
 config/config.bak
+backups/*
 
 # Smart data retrieved by the local machine
 config/local_data.json
@@ -7,3 +8,9 @@ config/local_data.json
 # Testing images which may contain wifi passwords
 images/qr*.jpg
 images/qr*.png
+images/detect.jpg
+
+# Python cache files
+**/__pycache__
+
+
