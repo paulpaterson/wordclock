@@ -12,6 +12,13 @@ B="\e[1;36m"
 printf "\nChecking overall configuration for errors.\n\n"
 
 # Overall info
+
+if [ `which nmcli` ];then
+  printf "$G - Found nmcli - able to make network changes\n"
+else
+  printf "$R - Did not find nmcli - unable to make network changes automatically\n"
+fi
+
 DEVICE=`ip -br link show | awk 'NR==2{print $1}'`
 IP=`ip -4 a show $DEVICE | grep -oP '(?<=inet\s)\d+(\.\d+){3}'`
 HOSTNAME=`hostname`

@@ -103,6 +103,7 @@ fi
 
 # Setting the fixed IP address
 if [ $SET_IP -eq 1 ]; then
+  if command -v nmcli >/dev/null 2>&1; then
   connection=`nmcli --fields name  connection show | sed -n '2p' | awk '{$1=$1};1'`
   printf "Trying to set fixed IP address for '$connection' as '$FIXED_IP'\n"
   sudo nmcli connection modify "$connection" ipv4.method manual
@@ -112,6 +113,9 @@ if [ $SET_IP -eq 1 ]; then
   IP=`ip -4 a show $DEVICE | grep -oP '(?<=inet\s)\d+(\.\d+){3}'`
   printf "Validation tried to set to $FIXED_IP - is now $IP\n"
   printf "You must reboot or reload internet settings via: sudo nmcli connection up \"$connection\"\n"
+  else
+  printf "Cannot find nmcli - unable to set IP address\n"
+  fi 
 else
   printf "Not setting fixed IP Address. Leaving as '$IP'\n"
 fi
