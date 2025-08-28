@@ -1,6 +1,6 @@
 """Read config by using the camera to look at text"""
 
-import easyocr
+import easyocr  # type: ignore
 import pathlib
 import pprint
 import cv2

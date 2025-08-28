@@ -60,8 +60,8 @@ class ShowImage(Mode):
         self.size = size
         #
         # Extract all the frames if there are some
-        if self.original_image.n_frames > 0:
-            for idx in range(self.original_image.n_frames):
+        if self.original_image.n_frames > 0:  # type: ignore
+            for idx in range(self.original_image.n_frames):  # type: ignore
                 self.original_image.seek(idx)
                 self.frames.append(self.get_frame_from(self.original_image))
         else:

@@ -6,7 +6,7 @@ import requests
 import aiohttp
 
 try:
-    from omnilogic import OmniLogic
+    from omnilogic import OmniLogic  # type: ignore
 except ImportError:
     print('Omnilogic module not imported')
     omnilogic = None

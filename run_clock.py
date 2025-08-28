@@ -239,7 +239,7 @@ def main(offset, time, interval, simulation_update, face_mode, run_mode, show_it
         lights = lambda n: mocklights.MockLights(term, n)
     elif light_mode in ('real', 'detect'):
         try:
-            from pi5neo import Pi5Neo
+            from pi5neo import Pi5Neo  # type: ignore
         except ImportError:
             lights = None
         else:
@@ -305,7 +305,7 @@ def main(offset, time, interval, simulation_update, face_mode, run_mode, show_it
                           button_key, mode_button_key, set_system_time, qrcode_file)
 
         if button_pin != -1:
-            import gpiozero
+            import gpiozero  # type: ignore
             button = gpiozero.Button(button_pin)
             button.when_pressed = updater.button_up
         if mode_button_pin != -1:

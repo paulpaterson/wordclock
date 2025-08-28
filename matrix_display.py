@@ -14,7 +14,7 @@ import sys
 # Load LED control stuff if it is there
 baud_rate = 1000 # 800 maybe for the RPI5
 try:
-    from pi5neo import Pi5Neo
+    from pi5neo import Pi5Neo  # type: ignore
 except ImportError:
     matrix_leds = None
 else:

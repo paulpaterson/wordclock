@@ -1,4 +1,4 @@
-import pi5neo
+import pi5neo  # type: ignore
 import sys
 
 p = pi5neo.Pi5Neo('/dev/spidev0.0', 16*16, 1000)

@@ -1,5 +1,5 @@
 
-import gpiozero
+import gpiozero  # type: ignore
 import time
 import signal
 
