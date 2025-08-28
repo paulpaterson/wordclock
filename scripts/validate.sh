@@ -16,7 +16,7 @@ printf "\nChecking overall configuration for errors.\n\n"
 if [ `which nmcli` ];then
   printf "$G - Found nmcli - able to make network changes\n"
 else
-  printf "$R - Did not find nmcli - unable to make network changes automatically\n"
+  printf "$Y - Did not find nmcli - unable to make network changes automatically\n"
 fi
 
 DEVICE=`ip -br link show | awk 'NR==2{print $1}'`
@@ -52,6 +52,12 @@ fi
 
 printf "$W"
 
+# Camera available?
+if [ -d "/dev/video0" ]; then
+  printf "$G - Found camera, should be able to check QR codes\n"
+else
+  printf "$Y - No camera found, will not be able to check QR codes\n"
+fi
 
 # Boot behaviour
 BOOT=`sudo raspi-config nonint get_autologin`
