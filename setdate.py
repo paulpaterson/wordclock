@@ -2,7 +2,7 @@ import subprocess
 import datetime
 
 
-def set_system_date(target_time):
+def set_system_date(target_time: datetime.datetime) -> None:
     # Format the date and time for the date command (adjust the format as needed)
     date_string = target_time.strftime("%Y/%m/%d %H:%M:%S")
 

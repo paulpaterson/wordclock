@@ -19,10 +19,10 @@ print('Waiting for the button to be pressed')
 #b.wait_for_press()
 #print('The button was pressed')
 
-def on():
+def on() -> None:
     print('Button is on')
 
-def off():
+def off() -> None:
     print('Button is off')
 
 b.when_pressed = on

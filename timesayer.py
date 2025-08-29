@@ -55,7 +55,7 @@ complex_times = simple_times + [
 
 def convert_to_text(t: datetime.time, simple: bool = False,
                     mode: Mode = Mode.am_pm, twelve_mode: TwelveMode = TwelveMode.mode_name,
-                    show_a=False) -> str:
+                    show_a: bool=False) -> str:
     """Return a text representation of the time"""
     hour_words = [
         'midnight' if twelve_mode == TwelveMode.mode_name else 'twelve',
