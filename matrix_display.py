@@ -2,6 +2,8 @@
 import time
 import pathlib
 import importlib
+from types import FrameType
+
 import click
 import blessed
 from matrix_modes import Mode, CycleColors, ShowImage
@@ -24,7 +26,7 @@ else:
 class DisplayMatrix:
     """Represents the matrix being displayed"""
 
-    def __init__(self, size: GRID, modes: list[Mode]):
+    def __init__(self, size: GRID, modes: list[Mode]) -> None:
         """Initialise the matrix"""
         self.term = blessed.Terminal()
         self.size = size
@@ -37,7 +39,7 @@ class DisplayMatrix:
         else:
             self.matrix_leds = None
 
-    def display_board(self):
+    def display_board(self) -> None:
         """Update the display of the board"""
         print(self.term.home + self.term.clear)
         for row in self.lights.rows():
@@ -46,7 +48,7 @@ class DisplayMatrix:
                 print(self.term.color_rgb(*color) + "■", end="")
             print('')
 
-    def display_leds(self):
+    def display_leds(self) -> None:
         """Update the LED board"""
         if not self.matrix_leds:
             raise ImportError('Cannot import the led control')
@@ -69,7 +71,7 @@ class DisplayMatrix:
         #
         self.matrix_leds.update_strip()
 
-    def update_board(self):
+    def update_board(self) -> None:
         """Update the board"""
         for mode in self.modes:
             mode.update(self.lights)
@@ -80,8 +82,8 @@ class DisplayMatrix:
 @click.option('--interval', default=10, type=float, help="Refresh interval (s)")
 @click.option('--config', required=True, type=str, help="File to use for config")
 @click.argument('parameters', nargs=-1)
-def main(screen, leds, interval, config, parameters):
-    def signal_handler(sig, frame):
+def main(screen: bool, leds: bool, interval: float, config: str, parameters: list[str]) -> None:
+    def signal_handler(sig: int, frame: FrameType|None) -> None:
         """Handle the SIGTERM from SystemD"""
         print(f'Caught SIGTERM {sig}')
         if b.matrix_leds:
@@ -94,8 +96,8 @@ def main(screen, leds, interval, config, parameters):
 
     b = DisplayMatrix(GRID(16, 16), [])
 
-    config = importlib.import_module(config)
-    modes = config.get_modes(b, *parameters)
+    config_module = importlib.import_module(config)
+    modes = config_module.get_modes(b, *parameters)
     for mode in modes:
         b.modes.append(mode)
 
