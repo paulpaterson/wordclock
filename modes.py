@@ -6,6 +6,7 @@ import json
 import os
 import subprocess
 from collections import namedtuple
+from typing import Any
 
 
 class FaceModeType(enum.Enum):
@@ -26,13 +27,13 @@ class Mode:
     type = FaceModeType.FACE
     include_as_dynamic = False
 
-    def __init__(self, parameters):
+    def __init__(self, parameters: dict[str, Any]) -> None:
         self.parameters = parameters
 
-    def update(self, board):
+    def update(self, board) -> None:
         """Update the board according to the mode"""
 
-    def set_edge_light_by_index(self, board, index, color=None):
+    def set_edge_light_by_index(self, board, index, color=None) -> None:
         if index < 16:
             row, col = 0, index
         elif index < 16 + 15:
