@@ -10,7 +10,7 @@ import sys
 import re
 
 
-def raw_get_qr_code(filename, resize="resize", width=400):
+def raw_get_qr_code(filename: pathlib.Path, resize: str="resize", width: int=400) -> str:
     if sys.platform == 'linux':
         zbar_app = 'zbarimg'
     else:
@@ -31,7 +31,7 @@ def raw_get_qr_code(filename, resize="resize", width=400):
                     resized.save(byte_stream, format="JPEG")
                     fp.write(byte_stream.getvalue())
                     fp.close()
-                    the_file_name = fp.name
+                    the_file_name = pathlib.Path(fp.name)
             else:
                 the_file_name = image_file
 
@@ -48,10 +48,10 @@ def raw_get_qr_code(filename, resize="resize", width=400):
 
     code = output.stdout.split(b":", maxsplit=1)
     result = code[1].decode('utf-8').strip()
-    #print(f'Code is "{result}"')
+
     return result
 
-def get_qr_code(filename):
+def get_qr_code(filename: pathlib.Path) -> str|None:
     """Try to get the QR code from an image file"""
     try:
         result = raw_get_qr_code(filename, 'resize')
@@ -64,7 +64,7 @@ def get_qr_code(filename):
     return result
 
 
-def capture_frame(filename, timeout=1):
+def capture_frame(filename: pathlib.Path, timeout: float=1) -> None:
     """Capture a frame from the camera"""
     print("Capturing ...", end="")
     result = subprocess.run([
@@ -77,14 +77,14 @@ def capture_frame(filename, timeout=1):
     return None
 
 
-def detect_mode(max_iterations, fixed_filename=None):
+def detect_mode(max_iterations: int, fixed_filename: str="") -> str | None:
     """Continuously try to detect a QR code"""
     filename = fixed_filename if fixed_filename else pathlib.Path(__file__).parent / "images" / "detect.jpg"
     iteration = max_iterations
     while iteration:
         if not fixed_filename:
-            capture_frame(filename, 0.01)
-        result = get_qr_code(filename)
+            capture_frame(pathlib.Path(filename), 0.01)
+        result = get_qr_code(pathlib.Path(filename))
         if result:
             print(f"We got a QR code for: {result}")
             return result
@@ -93,10 +93,10 @@ def detect_mode(max_iterations, fixed_filename=None):
             iteration -= 1
     return None
 
-def get_wifi_details_from_qr(qr_string):
+def get_wifi_details_from_qr(qr_string: str) -> dict[str, str]:
     """Return the WIFI details from a code read form the camera"""
     if not qr_string.startswith('WIFI:'):
-        return None
+        return {}
     parts = {}
     for part_type, part_value in re.findall('(\w):([^;]*);', qr_string[5:]):
         parts[part_type] = part_value
@@ -118,6 +118,6 @@ if __name__ == '__main__':
                 else:
                     print('No result!')
         else:
-            print(get_qr_code(sys.argv[1]))
+            print(get_qr_code(pathlib.Path(__file__).parent / sys.argv[1]))
     else:
         print('Usage: python qrcode.py <filename>, <optionally: resize>')
