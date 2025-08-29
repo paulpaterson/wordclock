@@ -1,6 +1,8 @@
+import matrix_display
+import matrix_modes
 from matrix_modes import *
 
-def get_modes(board):
+def get_modes(board: matrix_display.DisplayMatrix) -> list[matrix_modes.Mode]:
     return [
         SandSim(
             board.lights.get_box_coords(COORD(0, 0), GRID(16, 16)),
