@@ -15,11 +15,11 @@ class ModeUpdateError(Exception):
 class Mode:
     """An abstract mode that drives the matrix display"""
 
-    def __init__(self, locations: list[COORD]):
+    def __init__(self, locations: list[COORD]) -> None:
         """Initialise the mode"""
         self.light_locations = locations
 
-    def update(self, lights: LightCollection):
+    def update(self, lights: LightCollection) -> None:
         """Update the board according to the mode"""
 
 
@@ -27,13 +27,13 @@ class Mode:
 class CycleColors(Mode):
     """A mode that cycles colors"""
 
-    def __init__(self, locations, colors: list[COLOR], synchronized=False):
+    def __init__(self, locations: list[COORD], colors: list[COLOR], synchronized: bool=False) -> None:
         """Initialise the mode"""
         super().__init__(locations)
         self.color_list = colors
         self.synchronized = synchronized
 
-    def update(self, lights: LightCollection):
+    def update(self, lights: LightCollection) -> None:
         """Update all the colors"""
         if not self.color_list:
             raise ModeUpdateError(f'There are no colors defined in this mode, {self}')
@@ -52,7 +52,7 @@ class CycleColors(Mode):
 class ShowImage(Mode):
     """A mode that shows one or more images in sequence"""
 
-    def __init__(self, locations, file: pathlib.Path, size: GRID):
+    def __init__(self, locations: list[COORD], file: pathlib.Path, size: GRID) -> None:
         """Initialise the mode"""
         super().__init__(locations)
         self.original_image = PIL.Image.open(file)
@@ -67,13 +67,13 @@ class ShowImage(Mode):
         else:
             self.frames.append(self.original_image)
 
-    def get_frame_from(self, image: PIL.Image.Image):
+    def get_frame_from(self, image: PIL.Image.Image) -> PIL.Image.Image:
         """Return a scaled and converted frame"""
         frame = image.convert('RGB')
         frame = frame.resize(self.size)
         return frame
 
-    def update(self, lights: LightCollection):
+    def update(self, lights: LightCollection) -> None:
         """Update the representation of the picture"""
         #
         # Get the frame to display
@@ -83,15 +83,16 @@ class ShowImage(Mode):
         # Now light up the display pixels
         for location in self.light_locations:
             light = lights.get_light_at(location)
-            light.set_color(frame.getpixel((location.col, location.row)))
+            pixel_color: COLOR = frame.getpixel((location.col, location.row))  # type: ignore
+            light.set_color(pixel_color)
 
 
 class SandSim(Mode):
     """A mode that runs a sand falling simulation"""
 
-    def __init__(self, locations, size: GRID, colors: dict[int, COLOR],
+    def __init__(self, locations: list[COORD], size: GRID, colors: dict[int, COLOR],
                  drop_interval: int=5, drop_count: int=1, max_sim_length: int=200,
-                 random_at_end: bool=False):
+                 random_at_end: bool=False) -> None:
         super().__init__(locations)
         self.sim = SandSimulation(size.cols, size.rows)
         self.iteration = 0
@@ -103,7 +104,7 @@ class SandSim(Mode):
         if self.random_at_end:
             self.randomize_params()
 
-    def update(self, lights: LightCollection):
+    def update(self, lights: LightCollection) -> None:
         """Update the simulation"""
         self.sim.run_simulation(1, self.iteration, self.drop_interval, self.drop_count)
         for location in self.light_locations:
@@ -119,7 +120,7 @@ class SandSim(Mode):
             if self.random_at_end:
                 self.randomize_params()
 
-    def randomize_params(self):
+    def randomize_params(self) -> None:
         """Randomize the parameters of the simulation"""
         self.drop_interval = random.randrange(1, self.initial_drop_interval * 2)
         self.max_sim_length = int(self.initial_sim_length * self.drop_interval / self.initial_drop_interval)
@@ -157,7 +158,7 @@ class SandSim(Mode):
         return [COLOR(r1, g1, b1), COLOR(r2, g2, b2), COLOR(r3, g3, b3)]
 
 class SandSimulation:
-    def __init__(self, width=16, height=16):
+    def __init__(self, width: int=16, height: int=16) -> None:
         """
         Initializes the sand simulation grid.
 
@@ -182,11 +183,11 @@ class SandSimulation:
         self.current_sand_type = 1
         self.max_sand_types = 3
 
-    def init_grid(self):
+    def init_grid(self) -> None:
         """Initialise the grid"""
         self.grid = [[0 for _ in range(self.width)] for _ in range(self.height)]
 
-    def _clear_screen(self):
+    def _clear_screen(self) -> None:
         """Clears the terminal screen for animation."""
         # For Windows
         if os.name == 'nt':
@@ -195,7 +196,7 @@ class SandSimulation:
         else:
             _ = os.system('clear')
 
-    def _draw_grid(self):
+    def _draw_grid(self) -> None:
         """Prints the current state of the grid to the console."""
         self._clear_screen()
         print("Sand Falling Simulation (16x16)")
@@ -206,7 +207,7 @@ class SandSimulation:
         print("------------------------------")
         print("Press Ctrl+C to stop.")
 
-    def add_sand(self, col, sand_type=1):
+    def add_sand(self, col: int, sand_type: int=1) -> None:
         """
         Adds a single sand particle of a specified type at the top of a given column.
 
@@ -222,7 +223,7 @@ class SandSimulation:
         else:
             print(f"Invalid column ({col}) or sand type ({sand_type}).")
 
-    def _update_sand(self):
+    def _update_sand(self) -> None:
         """
         Applies the falling logic to all sand particles in the grid.
         Iterates from bottom to top to ensure correct falling behavior.
@@ -258,7 +259,7 @@ class SandSimulation:
                             self.grid[r][c] = 0
                         # If none of the above, sand stays put (it's settled)
 
-    def run_simulation(self, steps=100, current_step=0, drop_interval=5, drop_count=1):
+    def run_simulation(self, steps: int=100, current_step: int=0, drop_interval: int=5, drop_count: int=1) -> None:
         """
         Runs the sand falling simulation for a specified number of steps.
 
