@@ -1,4 +1,5 @@
 """Represents the faces of the clock"""
+import blessed
 
 
 class Word:
@@ -6,18 +7,18 @@ class Word:
     new_line = False
     is_used = True
 
-    def __init__(self, word, is_on=False):
+    def __init__(self, word: str, is_on: bool=False) -> None:
         self.line = None
         self.word = word
         self.on = is_on
 
-    def clear(self):
+    def clear(self) -> None:
         self.on = False
 
-    def activate(self):
+    def activate(self) -> None:
         self.on = True
 
-    def show(self, term, terminal_mode=True):
+    def show(self, term: blessed.Terminal, terminal_mode: bool=True) -> str:
         if self.on:
             return term.red(self.word.upper()) if terminal_mode else self.word.upper()
         else:
@@ -430,7 +431,7 @@ faces = {
     '16x16full': full_square_words,
 }
 
-def get_valid_faces():
+def get_valid_faces() -> list[str]:
     """Return the valid face types"""
     return list(sorted(faces.keys()))
 
