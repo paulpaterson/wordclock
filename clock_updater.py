@@ -61,7 +61,7 @@ class Updater:
         while True:
             try:
                 t = datetime.datetime.now()
-                self.board.time = t + self.current_offset
+                self.board.time = (t + self.current_offset).time()
                 #
                 logs = self.update_board()
                 if self.mode != UpdateModes.NORMAL and time.time() - self.last_key_press > self.button_reset_interval:
@@ -90,7 +90,7 @@ class Updater:
             if os.path.getmtime('config/config.sh') != last_config_time:
                 sys.exit(2)
 
-        if self.lights:
+        if self.lights and self.board.lights:
             self.board.lights.clear_strip()
             self.board.lights.update_strip()
 

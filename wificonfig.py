@@ -29,7 +29,7 @@ class WifiConfigurator:
     def __init__(self, updater: Updater, qrcode_file: str="") -> None:
         """Initialise the configurator"""
         self.updater = updater
-        self.wifi_stage = WifiConfigStage.IDLE
+        self.wifi_stage: WifiConfigStage = WifiConfigStage.IDLE
         self.max_retries = 4
         self.wifi_details: dict[str, str] = {}
         self.fixed_qrcode_filename = qrcode_file
@@ -52,7 +52,7 @@ class WifiConfigurator:
             #
             # Set these as the network settings and try to connect to that
             # network
-            self.make_network_change()
+            self.wifi_stage = self.make_network_change()
             #
             if self.wifi_stage == WifiConfigStage.NETWORK_JOINED:
                 # Connected!
@@ -113,7 +113,7 @@ class WifiConfigurator:
                 self.wifi_details = details
                 return True
 
-    def make_network_change(self) -> None:
+    def make_network_change(self) -> WifiConfigStage:
         """Set the network properties from the QR code"""
         try:
             result = subprocess.run(
@@ -129,8 +129,8 @@ class WifiConfigurator:
             )
         except subprocess.CalledProcessError as e:
             print(f'Failed: {e}')
-            self.wifi_stage = WifiConfigStage.NETWORK_NOT_JOINED
+            return WifiConfigStage.NETWORK_NOT_JOINED
         else:
-            self.wifi_stage = WifiConfigStage.NETWORK_JOINED
+            return WifiConfigStage.NETWORK_JOINED
 
 
