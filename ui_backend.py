@@ -12,7 +12,7 @@ app = Flask(__name__)
 # Configuration file path
 CONFIG_FILE = "config/config.sh"
 
-def load_config():
+def load_config() -> dict[str, str]:
     """
     Loads the configuration from the config.sh file.
     Returns a dictionary with the configuration parameters.
@@ -33,7 +33,7 @@ def load_config():
     return config
 
 
-def save_config(data):
+def save_config(data: dict[str, str]) -> bool:
     """
     Saves the configuration to the config.sh file.
     Args:

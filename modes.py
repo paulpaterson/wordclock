@@ -27,11 +27,12 @@ class Mode:
     type = FaceModeType.FACE
     include_as_dynamic = False
 
-    def __init__(self, parameters: dict[str, Any]) -> None:
+    def __init__(self, parameters: list[str]|None) -> None:
         self.parameters = parameters
 
-    def update(self, board) -> None:
+    def update(self, board) -> list[str]:
         """Update the board according to the mode"""
+        return []
 
     def set_edge_light_by_index(self, board, index, color=None) -> None:
         if index < 16:
@@ -48,7 +49,7 @@ class Mode:
 class Normal(Mode):
     """Show the time"""
 
-    def update(self, board):
+    def update(self, board) -> list[str]:
         """Update the board to show the current time"""
         time_string = board.convert_time()
         time_words = time_string.split()
@@ -56,6 +57,7 @@ class Normal(Mode):
         for word in time_words:
             the_word = board.find_next_word(word, possible_words)
             the_word.activate()
+        return []
 
 
 class ShowIPAddress(Mode):
@@ -378,7 +380,7 @@ class EdgeLightCustom(Mode):
             self.set_edge_light_by_index(board, light_num + light_start, color)
 
 
-modes = {
+modes: dict[str, type[Mode]] = {
     'Normal': Normal,
     'EdgeLightBlank': EdgeLightBlank,
     'EdgeLightSeconds': EdgeLightSeconds,
@@ -392,5 +394,5 @@ modes = {
     'ShowIPAddress': ShowIPAddress,
 }
 
-def get_valid_modes():
+def get_valid_modes() -> list[str]:
     return sorted(list(modes.keys()))

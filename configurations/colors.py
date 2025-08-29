@@ -1,6 +1,8 @@
+import matrix_display
+import matrix_modes
 from matrix_modes import *
 
-def get_modes(board):
+def get_modes(board: matrix_display.DisplayMatrix) -> list[matrix_modes.Mode]:
     return [
             CycleColors(
                 board.lights.get_edge_coords(),

@@ -3,6 +3,9 @@ import random
 import signal
 import sys
 import datetime
+from collections.abc import Callable
+from types import FrameType
+from typing import Any
 
 import blessed
 import blessed.sequences
@@ -19,8 +22,11 @@ RUN_MODES = ['NORMAL', 'CALCSIZE', 'SHOWLETTERS']
 class Board:
     """Represents of the words arranged in a board"""
 
-    def __init__(self, term, time, simple=False, show_it_is=False, lights=None, light_color=None,
-                 replace_blanks=False, blank_character=' ', edge_character=' ', show_a=False, display=None):
+    def __init__(self, term: blessed.Terminal, time: datetime.time, simple: bool=False, show_it_is: bool=False,
+                 lights: Callable[[int], Any]|None=None,
+                 light_color: tuple[int, int, int]|None=None,
+                 replace_blanks: bool=False, blank_character: str=' ', edge_character: str=' ',
+                 show_a: bool=False, display: list[modes.Mode]|None=None):
         self.term = term
         self.time = time
         self.rows: list[list[faces.Word]] = [[]]
@@ -34,16 +40,17 @@ class Board:
         self.edge_character = edge_character
         self.replace_blanks = replace_blanks
         self.show_a = show_a
-        self.edge_lights = {}
+        self.edge_lights: dict[tuple[int, int], tuple[int, int, int]] = {}
         self.modes = display or [modes.Normal(None)]
         self.show_board_on_terminal = True
 
-    def add_word(self, word):
+    def add_word(self, word: faces.Word) -> None:
         if word.word and word.word[0] == 'x':
             word.word = self.get_fill_character(len(word.word))
-        self.rows[word.line].append(word)
+        if word.line is not None:
+            self.rows[word.line].append(word)
 
-    def add_words(self, words):
+    def add_words(self, words: faces.FaceDefinition) -> None:
         current_line = 0
         for word in words:
             if word.new_line:
@@ -58,7 +65,7 @@ class Board:
         if self.lights_fn:
             self.lights = self.lights_fn(self.total_lights)
 
-    def get_fill_character(self, number=1):
+    def get_fill_character(self, number: int=1) -> str:
         """Returns a new character to use as a fill character"""
         blanks = ''
         for _ in range(number):
@@ -68,7 +75,7 @@ class Board:
                 blanks += random.choice('ACEFILSTU')
         return blanks
 
-    def get_board_text(self, terminal_mode=True):
+    def get_board_text(self, terminal_mode: bool=True) -> list[str]:
         text = []
         width, height = self.get_dimensions()
         for idx, row in enumerate(self.rows):
@@ -78,7 +85,7 @@ class Board:
             text[-1] = text[-1] + self.get_fill_character(width - len(text[-1]))
         return text
 
-    def get_outer_edge(self):
+    def get_outer_edge(self) -> list[str]:
         """Generate the view of the outer edge lights"""
         text = []
         width, height = self.get_dimensions()
@@ -93,7 +100,7 @@ class Board:
 
         return text
 
-    def show_board(self, logs):
+    def show_board(self, logs: list[str]) -> None:
         print(self.term.home + self.term.clear)
         text_lines = self.get_board_text(terminal_mode=self.lights is None)
         if self.show_board_on_terminal:
@@ -101,7 +108,8 @@ class Board:
             print('\n'.join(self.get_outer_edge()))
             print()
         #
-        print(self.term.green(f"Time = {self.time.strftime('%H:%M')}, {timesayer.convert_to_text(self.time, show_a=self.show_a)}"))
+        print(self.term.green(
+            f"Time = {self.time.strftime('%H:%M')}, {timesayer.convert_to_text(self.time, show_a=self.show_a)}"))
         print(self.term.green(f'Board {self.get_dimensions()}'))
         #
         if self.lights:
@@ -113,7 +121,7 @@ class Board:
                 print(self.term.red(line))
 
 
-    def do_lights(self, text):
+    def do_lights(self, text: list[str]) -> None:
         if not self.lights:
             return
         self.lights.clear_strip()
@@ -151,27 +159,27 @@ class Board:
             raise Exception(f'Failed to send SPI data - is SPI interface turned on?: {err}')
 
 
-    def clear_board(self):
+    def clear_board(self) -> None:
         for row in self.rows:
             for word in row:
                 word.clear()
         self.edge_lights = {}
 
-    def get_all_words(self):
+    def get_all_words(self) -> list[faces.Word]:
         words = []
         for row in self.rows:
             for word in row:
                 words.append(word)
         return words
 
-    def find_next_word(self, word, possible_words):
+    def find_next_word(self, word: str, possible_words: list[faces.Word]) -> faces.Word:
         while possible_words:
             possible_word = possible_words.pop(0)
             if possible_word.word.lower() == word.lower():
                 return possible_word
-        raise ValueError(f'Could not find {word} in {self.time.time()}')
+        raise ValueError(f'Could not find {word} in {self.time}')
 
-    def update_board(self):
+    def update_board(self) -> list[str]:
         self.clear_board()
         logs = []
         for mode in self.modes:
@@ -181,7 +189,7 @@ class Board:
 
         return logs
 
-    def convert_time(self):
+    def convert_time(self) -> str:
         it_is = 'It is ' if self.show_it_is else ''
         return it_is + timesayer.convert_to_text(self.time, simple=self.simple,
                                          mode=timesayer.Mode.oclock,
@@ -189,7 +197,7 @@ class Board:
                                          show_a=self.show_a
         )
 
-    def get_dimensions(self):
+    def get_dimensions(self) -> tuple[int, int]:
         rows = len(self.rows)
         cols = sum(len(word.word) for word in self.rows[int(rows / 2)])
         return (cols, rows)
@@ -206,7 +214,7 @@ class Board:
 @click.option('--light-mode', type=click.Choice(['off', 'simulate', 'real', 'detect']), default='off',
               help='Set how to handle lights')
 @click.option('--light-color', type=str, default="#0A0A0A",
-              help='The color for the lights when they are on')
+              help='The color for the lights when they are on (eg #ff0000)')
 @click.option('--replace-blanks', default=False, is_flag=True, help='Replace blanks in the face with random letters')
 @click.option('--blank-character', type=str, default=' ', help='Blank character to use')
 @click.option('--edge-character', type=str, default='■', help='Character to use for the edge')
@@ -222,9 +230,11 @@ class Board:
 @click.option('--button-pin', type=int, default=-1, help='GPIO Pin where button is. Set to -1 for no button (default)')
 @click.option('--mode-button-pin', type=int, default=-1, help='GPIO Pin where edge mode button is. Set to -1 for no button (default)')
 @click.option('--set-system-time', is_flag=True, help="Whether to set the system time when using the adjustment button")
-def main(offset, time, interval, simulation_update, face_mode, run_mode, show_it_is, light_mode, light_color,
-         replace_blanks, blank_character, edge_character, array_format, button_key, mode_button_key, baud_rate, show_a, mode,
-         mode_parameters, qrcode_file, button_pin, mode_button_pin, set_system_time):
+def main(offset: int, time: str, interval: float, simulation_update: int,
+         face_mode: str, run_mode: str, show_it_is: bool, light_mode: str, light_color: str,
+         replace_blanks: bool, blank_character: str, edge_character: str, array_format: bool,
+         button_key: str, mode_button_key: str, baud_rate: int, show_a: bool, mode: str,
+         mode_parameters: list[str], qrcode_file: str, button_pin: int, mode_button_pin: int, set_system_time: bool) -> None:
 
     term = blessed.Terminal()
     if time:
@@ -249,12 +259,13 @@ def main(offset, time, interval, simulation_update, face_mode, run_mode, show_it
 
     display_modes = [modes.modes[name](mode_parameters) for name in mode]
 
-    if light_color.startswith('#'):
-        light_color = hex_to_rgb(light_color)
+    decoded_color = hex_to_rgb(light_color)
+    if decoded_color is None:
+        decoded_color = (255, 255, 255)
 
-    b = Board(term, datetime.datetime.now(),
+    b = Board(term, datetime.datetime.now().time(),
               simple=face_mode=='14x5', show_it_is=show_it_is,
-              lights=lights, light_color=light_color,
+              lights=lights, light_color=decoded_color,
               replace_blanks=replace_blanks, blank_character=blank_character,
               edge_character=edge_character,
               show_a=show_a, display=display_modes
@@ -264,7 +275,7 @@ def main(offset, time, interval, simulation_update, face_mode, run_mode, show_it
 
     b.add_words(faces.faces[face_mode])
 
-    def signal_handler(sig, frame):
+    def signal_handler(sig: int, frame: FrameType | None) -> None:
         """Handle the SIGTERM from SystemD"""
         print(f'Caught SIGTERM {sig}')
         if lights and b.lights:
@@ -317,7 +328,7 @@ def main(offset, time, interval, simulation_update, face_mode, run_mode, show_it
 
 
 
-def hex_to_rgb(hex_color):
+def hex_to_rgb(hex_color: str) -> tuple[int, int, int]|None:
     """
     Converts a hex color code (e.g., "#14944c") to a tuple of RGB integers.
 

@@ -8,7 +8,7 @@ class Word:
     is_used = True
 
     def __init__(self, word: str, is_on: bool=False) -> None:
-        self.line = None
+        self.line: int|None = None
         self.word = word
         self.on = is_on
 
@@ -29,13 +29,16 @@ class Unused(Word):
     is_used = False
 
 
-class NewLine:
+class _NewLine(Word):
     new_line = True
     is_used = False
 
+NewLine = _NewLine('', False)
 
 
-full_words = [
+FaceDefinition = list[Word]
+
+full_words: FaceDefinition = [
     Word('It', True),
     Unused('l'),
     Word('is', True),
@@ -95,7 +98,7 @@ full_words = [
     NewLine,
 ]
 
-simple_words = [
+simple_words: FaceDefinition = [
     Word('quarter'),
     Word('half'),
     Word('past'),
@@ -125,7 +128,7 @@ simple_words = [
     NewLine,
 ]
 
-square_words = [
+square_words: FaceDefinition = [
     NewLine,
     NewLine,
     NewLine,
@@ -225,7 +228,7 @@ square_words = [
     NewLine,
 ]
 
-new_square_words = [
+new_square_words: FaceDefinition = [
     NewLine,
     NewLine,
     NewLine,
@@ -324,7 +327,7 @@ new_square_words = [
     NewLine,
 ]
 
-full_square_words = [
+full_square_words: FaceDefinition = [
     NewLine,
     NewLine,
     NewLine,
@@ -423,7 +426,7 @@ full_square_words = [
     NewLine,
 ]
 
-faces = {
+faces: dict[str, FaceDefinition] = {
     '10x11': full_words,
     '14x5': simple_words,
     '16x16': square_words,
