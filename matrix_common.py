@@ -21,30 +21,30 @@ class NoSuchLight(Exception):
 class Light:
     """Represents a single light in the matrix"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialise the light"""
         self.on = False
         self.color = WHITE
 
-    def set_color(self, color: COLOR, on=True):
+    def set_color(self, color: COLOR, on: bool=True) -> None:
         """Set the color of the light"""
         self.color = color
         if on:
             self.on = on
 
-    def turn_on(self):
+    def turn_on(self) -> None:
         """Turn the light on"""
         self.on = True
 
-    def turn_off(self):
+    def turn_off(self) -> None:
         """Turn the light off"""
         self.on = False
 
-    def toggle(self):
+    def toggle(self) -> None:
         """Toggle the light"""
         self.on = not self.on
 
-    def get_shown_color(self):
+    def get_shown_color(self) -> COLOR:
         """Return which color should be shown"""
         return self.color if self.on else BLACK
 
@@ -61,14 +61,15 @@ class LightCollection:
             for col in range(size.cols):
                 self.lights[-1].append(Light())
 
-    def rows(self):
+    def rows(self) -> list[list[Light]]:
         """Iterate over the rows of lights"""
         return self.lights
 
-    def get_light_at(self, coords: COORD):
+    def get_light_at(self, coords: COORD) -> Light:
         """Return the light at a certain coordinate"""
+        light: Light = self.lights[coords.row][coords.col]
         try:
-            return self.lights[coords.row][coords.col]
+            return light
         except IndexError:
             raise NoSuchLight(f'No light found at {coords}')
 
