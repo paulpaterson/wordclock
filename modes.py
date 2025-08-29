@@ -53,7 +53,7 @@ class Mode:
 class Normal(Mode):
     """Show the time"""
 
-    def update(self, board) -> list[str]:
+    def update(self, board: Board) -> list[str]:
         """Update the board to show the current time"""
         time_string = board.convert_time()
         time_words = time_string.split()
@@ -73,7 +73,7 @@ class ShowIPAddress(Mode):
     ]
     include_as_dynamic = True
 
-    def __init__(self, parameters):
+    def __init__(self, parameters: list[str]|None) -> None:
         """Initialise the mode"""
         super().__init__(parameters)
         self.character_idx = -1
@@ -81,7 +81,7 @@ class ShowIPAddress(Mode):
         self.edge_mode = ConfigMode(None)
         self.edge_mode.color = (100, 100, 255)
 
-    def update(self, board):
+    def update(self, board: Board) -> list[str]:
         """Update the board to show the IP address"""
         #
         # Get the index of the next character to display
@@ -109,6 +109,8 @@ class ShowIPAddress(Mode):
              #
         self.character_idx += 1
         self.edge_mode.update(board)
+        #
+        return []
 
 
 class EdgeLightSeconds(Mode):
@@ -117,12 +119,12 @@ class EdgeLightSeconds(Mode):
     type = FaceModeType.EDGE
     include_as_dynamic = True
 
-    def update(self, board):
+    def update(self, board: Board) -> list[str]:
         """Update the edge lights"""
-
         board.edge_lights = {}
         s = datetime.datetime.now().second
         self.set_edge_light_by_index(board, s, (255, 255, 255))
+        return []
 
 
 class EdgeLightColor(Mode):
@@ -136,17 +138,19 @@ class EdgeLightColor(Mode):
         (0, 0, 255),
     ]
 
-    def __init__(self, parameters):
+    def __init__(self, parameters: list[str]|None) -> None:
         super().__init__(parameters)
         self.offset = 0
 
-    def update(self, board):
+    def update(self, board: Board) -> list[str]:
         """Update the edge lights"""
         board.edge_lights = {}
         for idx in range(61):
             color = self.colors[(self.offset + idx) % len(self.colors)]
             self.set_edge_light_by_index(board, idx, color)
         self.offset += 1
+        return []
+
 
 class EdgeLightBlank(EdgeLightColor):
     """No lights on the edge"""
@@ -182,12 +186,12 @@ class TestEdge(Mode):
     toggle = True
     type = FaceModeType.TEST
 
-    def __init__(self, parameters):
+    def __init__(self, parameters: list[str]|None) -> None:
         super().__init__(parameters)
         self.on = True
         self.top = self.right = self.bottom = self.left = True
 
-    def update(self, board):
+    def update(self, board: Board) -> list[str]:
         """Update the edge lights"""
         board.edge_lights = {}
         rows, cols = board.get_dimensions()
@@ -205,6 +209,8 @@ class TestEdge(Mode):
 
         if self.toggle:
             self.on = not self.on
+        return []
+
 
 class ConfigMode(TestEdge):
     """Shows the phone in config mode"""
@@ -218,22 +224,20 @@ class TestWords(Mode):
 
     type = FaceModeType.TEST
 
-    def __init__(self, parameters):
+    def __init__(self, parameters: list[str]|None) -> None:
         super().__init__(parameters)
-        self.idx = None
+        self.idx = -1
 
-    def update(self, board):
+    def update(self, board: Board) -> list[str]:
         """Update each word"""
         possible_words = [word for word in board.get_all_words() if word.is_used]
-        if self.idx is None:
-            self.idx = -1
-        else:
-            possible_words[self.idx].clear()
+        possible_words[self.idx].clear()
 
         self.idx += 1
         if self.idx >= len(possible_words):
             self.idx = 0
         possible_words[self.idx].activate()
+        return []
 
 
 class FlashWords(Mode):
@@ -241,11 +245,11 @@ class FlashWords(Mode):
 
     type = FaceModeType.TEST
 
-    def __init__(self, parameters):
+    def __init__(self, parameters: list[str]|None) -> None:
         super().__init__(parameters)
         self.on = True
 
-    def update(self, board):
+    def update(self, board: Board) -> list[str]:
         """Update each word"""
         possible_words = [word for word in board.get_all_words() if word.is_used]
         if self.parameters:
@@ -257,6 +261,7 @@ class FlashWords(Mode):
             else:
                 word.clear()
         self.on = not self.on
+        return []
 
 
 class EdgeLightCustom(Mode):
@@ -265,21 +270,21 @@ class EdgeLightCustom(Mode):
     type = FaceModeType.EDGE
     include_as_dynamic = True
 
-    def __init__(self, parameters):
+    def __init__(self, parameters: list[str]|None) -> None:
         super().__init__(parameters)
         #
         self.config_data = self.read_config()
         self.frequency = self.config_data['frequency']
-        self.last_time = None
+        self.last_time = 0.0
         self.last_data = None
 
-    def read_config(self):
+    def read_config(self) -> Any:
         """Read the configuration data"""
         with open('config/local_config.json', 'r') as f:
             config_data_text = f.read()
         return json.loads(config_data_text)
 
-    def get_data(self):
+    def get_data(self) -> Any:
         """Get the latest data to show"""
         #
         last_update = os.stat('config/local_data.json').st_mtime
@@ -296,7 +301,7 @@ class EdgeLightCustom(Mode):
         else:
             return None
 
-    def update(self, board):
+    def update(self, board: Board) -> list[str]:
         """Update the display"""
         data = self.get_data()
         if data:
@@ -308,8 +313,10 @@ class EdgeLightCustom(Mode):
         elif self.last_data:
             self.update_display(board, self.last_data)
             return []
+        else:
+            return []
 
-    def update_display(self, board, data):
+    def update_display(self, board: Board, data: dict[str, Any]) -> None:
         """Actually update the lights"""
         self.config_data = self.read_config()
         for item in self.config_data['items']:
@@ -323,11 +330,11 @@ class EdgeLightCustom(Mode):
                 case _:
                     raise ValueError(f'Unknown type {t}')
 
-    def show_bar(self, board, item, data):
+    def show_bar(self, board: Board, item: dict[str, Any], data: dict[str, Any]) -> None:
         """Show lights as a bar"""
         light_start = item['light-start']
         light_end = item['light-end']
-        value = data.get(item['variable'])
+        value = data.get(item['variable'], 0)
         ranges = item['ranges']
         reverse_it = item['reversed']
         last_color = color = (0, 0, 0)
@@ -355,7 +362,7 @@ class EdgeLightCustom(Mode):
             else:
                 self.set_edge_light_by_index(board, light_num + light_start, last_color)
 
-    def show_boolean(self, board, item, data):
+    def show_boolean(self, board: Board, item: dict[str, Any], data: dict[str, Any]) -> None:
         """Show lights as a bar"""
         light_start = item['light-start']
         light_end = item['light-end']
@@ -367,7 +374,7 @@ class EdgeLightCustom(Mode):
             color = on_color if value else off_color
             self.set_edge_light_by_index(board, idx, color)
 
-    def show_text(self, board, item, data):
+    def show_text(self, board: Board, item: dict[str, Any], data: dict[str, Any]) -> None:
         """Show lights as a text mapping"""
         variable = item['variable']
         light_start = item['light-start']
