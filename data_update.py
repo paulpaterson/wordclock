@@ -1,5 +1,6 @@
 import sys
 import json
+from types import FrameType
 from typing import Any
 
 import requests
@@ -21,7 +22,7 @@ import signal
 import paramiko
 
 
-async def get_pool_data(store):
+async def get_pool_data(store: dict[str, Any]) -> None:
     """Get data on the pool telemetry"""
     ssl_context = ssl.create_default_context()
     ssl_context.check_hostname = False
@@ -41,7 +42,7 @@ async def get_pool_data(store):
     store['air'] = status[0]['airTemp']
 
 
-def map_weather_name(name, daytime):
+def map_weather_name(name: str, daytime: bool) -> str:
     """Return a simple version of the forecasted weather
 
     Returns either Sunny, Cloudy, Rainy
@@ -60,7 +61,7 @@ def map_weather_name(name, daytime):
     #
     return name
 
-def get_weather_forecast(store, hours):
+def get_weather_forecast(store: dict[str, Any], hours: int) -> None:
     """Return the forecasted weather for the next few hours"""
     url = "https://api.weather.gov/gridpoints/HGX/31,80/forecast/hourly"
     response = requests.get(url)
@@ -76,7 +77,7 @@ def get_weather_forecast(store, hours):
     store['air'] = forecast_data['properties']['periods'][0]['temperature']
 
 
-def get_home_assistant(store):
+def get_home_assistant(store: dict[str, Any]) -> None:
     """Return data from home assistant"""
     client = paramiko.SSHClient()
     client.load_system_host_keys() # Load known hosts from your system
@@ -117,7 +118,7 @@ def get_home_assistant(store):
 @click.option('--debug', is_flag=True, default=False, help='Drop into debug mode when complete')
 @click.option('--iterations', type=int, default=-1, help='How many times to run')
 @click.option('--forecast', type=int, default=16, help='How many hours of forecast to look ahead')
-def main(interval, pool, weather, homeassistant, debug, iterations, forecast):
+def main(interval: int, pool: bool, weather: bool, homeassistant: bool, debug: bool, iterations: int, forecast: int) -> None:
     store: dict[str, Any] = {}
     try:
         while iterations:
@@ -155,7 +156,7 @@ def main(interval, pool, weather, homeassistant, debug, iterations, forecast):
         pdb.set_trace()
 
 
-def signal_handler(sig, frame):
+def signal_handler(sig: int, frame: FrameType|None) -> None:
     """Handle the SIGTERM from SystemD"""
     print(f'Caught SIGTERM {sig}')
     sys.exit(0)
