@@ -5,11 +5,17 @@ import enum
 import os
 import datetime
 import time
+from datetime import timedelta
+from typing import TYPE_CHECKING, Callable, Any
+
+import blessed
 
 import modes
 import setdate
 import wificonfig
 
+if TYPE_CHECKING:
+    from run_clock import Board
 
 class UpdateModes(enum.Enum):
     NORMAL = 'normal'
@@ -22,8 +28,9 @@ class UpdateModes(enum.Enum):
 class Updater:
     """A class to manage updating the clcck"""
 
-    def __init__(self, board, current_offset, term, interval,
-                 simulation_offset, lights, button_key, mode_button_key, set_system_time, qrcode_file):
+    def __init__(self, board: Board, current_offset: timedelta, term: blessed.Terminal, interval: float,
+                 simulation_offset: timedelta, lights: Callable[[int], Any]|None,
+                 button_key: str, mode_button_key: str, set_system_time: bool, qrcode_file: str):
         self.mode = UpdateModes.NORMAL
         self.wifi_config = wificonfig.WifiConfigurator(self, qrcode_file)
         self.board = board
@@ -44,11 +51,11 @@ class Updater:
         self.button_click = 0
         self.edge_modes = [mode(None) for mode in modes.modes.values() if mode.include_as_dynamic]
 
-    def update_board(self):
+    def update_board(self) -> list[str]:
         """Update the display of the clock"""
         return self.board.update_board()
 
-    def update(self):
+    def update(self) -> None:
         last_config_time = os.path.getmtime('config/config.sh')
         while True:
             try:
@@ -86,7 +93,7 @@ class Updater:
             self.board.lights.clear_strip()
             self.board.lights.update_strip()
 
-    def next_edge_mode(self):
+    def next_edge_mode(self) -> None:
         """Move to the next edge mode"""
         if self.mode == UpdateModes.NORMAL:
             new_mode: list[modes.Mode] = []
@@ -97,7 +104,7 @@ class Updater:
             self.edge_modes.append(new_edge_mode)
             self.board.modes = new_mode
 
-    def reset_config(self):
+    def reset_config(self) -> None:
         """Reset back to normal mode"""
         #
         # Reset the modes
@@ -119,7 +126,7 @@ class Updater:
             self.current_offset = datetime.timedelta()
 
 
-    def button_up(self):
+    def button_up(self) -> None:
         """The button was released"""
         if self.mode == UpdateModes.NORMAL:
             self.mode = UpdateModes.CONFIG_HOURS
