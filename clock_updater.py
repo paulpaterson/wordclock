@@ -1,5 +1,6 @@
 """Class to handle updating the clock face and edges"""
 
+from __future__ import annotations
 import sys
 import enum
 import os

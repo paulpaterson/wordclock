@@ -1,12 +1,16 @@
 """Some modes of operation of the clock"""
 
+from __future__ import annotations
 import datetime
 import enum
 import json
 import os
 import subprocess
 from collections import namedtuple
-from typing import Any
+from typing import Any, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from run_clock import Board
 
 
 class FaceModeType(enum.Enum):
@@ -30,11 +34,11 @@ class Mode:
     def __init__(self, parameters: list[str]|None) -> None:
         self.parameters = parameters
 
-    def update(self, board) -> list[str]:
+    def update(self, board: Board) -> list[str]:
         """Update the board according to the mode"""
         return []
 
-    def set_edge_light_by_index(self, board, index, color=None) -> None:
+    def set_edge_light_by_index(self, board: Board, index: int, color: tuple[int, int, int]|None=None) -> None:
         if index < 16:
             row, col = 0, index
         elif index < 16 + 15:
@@ -43,7 +47,7 @@ class Mode:
             row, col = 15, 15 - (index - 16 - 15) - 1
         else:
             row, col = 60 - index, 0
-        board.edge_lights[(row, col)] = color
+        board.edge_lights[(row, col)] = color if color else (0, 0, 0)
 
 
 class Normal(Mode):

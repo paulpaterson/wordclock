@@ -1,5 +1,6 @@
 """Responsible for configuring the WIFI by the clock reading a QR code"""
 
+from __future__ import annotations
 import enum
 import subprocess
 import warnings
