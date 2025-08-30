@@ -26,10 +26,10 @@ class Light:
         self.on = False
         self.color = WHITE
 
-    def set_color(self, color: COLOR, on: bool=True) -> None:
+    def set_color(self, color: COLOR, on: bool|None=True) -> None:
         """Set the color of the light"""
         self.color = color
-        if on:
+        if on is not None:
             self.on = on
 
     def turn_on(self) -> None:

@@ -27,7 +27,7 @@ class UpdateModes(enum.Enum):
 
 
 class Updater:
-    """A class to manage updating the clcck"""
+    """A class to manage updating the clock"""
 
     def __init__(self, board: Board, current_offset: timedelta, term: blessed.Terminal, interval: float,
                  simulation_offset: timedelta, lights: Callable[[int], Any]|None,
