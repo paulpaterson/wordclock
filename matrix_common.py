@@ -1,5 +1,7 @@
 from collections import namedtuple
 
+from pycparser.ply.ctokens import t_PLUS
+
 GRID = namedtuple('GRID', ['rows', 'cols'])
 COLOR = namedtuple('COLOR', ['red', 'green', 'blue'])
 COORD = namedtuple('COORD', ['row', 'col'])
@@ -16,6 +18,9 @@ YELLOW = COLOR(0, 255, 255)
 
 class NoSuchLight(Exception):
     """A light was not found"""
+
+class OutOfGridRange(Exception):
+    """Tried to get a coordinate that would be outside of the grid"""
 
 
 class Light:
@@ -67,18 +72,24 @@ class LightCollection:
 
     def get_light_at(self, coords: COORD) -> Light:
         """Return the light at a certain coordinate"""
-        light: Light = self.lights[coords.row][coords.col]
+        if coords.row < 0 or coords.col < 0:
+            raise NoSuchLight(f'Cannot use negative rows or columns: {coords}')
         try:
-            return light
+            light: Light = self.lights[coords.row][coords.col]
         except IndexError:
             raise NoSuchLight(f'No light found at {coords}')
+        return light
 
     def get_row_coords(self, row: int) -> list[COORD]:
         """Return a row of coords"""
+        if row < 0 or row >= self.size.rows:
+            raise OutOfGridRange(f'Row {row} would be outside the grid ({self.size}')
         return [COORD(row, col) for col in range(self.size.cols)]
 
     def get_col_coords(self, col: int) -> list[COORD]:
         """Return a col of coords"""
+        if col < 0 or col >= self.size.cols:
+            raise OutOfGridRange(f'Col {col} would be outside the grid ({self.size}')
         return [COORD(row, col) for row in range(self.size.rows)]
 
     def get_edge_coords(self) -> list[COORD]:
@@ -87,6 +98,8 @@ class LightCollection:
 
     def get_ring_coords(self, distance: int) -> list[COORD]:
         """Return a ring of cells at a certain distance from the edge"""
+        if distance == self.size.rows / 2 or distance == self.size.cols / 2:
+            return []
         result = self.get_row_coords(distance)[distance:self.size.cols-distance]
         result += self.get_col_coords(self.size.cols - distance - 1)[distance + 1:self.size.rows-distance]
         result += list(reversed(self.get_row_coords(self.size.rows - distance - 1)))[distance + 1:self.size.cols-distance]
@@ -95,5 +108,9 @@ class LightCollection:
 
     def get_box_coords(self, top_left: COORD, size: GRID) -> list[COORD]:
         """Return a box of cells"""
+        #
+        # Validity check
+        if top_left.col < 0 or top_left.row < 0 or top_left.row + size.rows > self.size.rows or top_left.col + size.cols > self.size.cols:
+            raise OutOfGridRange(f'Box ({top_left}, {size}) would be outside range of grid ({size}')
         return [COORD(row, col) for col in range(top_left.col, top_left.col + size.cols)
                 for row in range(top_left.row, top_left.row + size.rows)]
