@@ -187,3 +187,9 @@ class TestLightCollection:
         light_collection = LightCollection(GRID(10, 12))
         with pytest.raises(OutOfGridRange):
             ring = light_collection.get_box_coords(top_left, size)
+
+    def test_can_iterate_through_lights(self, light_collection: LightCollection) -> None:
+        assert len(list(light_collection)) == 2*3
+
+    def test_can_check_number_of_lights(self, light_collection: LightCollection) -> None:
+        assert len(light_collection) == 2*3

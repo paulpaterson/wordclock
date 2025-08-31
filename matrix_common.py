@@ -1,8 +1,11 @@
 from collections import namedtuple
+from typing import Iterator, NamedTuple
 
-from pycparser.ply.ctokens import t_PLUS
 
-GRID = namedtuple('GRID', ['rows', 'cols'])
+class GRID(NamedTuple):
+    rows: int
+    cols: int
+
 COLOR = namedtuple('COLOR', ['red', 'green', 'blue'])
 COORD = namedtuple('COORD', ['row', 'col'])
 
@@ -114,3 +117,13 @@ class LightCollection:
             raise OutOfGridRange(f'Box ({top_left}, {size}) would be outside range of grid ({size}')
         return [COORD(row, col) for col in range(top_left.col, top_left.col + size.cols)
                 for row in range(top_left.row, top_left.row + size.rows)]
+
+    def __iter__(self) -> Iterator[Light]:
+        """Iterate through the lights"""
+        for row in self.rows():
+            for col in row:
+                yield col
+
+    def __len__(self) -> int:
+        """Return the number of lights"""
+        return self.size.rows * self.size.cols

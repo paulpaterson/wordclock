@@ -3,6 +3,7 @@ import time
 import pathlib
 import importlib
 from types import FrameType
+from typing import Any
 
 import click
 import blessed
@@ -16,11 +17,15 @@ import sys
 # Load LED control stuff if it is there
 baud_rate = 1000 # 800 maybe for the RPI5
 try:
-    from pi5neo import Pi5Neo  # type: ignore
+    import pi5neo    # type: ignore
 except ImportError:
-    matrix_leds = None
-else:
-    matrix_leds = lambda n: Pi5Neo('/dev/spidev0.0', n, baud_rate)
+    pi5neo = None
+
+def get_matrix_leds(n: int) -> Any:
+    if pi5neo:
+        return pi5neo.Pi5Neo('/dev/spidev0.0', n, baud_rate)
+    else:
+        return None
 
 
 class DisplayMatrix:
@@ -34,10 +39,7 @@ class DisplayMatrix:
         self.modes = modes
         #
         # Initialise the hardware lights if we have them
-        if matrix_leds:
-            self.matrix_leds = matrix_leds(size.rows * size.cols)
-        else:
-            self.matrix_leds = None
+        self.matrix_leds = get_matrix_leds(size.rows * size.cols)
 
     def display_board(self) -> None:
         """Update the display of the board"""

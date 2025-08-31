@@ -1,5 +1,6 @@
 import pytest
 
+from matrix_common import LightCollection, GRID
 from matrix_modes import Mode, COORD, COLOR
 
 
@@ -12,6 +13,5 @@ def test_mode_has_locations_that_are_coords() -> None:
 
 def test_mode_can_be_updated() -> None:
     mode = Mode([])
-    assert mode.update() is None
+    mode.update(LightCollection(GRID(10, 10)))
 
-    
