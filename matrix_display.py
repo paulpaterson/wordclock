@@ -108,7 +108,7 @@ def main(screen: bool, leds: bool, interval: float, config: str, parameters: lis
             b.update_board()
             if screen:
                 b.display_board()
-            if leds and matrix_leds:
+            if leds and b.matrix_leds:
                 b.display_leds()
             time.sleep(interval)
     except KeyboardInterrupt:

@@ -333,12 +333,12 @@ full_square_words: FaceDefinition = [
     NewLine,
     Unused('xx'),
 
-    Unused('s'),
+    Unused('j'),
     Word('It', True),
     Unused('0'),
     Word('is', True),
     Unused('1'),
-    Word('AM'),
+    Word('Aa'),
     Word('a'),
     Word('PM'),
 
@@ -347,8 +347,8 @@ full_square_words: FaceDefinition = [
     Unused('xx'),
 
     Word('quarter'),
-    Unused('y2c'),
-    Unused('d3'),
+    Unused('2'),
+    Unused('zero'),
 
     Unused('xx'),
     NewLine,
@@ -364,7 +364,7 @@ full_square_words: FaceDefinition = [
     Unused('xx'),
 
     Word('half'),
-    Unused('s4'),
+    Unused('34'),
     Word('ten'),
     Unused('5'),
     Word('to'),
@@ -374,7 +374,8 @@ full_square_words: FaceDefinition = [
     Unused('xx'),
 
     Word('past'),
-    Unused('ejuy'),
+    Unused('e'),
+    Word('dot'),
     Word('nine'),
 
     Unused('xx'),

@@ -68,7 +68,7 @@ class ShowIPAddress(Mode):
     """Show the current IP address by flashing the numbers one by one"""
 
     words = [
-        '0', 'one', 'two', 'three', 'four', 'five',
+        'zero', 'one', 'two', 'three', 'four', 'five',
         'six', 'seven', 'eight', 'nine', 'ten',
     ]
     include_as_dynamic = True
@@ -102,7 +102,7 @@ class ShowIPAddress(Mode):
             if current_character != '.':
                 word = self.words[int(current_character)]
             else:
-                word = 's'
+                word = 'dot'
              #
             the_word = board.find_next_word(word, possible_words)
             the_word.activate()
