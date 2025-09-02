@@ -24,6 +24,10 @@ class UpdateModes(enum.Enum):
     CONFIG_MINS = 'config mins'
     CONFIG_WIFI = 'config WIFI'
 
+class ButtonMode(enum.Enum):
+    IDLE = 0
+    CHOOSING_MODE = 1
+    IN_MODE = 2
 
 
 class Updater:
@@ -49,7 +53,8 @@ class Updater:
         self.last_key_press = time.time()
         self.button_reset_interval = 5
         self.button_mins_interval = 0.5
-        self.button_click = 0
+        self.button_mode = ButtonMode.IDLE
+        self.button_time = time.time()
         self.edge_modes = [mode(None) for mode in modes.modes.values() if mode.include_as_dynamic]
 
     def update_board(self) -> list[str]:
@@ -61,13 +66,8 @@ class Updater:
         while True:
             try:
                 t = datetime.datetime.now()
+                self.button_time = time.time() # Time used to detect button presses
                 self.board.time = (t + self.current_offset).time()
-                #
-                logs = self.update_board()
-                if self.mode != UpdateModes.NORMAL and time.time() - self.last_key_press > self.button_reset_interval:
-                    self.reset_config()
-                else:
-                    self.board.show_board(logs)
                 #
                 with self.term.cbreak():
                     if pressed := self.term.inkey(timeout=self.interval):
@@ -77,12 +77,20 @@ class Updater:
                             self.next_edge_mode()
                         else:
                             break
-                    #
-                    # Set the lights to show we are now in active config
-                    if self.mode != UpdateModes.NORMAL and time.time() - self.last_key_press > self.button_mins_interval:
-                        self.config_mode.right = True
-                        self.config_mode.left = True
-
+                #
+                # Set the lights to show we are now in active config
+                if self.mode != UpdateModes.NORMAL and self.button_time - self.last_key_press > self.button_mins_interval:
+                    self.config_mode.right = True
+                    self.config_mode.left = True
+                    self.button_mode = ButtonMode.IN_MODE
+                #
+                logs = self.update_board()
+                #
+                if self.mode != UpdateModes.NORMAL and self.button_time - self.last_key_press >= self.button_reset_interval:
+                    self.reset_config()
+                else:
+                    self.board.show_board(logs)
+                #
                 self.current_offset += self.simulation_offset
             except KeyboardInterrupt:
                 print('CTRL-C detected')
@@ -112,7 +120,7 @@ class Updater:
         self.mode = UpdateModes.NORMAL
         self.wifi_config.go_idle()
         self.board.modes = self.old_modes
-        self.button_click = 0
+        self.button_mode = ButtonMode.IDLE
         if self.config_mode.on:
             # If it was on then turn it off to clear the config display
             self.config_mode.color = (0, 0, 0)
@@ -132,25 +140,26 @@ class Updater:
         if self.mode == UpdateModes.NORMAL:
             self.mode = UpdateModes.CONFIG_HOURS
             self.board.modes = self.config_modes
+            self.config_mode.color = (255, 0, 255)
             self.config_mode.right = False
             self.config_mode.left = False
-            self.button_click = 0
-        elif self.mode == UpdateModes.CONFIG_HOURS and time.time() - self.last_key_press < self.button_mins_interval and self.button_click == 0:
+            self.button_mode = ButtonMode.CHOOSING_MODE
+        elif self.mode == UpdateModes.CONFIG_HOURS and self.button_mode == ButtonMode.CHOOSING_MODE:
             self.mode = UpdateModes.CONFIG_MINS
             self.config_mode.color = (255, 255, 0)
             self.config_mode.right = False
             self.config_mode.left = False
-        elif self.mode == UpdateModes.CONFIG_MINS and time.time() - self.last_key_press < self.button_mins_interval and self.button_click == 0:
+        elif self.mode == UpdateModes.CONFIG_MINS and self.button_mode == ButtonMode.CHOOSING_MODE:
             self.mode = UpdateModes.CONFIG_WIFI
             result = self.wifi_config.start_reading()
             if result == wificonfig.WifiConfigStage.NETWORK_JOINED:
                 self.mode = UpdateModes.NORMAL
                 self.board.modes = [modes.ShowIPAddress(None)]
         else:
+            self.button_mode = ButtonMode.IN_MODE
             if self.mode == UpdateModes.CONFIG_HOURS:
                 self.current_offset += datetime.timedelta(hours=1)
             elif self.mode == UpdateModes.CONFIG_MINS:
                 self.current_offset += datetime.timedelta(minutes=5)
-            self.button_click += 1
-        self.last_key_press = time.time()
+        self.last_key_press = self.button_time
 
