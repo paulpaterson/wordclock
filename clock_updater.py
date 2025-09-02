@@ -52,7 +52,7 @@ class Updater:
         self.config_modes = [self.config_mode, modes.Normal(None)]
         self.last_key_press = time.time()
         self.button_reset_interval = 5
-        self.button_mins_interval = 0.5
+        self.button_mins_interval = 1.0
         self.button_mode = ButtonMode.IDLE
         self.button_time = time.time()
         self.edge_modes = [mode(None) for mode in modes.modes.values() if mode.include_as_dynamic]
