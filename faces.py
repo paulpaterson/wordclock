@@ -338,7 +338,7 @@ full_square_words: FaceDefinition = [
     Unused('0'),
     Word('is', True),
     Unused('1'),
-    Word('Aa'),
+    Word('AM'),
     Word('a'),
     Word('PM'),
 
