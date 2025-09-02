@@ -20,7 +20,7 @@ else
 fi
 
 DEVICE=`ip -br link show | awk 'NR==2{print $1}'`
-IP=`ip -4 a show $DEVICE | grep -oP '(?<=inet\s)\d+(\.\d+){3}'`
+IP=`/home/clock/wordclock/scripts/getip.sh`
 HOSTNAME=`hostname`
 
 printf "$G - This machine is: $B $HOSTNAME - $IP ($DEVICE)\n"
