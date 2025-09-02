@@ -30,7 +30,7 @@ class WifiConfigurator:
         """Initialise the configurator"""
         self.updater = updater
         self.wifi_stage: WifiConfigStage = WifiConfigStage.IDLE
-        self.max_retries = 4
+        self.max_retries = 8
         self.wifi_details: dict[str, str] = {}
         self.fixed_qrcode_filename = qrcode_file
 
