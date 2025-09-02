@@ -211,6 +211,23 @@ class TestEdge(Mode):
             self.on = not self.on
         return []
 
+    def set_edges(self, top: bool, right: bool, bottom: bool, left: bool) -> None:
+        """Set all edges at once"""
+        self.top = top
+        self.right = right
+        self.bottom = bottom
+        self.left = left
+
+    def cycle_edges(self) -> None:
+        """Cycle the edges around"""
+        print('Cycling edges', self.top, self.right, self.bottom, self.left)
+        left = self.left
+        self.left = self.bottom
+        self.bottom = self.right
+        self.right = self.top
+        self.top = left
+        print('After Cycling edges', self.top, self.right, self.bottom, self.left)
+
 
 class ConfigMode(TestEdge):
     """Shows the phone in config mode"""

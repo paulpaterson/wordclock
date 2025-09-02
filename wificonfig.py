@@ -37,18 +37,14 @@ class WifiConfigurator:
     def start_reading(self) -> WifiConfigStage:
         """Start trying to read the QR code"""
         self.wifi_stage = WifiConfigStage.READING_QR_CODE
-        self.updater.config_mode.top = True
-        self.updater.config_mode.right = False
-        self.updater.config_mode.left = False
-        self.updater.config_mode.bottom = True
+        self.updater.config_mode.set_edges(True, False, False, False)
+        self.update_board()
         #
         # Try to rad the QR code to get the network details
         self.read_qr_code()
         if self.wifi_stage == WifiConfigStage.WAITING_TO_JOIN_NETWORK:
-            self.updater.config_mode.top = False
-            self.updater.config_mode.bottom = False
-            self.updater.config_mode.left = True
-            self.updater.config_mode.right = True
+            self.updater.config_mode.set_edges(True, True, True, True)
+            self.update_board()
             #
             # Set these as the network settings and try to connect to that
             # network
@@ -84,12 +80,11 @@ class WifiConfigurator:
 
     def read_qr_code(self) -> None:
         """Read the QR code"""
-        on = False
-        for _ in range(self.max_retries):
+        for idx in range(self.max_retries):
+            print(f'Reading QR iteration {idx}')
             #
             # Flash the top bar
-            self.updater.config_mode.color = (255, 255, 255) if on else (100, 100, 255)
-            on = not on
+            self.updater.config_mode.cycle_edges()
             self.update_board()
             #
             # Try to get a QR code
@@ -102,7 +97,7 @@ class WifiConfigurator:
 
     def get_qr(self) -> bool:
         """Make one attempt to get the QR code and return the data or None if none found"""
-        result = qrcode.detect_mode(4, self.fixed_qrcode_filename)
+        result = qrcode.detect_mode(1, self.fixed_qrcode_filename)
         if not result:
             return False
         else:

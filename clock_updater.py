@@ -59,7 +59,9 @@ class Updater:
 
     def update_board(self) -> list[str]:
         """Update the display of the clock"""
-        return self.board.update_board()
+        logs = self.board.update_board()
+        self.board.show_board(logs)
+        return logs
 
     def update(self) -> None:
         last_config_time = os.path.getmtime('config/config.sh')
@@ -77,6 +79,13 @@ class Updater:
                             self.next_edge_mode()
                         else:
                             break
+                if self.mode == UpdateModes.CONFIG_WIFI:
+                    result = self.wifi_config.start_reading()
+                    self.mode = UpdateModes.NORMAL
+                    if result == wificonfig.WifiConfigStage.NETWORK_JOINED:
+                        self.board.modes = [modes.ShowIPAddress(None)]
+                    else:
+                        self.last_key_press = time.time()
                 #
                 # Set the lights to show we are now in active config
                 if self.mode != UpdateModes.NORMAL and self.button_time - self.last_key_press > self.button_mins_interval:
@@ -151,10 +160,7 @@ class Updater:
             self.config_mode.left = False
         elif self.mode == UpdateModes.CONFIG_MINS and self.button_mode == ButtonMode.CHOOSING_MODE:
             self.mode = UpdateModes.CONFIG_WIFI
-            result = self.wifi_config.start_reading()
-            if result == wificonfig.WifiConfigStage.NETWORK_JOINED:
-                self.mode = UpdateModes.NORMAL
-                self.board.modes = [modes.ShowIPAddress(None)]
+            self.config_mode.color = (100, 100, 255)
         else:
             self.button_mode = ButtonMode.IN_MODE
             if self.mode == UpdateModes.CONFIG_HOURS:
