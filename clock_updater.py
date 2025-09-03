@@ -70,13 +70,6 @@ class Updater:
                             self.action_button_press()
                         else:
                             break
-                if self.mode == UpdateModes.CONFIG_WIFI:
-                    result = self.wifi_config.start_reading()
-                    self.mode = UpdateModes.NORMAL
-                    if result == wificonfig.WifiConfigStage.NETWORK_JOINED:
-                        self.board.modes = [modes.ShowIPAddress(None)]
-                    else:
-                        self.last_key_press = time.time()
                 #
                 # Set the lights to show we are now in active config
                 if self.mode != UpdateModes.NORMAL:
@@ -109,10 +102,17 @@ class Updater:
             new_mode.append(new_edge_mode)
             self.edge_modes.append(new_edge_mode)
             self.board.modes = new_mode
-        if self.mode == UpdateModes.CONFIG_HOURS:
+        elif self.mode == UpdateModes.CONFIG_HOURS:
             self.current_offset += datetime.timedelta(hours=1)
         elif self.mode == UpdateModes.CONFIG_MINS:
             self.current_offset += datetime.timedelta(minutes=5)
+        elif self.mode == UpdateModes.CONFIG_WIFI:
+            result = self.wifi_config.start_reading()
+            self.mode = UpdateModes.NORMAL
+            if result == wificonfig.WifiConfigStage.NETWORK_JOINED:
+                self.board.modes = [modes.ShowIPAddress(None)]
+            else:
+                self.last_key_press = time.time()
         #
         self.mode_cancel_timer = 4
 
