@@ -228,6 +228,10 @@ class TestEdge(Mode):
         self.top = left
         print('After Cycling edges', self.top, self.right, self.bottom, self.left)
 
+    def set_edges_from_int(self, value: int) -> None:
+        """Set the edges base on the value"""
+        self.set_edges(value >= 1, value >= 2, value >= 3, value >= 4)
+
 
 class ConfigMode(TestEdge):
     """Shows the phone in config mode"""

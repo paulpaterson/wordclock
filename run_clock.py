@@ -318,11 +318,11 @@ def main(offset: int, time: str, interval: float, simulation_update: int,
         if button_pin != -1:
             import gpiozero  # type: ignore
             button = gpiozero.Button(button_pin)
-            button.when_pressed = updater.button_up
+            button.when_pressed = updater.mode_button_press
         if mode_button_pin != -1:
             import gpiozero
             mode_button = gpiozero.Button(mode_button_pin)
-            mode_button.when_pressed = updater.next_edge_mode
+            mode_button.when_pressed = updater.action_button_press
 
         updater.update()
 
