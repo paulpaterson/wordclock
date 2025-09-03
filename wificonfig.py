@@ -37,6 +37,7 @@ class WifiConfigurator:
     def start_reading(self) -> WifiConfigStage:
         """Start trying to read the QR code"""
         self.wifi_stage = WifiConfigStage.READING_QR_CODE
+        self.updater.config_mode.color = (100, 100, 255)
         self.updater.config_mode.set_edges(True, False, False, False)
         self.update_board()
         #

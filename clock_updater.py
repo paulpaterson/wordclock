@@ -23,7 +23,7 @@ class UpdateModes(enum.Enum):
     CONFIG_HOURS = 'config hours'   # Action button advances hours
     CONFIG_MINS = 'config mins'     # Action button advances minutes
     CONFIG_WIFI = 'config WIFI'     # Action button triggers to start scanning for QR code
-
+    CONFIG_QR = 'config QR'         # Clock is trying to get QR code
 
 class Updater:
     """A class to manage updating the clock"""
@@ -72,14 +72,20 @@ class Updater:
                             break
                 #
                 # Set the lights to show we are now in active config
-                if self.mode != UpdateModes.NORMAL:
+                if self.mode == UpdateModes.CONFIG_QR:
+                    result = self.wifi_config.start_reading()
+                    self.mode = UpdateModes.NORMAL
+                    if result == wificonfig.WifiConfigStage.NETWORK_JOINED:
+                        self.board.modes = [modes.ShowIPAddress(None)]
+                    else:
+                        self.mode_cancel_timer = 10
+                elif self.mode != UpdateModes.NORMAL:
                     self.config_mode.set_edges_from_int(self.mode_cancel_timer)
                     self.mode_cancel_timer -= 1
                     if self.mode_cancel_timer < 0:
                         self.reset_config()
                 #
                 logs = self.update_board()
-                self.update_board()
                 #
                 self.current_offset += self.simulation_offset
             except KeyboardInterrupt:
@@ -107,14 +113,9 @@ class Updater:
         elif self.mode == UpdateModes.CONFIG_MINS:
             self.current_offset += datetime.timedelta(minutes=5)
         elif self.mode == UpdateModes.CONFIG_WIFI:
-            result = self.wifi_config.start_reading()
-            self.mode = UpdateModes.NORMAL
-            if result == wificonfig.WifiConfigStage.NETWORK_JOINED:
-                self.board.modes = [modes.ShowIPAddress(None)]
-            else:
-                self.last_key_press = time.time()
+            self.mode = UpdateModes.CONFIG_QR
         #
-        self.mode_cancel_timer = 4
+        self.mode_cancel_timer = 6
 
     def reset_config(self) -> None:
         """Reset back to normal mode"""
@@ -148,9 +149,9 @@ class Updater:
             self.config_mode.color = (255, 255, 0)
         elif self.mode == UpdateModes.CONFIG_MINS:
             self.mode = UpdateModes.CONFIG_WIFI
-            self.config_mode.color = (100, 100, 255)
+            self.config_mode.color = (0, 0, 255)
         else:
             self.reset_config()
 
-        self.mode_cancel_timer = 4
+        self.mode_cancel_timer = 6
 
