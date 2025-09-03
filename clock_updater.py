@@ -24,11 +24,6 @@ class UpdateModes(enum.Enum):
     CONFIG_MINS = 'config mins'     # Action button advances minutes
     CONFIG_WIFI = 'config WIFI'     # Action button triggers to start scanning for QR code
 
-class ButtonMode(enum.Enum):
-    IDLE = 0
-    CHOOSING_MODE = 1
-    IN_MODE = 2
-
 
 class Updater:
     """A class to manage updating the clock"""
@@ -51,9 +46,6 @@ class Updater:
         self.config_mode = modes.ConfigMode(None)
         self.config_modes = [self.config_mode, modes.Normal(None)]
         self.last_key_press = time.time()
-        self.button_reset_interval = 5
-        self.button_mins_interval = 1.0
-        self.button_mode = ButtonMode.IDLE
         self.mode_cancel_timer: int = 0
         self.edge_modes = [mode(None) for mode in modes.modes.values() if mode.include_as_dynamic]
 
@@ -131,7 +123,6 @@ class Updater:
         self.mode = UpdateModes.NORMAL
         self.wifi_config.go_idle()
         self.board.modes = self.old_modes
-        self.button_mode = ButtonMode.IDLE
         if self.config_mode.on:
             # If it was on then turn it off to clear the config display
             self.config_mode.color = (0, 0, 0)
