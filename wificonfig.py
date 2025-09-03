@@ -119,6 +119,7 @@ class WifiConfigurator:
                     '--password', self.wifi_details['PASSWORD'],
                     '--security', self.wifi_details['SECURITY'],
                     '--wait', '20',
+                    '--ipfile',
                 ],
                 capture_output=False, text=True, check=True
             )

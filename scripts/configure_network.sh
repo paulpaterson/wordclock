@@ -8,13 +8,14 @@ SECURITY="WEP"
 PASSWORD="Password"
 HIDDEN=0
 SET_IP=0
+IP_FROM_FILE=0
 IP=""
 WAITTIME=10
 
 printf "\n"
 
 # Checking for command line parameters
-VALID_ARGS=$(getopt -o h --long help,ssid:,security:,password:,hidden,ip:,wait: -- "$@")
+VALID_ARGS=$(getopt -o h --long help,ssid:,security:,password:,hidden,ipfile,ip:,wait: -- "$@")
 if [[ $? -ne 0 ]]; then
   exit 1;
 fi
@@ -24,7 +25,7 @@ eval set -- "$VALID_ARGS"
 while [ : ];do
   case "$1" in
     -h | --help)
-      printf "Usage: configure_network.sh --help --ssid <SSID> --security <WEP|WPA|WPA2,nopass> --password <PASSWORD> --IP <FIXED IP ADDRESS> --WAIT <time(s) to wait for WIFI) --hidden\n"
+      printf "Usage: configure_network.sh --help --ssid <SSID> --security <WEP|WPA|WPA2,nopass> --password <PASSWORD> --IP <FIXED IP ADDRESS> --WAIT <time(s) to wait for WIFI) --hidden --ipfile\n"
       exit 0
       shift
       ;;
@@ -47,6 +48,10 @@ while [ : ];do
       ;;
     --hidden)
       HIDDEN=1
+      shift
+      ;;
+    --ipfile)
+      IP_FROM_FILE=1
       shift
       ;;
     --wait)
@@ -72,12 +77,30 @@ else
   printf " - Not hidden\n"
 fi
 if [ $SET_IP -eq 0 ]; then
-  printf " - Dynamic IP address\n"
+  if [ $IP_FROM_FILE -eq 0 ]; then
+    printf " - Dynamic IP address\n"
+  else
+    printf " - Fixed IP read from config/fixedip.txt\n"
+    # Read IP address if we need to
+    if [ -f config/fixedip.txt ]; then
+      READ_IP=$(<config/fixedip.txt)
+      if [ $READ_IP == "None" ]; then
+        printf " - Read "None" assuming dynamic\n"
+      else
+        printf " - Read IP as $READ_IP\n"
+        SET_IP=1
+        IP=$READ_IP
+      fi
+    else
+      printf " - file not found, assume dynamic\n"
+    fi
+  fi
 else
   printf " - Fixed IP $IP\n"
 fi
 
 printf "\n"
+
 
 # Name the file
 
