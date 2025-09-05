@@ -14,6 +14,9 @@ class MockLEDColor:
     def is_set(self) -> bool:
         return not(self.red == 0 and self.green == 0 and self.blue == 0)
 
+    def as_tuple(self) -> tuple[int, int, int]:
+        return self.red, self.green, self.blue
+
 
 class MockLights:
 

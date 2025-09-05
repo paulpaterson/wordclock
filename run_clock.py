@@ -1,4 +1,6 @@
 import enum
+import json
+import pathlib
 import random
 import signal
 import sys
@@ -6,6 +8,7 @@ import datetime
 from collections.abc import Callable
 from types import FrameType
 from typing import Any
+import json
 
 import blessed
 import blessed.sequences
@@ -15,6 +18,7 @@ import mocklights
 import faces
 import modes
 import clock_updater
+import mocklights
 
 
 RUN_MODES = ['NORMAL', 'CALCSIZE', 'SHOWLETTERS']
@@ -26,7 +30,8 @@ class Board:
                  lights: Callable[[int], Any]|None=None,
                  light_color: tuple[int, int, int]|None=None,
                  replace_blanks: bool=False, blank_character: str=' ', edge_character: str=' ',
-                 show_a: bool=False, display: list[modes.Mode]|None=None):
+                 show_a: bool=False, display: list[modes.Mode]|None=None,
+                 record_frames_to: pathlib.Path|None=None):
         self.term = term
         self.time = time
         self.rows: list[list[faces.Word]] = [[]]
@@ -43,6 +48,8 @@ class Board:
         self.edge_lights: dict[tuple[int, int], tuple[int, int, int]] = {}
         self.modes = display or [modes.Normal(None)]
         self.show_board_on_terminal = True
+        self.record_frames_to = record_frames_to
+        self.recorded_frames = 0
 
     def add_word(self, word: faces.Word) -> None:
         if word.word and word.word[0] == 'x':
@@ -113,18 +120,52 @@ class Board:
         print(self.term.green(f'Board {self.get_dimensions()}'))
         #
         if self.lights:
-            self.do_lights(text_lines)
+            self.do_lights(text_lines, self.lights)
+        #
+        if self.record_frames_to:
+            self.record_current_frame(text_lines)
         #
         if logs:
             print(self.term.red('\nLogs\n'))
             for line in logs:
                 print(self.term.red(line))
 
+    def record_current_frame(self, text: list[str]) -> None:
+        """"Record the current state of the board in a frame"""
+        if self.record_frames_to:
+            filename = self.record_frames_to / f'frame-{self.recorded_frames}.json'
+            with open(filename, 'w') as f:
+                data: list[list[tuple[int, int, int]]] = []
+                rows, cols = self.get_dimensions()
+                for row in range(rows):
+                    data.append([])
+                    for col in range(cols):
+                        data[-1].append((0, 0, 0))
+                #
+                for col in range(cols):
+                    for row in range(rows):
+                        letter = text[row][col]
+                        if letter != ' ':
+                            data[row][col] = self.light_color if self.light_color else (0, 0, 0)
 
-    def do_lights(self, text: list[str]) -> None:
-        if not self.lights:
+                        # Check edge lights
+                        if col == 0 or col == cols - 1 or row == 0 or row == rows - 1:
+                            try:
+                                edge_color = self.edge_lights[(row, col)]
+                            except KeyError:
+                                pass  # OK, not lit
+                            else:
+                                if edge_color:
+                                    data[row][col] = edge_color
+                #
+                f.write(json.dumps(data))
+            self.recorded_frames += 1
+
+
+    def do_lights(self, text: list[str], lights: Any) -> None:
+        if not lights:
             return
-        self.lights.clear_strip()
+        lights.clear_strip()
         #
         # Lights go down from 0 in the top left and then at the end of each row they
         # bounce back up
@@ -138,7 +179,7 @@ class Board:
             for row in row_range:
                 letter = text[row][col]
                 if letter != ' ':
-                    self.lights.set_led_color(idx, *self.light_color)
+                    lights.set_led_color(idx, *self.light_color)
 
                 # Check edge lights
                 if col == 0 or col == cols - 1 or row == 0 or row == rows - 1:
@@ -148,13 +189,13 @@ class Board:
                         pass # OK, not lit
                     else:
                         if edge_color:
-                            self.lights.set_led_color(idx, *edge_color)
+                            lights.set_led_color(idx, *edge_color)
                         else:
-                            self.lights.set_led_color(idx, 0, 0, 0)
+                            lights.set_led_color(idx, 0, 0, 0)
 
                 idx += 1
         try:
-            self.lights.update_strip()
+            lights.update_strip()
         except OSError as err:
             raise Exception(f'Failed to send SPI data - is SPI interface turned on?: {err}')
 
@@ -230,11 +271,13 @@ class Board:
 @click.option('--button-pin', type=int, default=-1, help='GPIO Pin where button is. Set to -1 for no button (default)')
 @click.option('--mode-button-pin', type=int, default=-1, help='GPIO Pin where edge mode button is. Set to -1 for no button (default)')
 @click.option('--set-system-time', is_flag=True, help="Whether to set the system time when using the adjustment button")
+@click.option('--record-frames-to', type=click.Path(), default="", help="Folder to record frames of the matrix")
 def main(offset: int, time: str, interval: float, simulation_update: int,
          face_mode: str, run_mode: str, show_it_is: bool, light_mode: str, light_color: str,
          replace_blanks: bool, blank_character: str, edge_character: str, array_format: bool,
          button_key: str, mode_button_key: str, baud_rate: int, show_a: bool, mode: str,
-         mode_parameters: list[str], qrcode_file: str, button_pin: int, mode_button_pin: int, set_system_time: bool) -> None:
+         mode_parameters: list[str], qrcode_file: str, button_pin: int, mode_button_pin: int, set_system_time: bool,
+         record_frames_to: str) -> None:
 
     term = blessed.Terminal()
     if time:
@@ -268,7 +311,8 @@ def main(offset: int, time: str, interval: float, simulation_update: int,
               lights=lights, light_color=decoded_color,
               replace_blanks=replace_blanks, blank_character=blank_character,
               edge_character=edge_character,
-              show_a=show_a, display=display_modes
+              show_a=show_a, display=display_modes,
+              record_frames_to=pathlib.Path(record_frames_to)
     )
     if light_mode == 'detect' and lights:
         b.show_board_on_terminal = False
