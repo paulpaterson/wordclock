@@ -312,7 +312,7 @@ def main(offset: int, time: str, interval: float, simulation_update: int,
               replace_blanks=replace_blanks, blank_character=blank_character,
               edge_character=edge_character,
               show_a=show_a, display=display_modes,
-              record_frames_to=pathlib.Path(record_frames_to)
+              record_frames_to=pathlib.Path(record_frames_to) if record_frames_to else None
     )
     if light_mode == 'detect' and lights:
         b.show_board_on_terminal = False
