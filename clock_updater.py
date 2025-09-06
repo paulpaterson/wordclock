@@ -100,6 +100,7 @@ class Updater:
 
     def action_button_press(self) -> None:
         """Move to the next edge mode"""
+        self.board.recorded_action_button = True
         if self.mode == UpdateModes.NORMAL:
             new_mode: list[modes.Mode] = []
             new_edge_mode = self.edge_modes.pop(0)
@@ -140,6 +141,7 @@ class Updater:
 
     def mode_button_press(self) -> None:
         """The button was released"""
+        self.board.recorded_mode_button = True
         if self.mode == UpdateModes.NORMAL:
             self.mode = UpdateModes.CONFIG_HOURS
             self.board.modes = self.config_modes

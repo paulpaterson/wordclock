@@ -50,6 +50,8 @@ class Board:
         self.show_board_on_terminal = True
         self.record_frames_to = record_frames_to
         self.recorded_frames = 0
+        self.recorded_mode_button: bool = False
+        self.recorded_action_button: bool = False
 
     def add_word(self, word: faces.Word) -> None:
         if word.word and word.word[0] == 'x':
@@ -158,7 +160,11 @@ class Board:
                                 if edge_color:
                                     data[row][col] = edge_color
                 #
-                f.write(json.dumps(data))
+                f.write(json.dumps({
+                    'button-data': (self.recorded_mode_button, self.recorded_action_button),
+                    'light-data': data,
+                }))
+                self.recorded_mode_button = self.recorded_action_button = False
             self.recorded_frames += 1
 
 
