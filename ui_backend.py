@@ -189,14 +189,17 @@ def create_network():
     password = data['PASSWORD']
     security = data['SECURITY']
     try:
-        result = subprocess.run([
+        args = [
+            "sudo",
             "./scripts/configure_network.sh",
-            '--helpx',
             "--ssid", name,
             '--security', security,
             '--password', password,
-            '--ip', ipaddress,
-        ], capture_output=True, text=True, check=True)
+            '--wait', '0',
+        ]
+        if ipaddress != "":
+            args.extend(['--ip', ipaddress])
+        result = subprocess.run(args, capture_output=True, text=True, check=True)
         print("STDOUT:", result.stdout)
         print("STDERR:", result.stderr)
     except subprocess.CalledProcessError as e:

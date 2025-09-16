@@ -159,6 +159,11 @@ printf "Done!\n"
 
 # Wait until the network connects
 
+if [ $WAITTIME -eq 0 ]; then
+    printf "Complete!\n"
+    exit 0
+fi
+
 printf "Waiting for WiFi to connect ..."
 counter=$WAITTIME
 
