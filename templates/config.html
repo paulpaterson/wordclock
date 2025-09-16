@@ -21,6 +21,9 @@
             const saveButton = document.getElementById('saveButton');
             const updateButton = document.getElementById('updateButton');
             const rebootButton = document.getElementById('rebootButton');
+            const createNetworkButton = document.getElementById('createNetworkButton');
+            const ssidName = document.getElementById('ssidName');
+            const ssidPassword = document.getElementById('ssidPassword');
             const messageDiv = document.getElementById('message');
             const updateDiv = document.getElementById('update');
             const rebootDiv = document.getElementById('reboot');
@@ -121,6 +124,28 @@
                 }
             }
 
+            async function createNetwork() {
+                try {
+                    const response = await fetch('/api/create_network', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: {
+                            'NAME': ssidName.value,
+                            'PASSWORD': ssidPassword
+                        }
+                    });
+                    if (!response.ok) {
+                        throw new Error(`Failed to set the network for the clock: ${response.status}`);
+                    }
+                    text = await response.text();
+                    showReboot('Clock network has been set: ' + text + '. Disconnect from your hotspot to continue.', 'success');
+                } catch (error) {
+                    showReboot(`Error setting network for the clock: ${error.message}`, 'error');
+                }
+            }
+
             async function saveConfig() {
                 const selectedModes = [];
                 const modeCheckboxes = document.querySelectorAll('input[name="mode"]');
@@ -178,6 +203,7 @@
             saveButton.addEventListener('click', saveConfig);
             updateButton.addEventListener('click', updateClock);
             rebootButton.addEventListener('click', rebootClock);
+            createNetworkButton.addEventListener('click', createNetwork);
 
             fetchConfig(); // Load config on page load
         });
@@ -538,7 +564,20 @@
 
         <button id="saveButton" class="button">Save Configuration</button>
         <div id="message" class="message"></div>
+
+        <div class="form-group">
+            <label for="ssidName">SSID Name</label>
+            <input type="text" id="ssidName" value="">
+        </div>
+
+        <div class="form-group">
+            <label for="ssidPassword">Password</label>
+            <input type="text" id="ssidPassword" value="">
+        </div>
+
+        <button id="createNetworkButton" class="button">Create Network Connection</button>
     </div>
+
 
     <script>
         const intervalInput = document.getElementById('interval');
