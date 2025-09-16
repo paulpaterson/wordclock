@@ -24,6 +24,7 @@
             const createNetworkButton = document.getElementById('createNetworkButton');
             const ssidName = document.getElementById('ssidName');
             const ssidPassword = document.getElementById('ssidPassword');
+            const wifiSecurity = document.getElementById('wifiSecurity');
             const messageDiv = document.getElementById('message');
             const updateDiv = document.getElementById('update');
             const rebootDiv = document.getElementById('reboot');
@@ -126,15 +127,20 @@
 
             async function createNetwork() {
                 try {
+                    var details = {
+                            'NAME': ssidName.value,
+                            'PASSWORD': ssidPassword.value,
+                            'IPADDRESS': ipAddressInput.value,
+                            'SECURITY': wifiSecurity.value
+                    };
+                    var details_json = JSON.stringify(details);
+
                     const response = await fetch('/api/create_network', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body: {
-                            'NAME': ssidName.value,
-                            'PASSWORD': ssidPassword
-                        }
+                        body: details_json
                     });
                     if (!response.ok) {
                         throw new Error(`Failed to set the network for the clock: ${response.status}`);
@@ -550,10 +556,6 @@
             <input type="number" id="baudRate" value="115200" min="1200" step="100">
         </div>
 
-        <div class="form-group" style="display: none">
-            <label for="ipAddress">IP Address for Clock</label>
-            <input type="text" id="ipAddress" value="192.168.1.38">
-        </div>
 
 
         <button id="updateButton" class="button update">Update Clock software from Github</button>
@@ -573,6 +575,21 @@
         <div class="form-group">
             <label for="ssidPassword">Password</label>
             <input type="text" id="ssidPassword" value="">
+        </div>
+
+        <div class="form-group">
+            <label for="ipAddress">IP Address for Clock</label>
+            <input type="text" id="ipAddress" value="192.168.1.38">
+        </div>
+
+        <div class="form-group">
+            <label for="wifiSecurity">WIFI Security</label>
+            <select id="wifiSecurity">
+                <option value="WEP">WEP</option>
+                <option value="WPA" selected>WPA</option>
+                <option value="WPA2">WPA2</option>
+                <option value="nopass">nopass</option>
+            </select>
         </div>
 
         <button id="createNetworkButton" class="button">Create Network Connection</button>

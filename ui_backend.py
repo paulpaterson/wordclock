@@ -181,6 +181,30 @@ def do_reboot():
         raise
     return 'OK'
 
+@app.route('/api/create_network', methods=['POST'])
+def create_network():
+    data = request.get_json()
+    name = data['NAME']
+    ipaddress = data['IPADDRESS']
+    password = data['PASSWORD']
+    security = data['SECURITY']
+    try:
+        result = subprocess.run([
+            "./scripts/configure_network.sh",
+            '--helpx',
+            "--ssid", name,
+            '--security', security,
+            '--password', password,
+            '--ip', ipaddress,
+        ], capture_output=True, text=True, check=True)
+        print("STDOUT:", result.stdout)
+        print("STDERR:", result.stderr)
+    except subprocess.CalledProcessError as e:
+        print(f"Command failed with exit code {e.returncode}: {e.stderr}")
+        raise
+    return 'OK'
+
+
 def get_my_ip():
     """
     Gets the current machine's IP address.  This method is more robust
