@@ -62,7 +62,7 @@ def convert_to_text(t: datetime.time, simple: bool = False,
     #
     # Check if just the date needed
     if mode == Mode.short_date:
-        return t.strftime('%a %b %d')
+        return t.strftime('%a %b %-d')
 
     hour_words = [
         'midnight' if twelve_mode == TwelveMode.mode_name else 'twelve',

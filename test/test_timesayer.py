@@ -204,7 +204,7 @@ class TestDateSayer(unittest.TestCase):
     def test_can_say_date(self):
         T = lambda y, m, d: datetime.datetime(y, m, d, 1, 00)
         tests = [
-            (T(2026, 1, 10), 'Sat Jan 10'),
+            (T(2026, 1, 1), 'Thu Jan 1'),
             (T(2026, 2, 27), 'Fri Feb 27'),
             (T(2026, 3, 12), 'Thu Mar 12'),
             (T(2026, 4, 12), 'Sun Apr 12'),

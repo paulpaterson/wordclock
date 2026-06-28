@@ -31,7 +31,7 @@ class Board:
                  light_color: tuple[int, int, int]|None=None,
                  replace_blanks: bool=False, blank_character: str=' ', edge_character: str=' ',
                  show_a: bool=False, display: list[modes.Mode]|None=None,
-                 record_frames_to: pathlib.Path|None=None):
+                 record_frames_to: pathlib.Path|None=None, month_mode: bool=False):
         self.term = term
         self.time = time
         self.rows: list[list[faces.Word]] = [[]]
@@ -52,6 +52,7 @@ class Board:
         self.recorded_frames = 0
         self.recorded_mode_button: bool = False
         self.recorded_action_button: bool = False
+        self.month_mode = month_mode
 
     def add_word(self, word: faces.Word) -> None:
         if word.word and word.word[0] == 'x':
@@ -239,7 +240,7 @@ class Board:
     def convert_time(self) -> str:
         it_is = 'It is ' if self.show_it_is else ''
         return it_is + timesayer.convert_to_text(self.time, simple=self.simple,
-                                         mode=timesayer.Mode.oclock,
+                                         mode=timesayer.Mode.oclock if not self.month_mode else timesayer.Mode.short_date,
                                          twelve_mode=timesayer.TwelveMode.number,
                                          show_a=self.show_a
         )
@@ -278,12 +279,13 @@ class Board:
 @click.option('--mode-button-pin', type=int, default=-1, help='GPIO Pin where edge mode button is. Set to -1 for no button (default)')
 @click.option('--set-system-time', is_flag=True, help="Whether to set the system time when using the adjustment button")
 @click.option('--record-frames-to', type=click.Path(), default="", help="Folder to record frames of the matrix")
+@click.option('--month-mode', is_flag=True, help="Whether to just show the months")
 def main(offset: int, time: str, interval: float, simulation_update: int,
          face_mode: str, run_mode: str, show_it_is: bool, light_mode: str, light_color: str,
          replace_blanks: bool, blank_character: str, edge_character: str, array_format: bool,
          button_key: str, mode_button_key: str, baud_rate: int, show_a: bool, mode: str,
          mode_parameters: list[str], qrcode_file: str, button_pin: int, mode_button_pin: int, set_system_time: bool,
-         record_frames_to: str) -> None:
+         record_frames_to: str, month_mode: bool) -> None:
 
     term = blessed.Terminal()
     if time:
@@ -318,7 +320,8 @@ def main(offset: int, time: str, interval: float, simulation_update: int,
               replace_blanks=replace_blanks, blank_character=blank_character,
               edge_character=edge_character,
               show_a=show_a, display=display_modes,
-              record_frames_to=pathlib.Path(record_frames_to) if record_frames_to else None
+              record_frames_to=pathlib.Path(record_frames_to) if record_frames_to else None,
+              month_mode=month_mode
     )
     if light_mode == 'detect' and lights:
         b.show_board_on_terminal = False
