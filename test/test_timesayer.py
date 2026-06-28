@@ -199,5 +199,29 @@ class TestSayer(unittest.TestCase):
             twelve_mode=timesayer.TwelveMode.number,
         ))
 
+class TestDateSayer(unittest.TestCase):
+
+    def test_can_say_date(self):
+        T = lambda y, m, d: datetime.datetime(y, m, d, 1, 00)
+        tests = [
+            (T(2026, 1, 10), 'Sat Jan 10'),
+            (T(2026, 2, 27), 'Fri Feb 27'),
+            (T(2026, 3, 12), 'Thu Mar 12'),
+            (T(2026, 4, 12), 'Sun Apr 12'),
+            (T(2026, 5, 12), 'Tue May 12'),
+            (T(2026, 6, 12), 'Fri Jun 12'),
+            (T(2026, 7, 12), 'Sun Jul 12'),
+            (T(2026, 8, 12), 'Wed Aug 12'),
+            (T(2026, 9, 12), 'Sat Sep 12'),
+            (T(2026, 10, 12), 'Mon Oct 12'),
+            (T(2026, 11, 12), 'Thu Nov 12'),
+            (T(2026, 12, 16), 'Wed Dec 16'),
+        ]
+        for date, result in tests:
+            self.assertEqual(
+                result,
+                timesayer.convert_to_text(date, mode=timesayer.Mode.short_date)
+            )
+
 if __name__ == '__main__':
     unittest.main()

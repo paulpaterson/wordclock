@@ -6,6 +6,7 @@ class Mode(enum.Enum):
     simple = 0
     am_pm = 1
     oclock = 2
+    short_date = 3
 
 class TwelveMode(enum.Enum):
     number = 0
@@ -57,6 +58,12 @@ def convert_to_text(t: datetime.time, simple: bool = False,
                     mode: Mode = Mode.am_pm, twelve_mode: TwelveMode = TwelveMode.mode_name,
                     show_a: bool=False) -> str:
     """Return a text representation of the time"""
+
+    #
+    # Check if just the date needed
+    if mode == Mode.short_date:
+        return t.strftime('%a %b %d')
+
     hour_words = [
         'midnight' if twelve_mode == TwelveMode.mode_name else 'twelve',
         'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight',
