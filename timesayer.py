@@ -54,7 +54,7 @@ complex_times = simple_times + [
 ]
 
 
-def convert_to_text(t: datetime.time, simple: bool = False,
+def convert_to_text(t: datetime.datetime, simple: bool = False,
                     mode: Mode = Mode.am_pm, twelve_mode: TwelveMode = TwelveMode.mode_name,
                     show_a: bool=False) -> str:
     """Return a text representation of the time"""
@@ -62,7 +62,7 @@ def convert_to_text(t: datetime.time, simple: bool = False,
     #
     # Check if just the date needed
     if mode == Mode.short_date:
-        return t.strftime('%a %b %-d')
+        return t.strftime('%a %-d %b')
 
     hour_words = [
         'midnight' if twelve_mode == TwelveMode.mode_name else 'twelve',

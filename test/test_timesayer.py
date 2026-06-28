@@ -204,18 +204,18 @@ class TestDateSayer(unittest.TestCase):
     def test_can_say_date(self):
         T = lambda y, m, d: datetime.datetime(y, m, d, 1, 00)
         tests = [
-            (T(2026, 1, 1), 'Thu Jan 1'),
-            (T(2026, 2, 27), 'Fri Feb 27'),
-            (T(2026, 3, 12), 'Thu Mar 12'),
-            (T(2026, 4, 12), 'Sun Apr 12'),
-            (T(2026, 5, 12), 'Tue May 12'),
-            (T(2026, 6, 12), 'Fri Jun 12'),
-            (T(2026, 7, 12), 'Sun Jul 12'),
-            (T(2026, 8, 12), 'Wed Aug 12'),
-            (T(2026, 9, 12), 'Sat Sep 12'),
-            (T(2026, 10, 12), 'Mon Oct 12'),
-            (T(2026, 11, 12), 'Thu Nov 12'),
-            (T(2026, 12, 16), 'Wed Dec 16'),
+            (T(2026, 1, 1), 'Thu 1 Jan'),
+            (T(2026, 2, 27), 'Fri 27 Feb'),
+            (T(2026, 3, 12), 'Thu 12 Mar'),
+            (T(2026, 4, 12), 'Sun 12 Apr'),
+            (T(2026, 5, 12), 'Tue 12 May'),
+            (T(2026, 6, 12), 'Fri 12 Jun'),
+            (T(2026, 7, 12), 'Sun 12 Jul'),
+            (T(2026, 8, 12), 'Wed 12 Aug'),
+            (T(2026, 9, 12), 'Sat 12 Sep'),
+            (T(2026, 10, 12), 'Mon 12 Oct'),
+            (T(2026, 11, 12), 'Thu 12 Nov'),
+            (T(2026, 12, 16), 'Wed 16 Dec'),
         ]
         for date, result in tests:
             self.assertEqual(

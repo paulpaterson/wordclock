@@ -60,7 +60,7 @@ class Updater:
         while True:
             try:
                 t = datetime.datetime.now()
-                self.board.time = (t + self.current_offset).time()
+                self.board.time = (t + self.current_offset)
                 #
                 with self.term.cbreak():
                     if pressed := self.term.inkey(timeout=self.interval):

@@ -26,7 +26,7 @@ RUN_MODES = ['NORMAL', 'CALCSIZE', 'SHOWLETTERS']
 class Board:
     """Represents of the words arranged in a board"""
 
-    def __init__(self, term: blessed.Terminal, time: datetime.time, simple: bool=False, show_it_is: bool=False,
+    def __init__(self, term: blessed.Terminal, time: datetime.datetime, simple: bool=False, show_it_is: bool=False,
                  lights: Callable[[int], Any]|None=None,
                  light_color: tuple[int, int, int]|None=None,
                  replace_blanks: bool=False, blank_character: str=' ', edge_character: str=' ',
@@ -314,7 +314,7 @@ def main(offset: int, time: str, interval: float, simulation_update: int,
     if decoded_color is None:
         decoded_color = (255, 255, 255)
 
-    b = Board(term, datetime.datetime.now().time(),
+    b = Board(term, datetime.datetime.now(),
               simple=face_mode=='14x5', show_it_is=show_it_is,
               lights=lights, light_color=decoded_color,
               replace_blanks=replace_blanks, blank_character=blank_character,
