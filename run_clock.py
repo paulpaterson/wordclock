@@ -247,7 +247,12 @@ class Board:
 
     def get_dimensions(self) -> tuple[int, int]:
         rows = len(self.rows)
-        cols = sum(len(word.word) for word in self.rows[int(rows / 2)])
+        for row in self.rows:
+            if row:
+                break
+        else:
+            raise ValueError('There appear to be no rows with any words in them')
+        cols = sum(len(word.word) for word in row)
         return (cols, rows)
 
 

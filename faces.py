@@ -477,6 +477,7 @@ short_date: FaceDefinition = [
     NewLine,
     NewLine,
     NewLine,
+    NewLine,
 
     NewLine,
     Word('26'),
@@ -507,7 +508,7 @@ short_date: FaceDefinition = [
 
     Word('Dec'),
     Unused('kfghabaeioubd'),
-    NewLine,
+
 
 ]
 
